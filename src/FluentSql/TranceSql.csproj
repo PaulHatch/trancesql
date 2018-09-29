@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>FluentSql</AssemblyName>
+    <PackageId>NorthAtlantic.FluentSql</PackageId>
+    <Authors>Trance Development Team</Authors>
+    <PackageTags>SQL Database Client</PackageTags>
+    <Copyright>2018</Copyright>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Elements\**" />
+    <EmbeddedResource Remove="Elements\**" />
+    <None Remove="Elements\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Data.Common" Version="4.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+
+</Project>
