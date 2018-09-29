@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{D57212A8-FEBD-4880-AE3F-821931F24942}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{297E8D6F-CF15-4856-8B95-07CF6E353E9B}"
+	ProjectSection(SolutionItems) = preProject
+		src\FluentSql\readme.md = src\FluentSql\readme.md
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TranceSql", "src\FluentSql\TranceSql.csproj", "{E5684131-B6A6-4B4B-9547-380E63019013}"
 EndProject
