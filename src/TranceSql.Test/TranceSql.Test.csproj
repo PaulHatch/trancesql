@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\FluentSql\TranceSql.csproj" />
+    <ProjectReference Include="..\TranceSql\TranceSql.csproj" />
   </ItemGroup>
 
 </Project>
