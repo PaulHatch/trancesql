@@ -45,9 +45,14 @@ namespace TranceSql.Language
             _values.Add(third);
         }
 
-        public void Add(params ISqlElement[] values)
+        public void Add(object value) => Add(value as ISqlElement ?? new Value(value));
+
+        public void Add(params object[] values)
         {
-            _values.AddRange(values);
+            foreach (var value in values)
+            {
+                Add(value as ISqlElement ?? new Value(value));
+            }
         }
 
         public static implicit operator ValuesCollection(Select select) 

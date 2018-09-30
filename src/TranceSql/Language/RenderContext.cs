@@ -11,7 +11,7 @@ namespace TranceSql.Language
         private Dictionary<Value, string> _dynamicParameters = new Dictionary<Value, string>();
         private Stack<RenderMode> _modes = new Stack<RenderMode>(new[] { RenderMode.Statment });
         private StringBuilder _result = new StringBuilder();
-        private DeferContext _deferrContext;
+        private DeferContext _deferContext;
 
         /// <summary>
         /// Gets or sets the line delimiter to use when rendering commands.
@@ -67,7 +67,7 @@ namespace TranceSql.Language
         public RenderContext(IDialect dialect, DeferContext deferContext)
         {
             Dialect = dialect;
-            _deferrContext = deferContext;
+            _deferContext = deferContext;
         }
 
         /// <summary>
@@ -83,15 +83,15 @@ namespace TranceSql.Language
             }
 
             string name;
-            if (_deferrContext == null)
+            if (_deferContext == null)
             {
                 name = $"@P{_index}";
                 _index++;
             }
             else
             {
-                name = $"@P{_deferrContext.ParameterIndex}";
-                _deferrContext.ParameterIndex++;
+                name = $"@P{_deferContext.ParameterIndex}";
+                _deferContext.ParameterIndex++;
             }
 
             _dynamicParameters.Add(value, name);

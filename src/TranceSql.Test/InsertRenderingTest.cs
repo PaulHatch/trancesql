@@ -124,5 +124,23 @@ namespace TranceSql.Test
 
             Assert.Equal("INSERT INTO Table\nDEFAULT VALUES;", result);
         }
+
+        [Fact]
+        public void AutomaticValuesRender()
+        {
+            var sut = new Insert
+            {
+                Columns = { "Column1", "Column2" },
+                Into = "Table",
+                Values = {
+                    { 123, 123 },
+                    { 123, 123 }
+                }
+            };
+
+            var result = sut.ToString();
+
+            Assert.Equal("INSERT INTO Table (Column1, Column2)\nVALUES (@P1, @P2),\n(@P3, @P4);", result);
+        }
     }
 }

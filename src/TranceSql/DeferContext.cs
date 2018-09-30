@@ -1,5 +1,4 @@
-﻿using TranceSql.Processing;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -7,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using TranceSql.Language;
+using TranceSql.Processing;
 
 namespace TranceSql
 {
@@ -17,11 +17,14 @@ namespace TranceSql
     {
         private CombineContext _context = new CombineContext();
         private List<ProcessorContext> _processors = new List<ProcessorContext>();
-        private SqlCommandManager _commandManager;
-        private bool _hasExecuted;
 
         /// <summary>Gets the command manager for execution of commands within this context.</summary>
-        internal SqlCommandManager CommandManager => _commandManager;
+        internal SqlCommandManager CommandManager { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether this instance has executed.
+        /// </summary>
+        internal bool HasExecuted { get; private set; }
 
         /// <summary>Gets or sets the current index value for dynamic parameters.</summary>
         internal int ParameterIndex { get; set; }
@@ -34,7 +37,7 @@ namespace TranceSql
         /// </param>
         internal DeferContext(SqlCommandManager commandManager)
         {
-            _commandManager = commandManager;
+            CommandManager = commandManager;
             ParameterIndex = 1;
         }
 
@@ -141,8 +144,8 @@ namespace TranceSql
         /// <returns>A task for the operation.</returns>
         internal async Task RunAsync()
         {
-            await _commandManager.RunCommandSetAsync(_context, _processors);
-            _hasExecuted = true;
+            await CommandManager.RunCommandSetAsync(_context, _processors);
+            HasExecuted = true;
         }
 
         /// <summary>
@@ -150,13 +153,8 @@ namespace TranceSql
         /// </summary>
         internal void Run()
         {
-            _commandManager.RunCommandSet(_context, _processors);
-            _hasExecuted = true;
+            CommandManager.RunCommandSet(_context, _processors);
+            HasExecuted = true;
         }
-
-        /// <summary>
-        /// Gets a value indicating whether this instance has executed.
-        /// </summary>
-        internal bool HasExecuted => _hasExecuted;
     }
 }

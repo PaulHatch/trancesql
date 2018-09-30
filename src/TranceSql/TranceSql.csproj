@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyName>FluentSql</AssemblyName>
+    <AssemblyName>TranceSql</AssemblyName>
     <PackageId>NorthAtlantic.FluentSql</PackageId>
     <Authors>Trance Development Team</Authors>
     <PackageTags>SQL Database Client</PackageTags>
