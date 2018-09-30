@@ -11,7 +11,6 @@ provide compatible SQL code for several databases:
  - Microsoft SQL Server
  - Sqlite
  - MySql
- - Informix
  - Oracle 
 
 ## Basic Example
