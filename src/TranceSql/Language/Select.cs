@@ -19,6 +19,8 @@ namespace TranceSql.Language
             set => _columns = value;
         }
 
+        public Table Into { get; set; }
+
         private DataSourceCollection _from;
         public DataSourceCollection From
         {
@@ -34,7 +36,8 @@ namespace TranceSql.Language
         }
 
         private ConditionCollection _where;
-        public ConditionCollection Where {
+        public ConditionCollection Where
+        {
             get => _where = _where ?? new ConditionCollection();
             set => _where = value;
         }
@@ -133,6 +136,13 @@ namespace TranceSql.Language
                         context.Write("(SELECT 1)");
                     }
                     context.Write($") AS {rowNumberName}");
+                }
+
+                if (Into != null)
+                {
+                    context.WriteLine();
+                    context.Write("INTO ");
+                    context.Render(Into);
                 }
 
                 if (_from?.Any() == true)

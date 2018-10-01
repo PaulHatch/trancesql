@@ -226,6 +226,21 @@ namespace TranceSql.Test
         }
 
         [Fact]
+        public void SelectIntoRender()
+        {
+            var sut = new Select
+            {
+                Columns = "Column1",
+                Into = "Table2",
+                From = "Table"
+            };
+
+            var result = sut.ToString();
+
+            Assert.Equal("SELECT Column1\nINTO Table2\nFROM Table;", result);
+        }
+
+        [Fact]
         public void ColumnAliasRender()
         {
             var sut = new Select
