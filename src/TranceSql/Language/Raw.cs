@@ -7,7 +7,7 @@ namespace TranceSql.Language
     /// <summary>
     /// Represents a raw snippet of SQL code.
     /// </summary>
-    public class Raw : ExpressionElement, ISqlElement
+    public class Raw : ExpressionElement, ISqlStatement
     {
         public string Value { get; set; }
 
