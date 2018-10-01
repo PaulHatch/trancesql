@@ -292,7 +292,7 @@ namespace TranceSql.Test
         [InlineData(LimitBehavior.FetchFirst, OffsetBehavior.Offset, "SELECT Column\nFROM Table\nFETCH FIRST 5 ROWS ONLY;")]
         [InlineData(LimitBehavior.RowNum, OffsetBehavior.None, "SELECT Column\nFROM (\nSELECT Column,ROW_NUMBER() OVER (ORDER BY (SELECT 1)) AS rownumber\nFROM Table)\nWHERE rownumber <= 5;")]
         [InlineData(LimitBehavior.RowNumAutomatic, OffsetBehavior.None, "SELECT *\nFROM (\nSELECT Column\nFROM Table)\nWHERE RowNum <= 5;")]
-        public void LimitBehaviorTypes(LimitBehavior limitBehavior, OffsetBehavior offsetBehavior, string expectedResult)
+        public void LimitBehaviorTypesRender(LimitBehavior limitBehavior, OffsetBehavior offsetBehavior, string expectedResult)
         {
             var dialect = new GenericDialect { LimitBehavior = limitBehavior, OffsetBehavior = offsetBehavior };
             var context = new RenderContext(dialect);

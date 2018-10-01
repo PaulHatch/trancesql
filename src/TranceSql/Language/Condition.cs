@@ -74,33 +74,33 @@ namespace TranceSql.Language
 
         // Automatic column + explicit parameter
 
-        public static Condition Equal(string column, Parameter parameter)
-            => new Condition(BooleanOperator.And, OperationType.Equal, new Column(column), parameter);
-        public static Condition NotEqual(string column, Parameter parameter)
-            => new Condition(BooleanOperator.And, OperationType.NotEqual, new Column(column), parameter);
-        public static Condition GreaterThan(string column, Parameter parameter)
-            => new Condition(BooleanOperator.And, OperationType.GreaterThan, new Column(column), parameter);
-        public static Condition GreaterThanOrEqual(string column, Parameter parameter)
-            => new Condition(BooleanOperator.And, OperationType.GreaterThanOrEqual, new Column(column), parameter);
-        public static Condition LessThan(string column, Parameter parameter)
-            => new Condition(BooleanOperator.And, OperationType.LessThan, new Column(column), parameter);
-        public static Condition LessThanOrEqual(string column, Parameter parameter)
-            => new Condition(BooleanOperator.And, OperationType.LessThanOrEqual, new Column(column), parameter);
+        public static Condition Equal(string column, ISqlElement value)
+            => new Condition(BooleanOperator.And, OperationType.Equal, new Column(column), value);
+        public static Condition NotEqual(string column, ISqlElement value)
+            => new Condition(BooleanOperator.And, OperationType.NotEqual, new Column(column), value);
+        public static Condition GreaterThan(string column, ISqlElement value)
+            => new Condition(BooleanOperator.And, OperationType.GreaterThan, new Column(column), value);
+        public static Condition GreaterThanOrEqual(string column, ISqlElement value)
+            => new Condition(BooleanOperator.And, OperationType.GreaterThanOrEqual, new Column(column), value);
+        public static Condition LessThan(string column, ISqlElement value)
+            => new Condition(BooleanOperator.And, OperationType.LessThan, new Column(column), value);
+        public static Condition LessThanOrEqual(string column, ISqlElement value)
+            => new Condition(BooleanOperator.And, OperationType.LessThanOrEqual, new Column(column), value);
 
         // Automatic column w/table + explicit parameter
 
-        public static Condition Equal(string table, string column, Parameter parameter)
-            => new Condition(BooleanOperator.And, OperationType.Equal, new Column(table, column), parameter);
-        public static Condition NotEqual(string table, string column, Parameter parameter)
-            => new Condition(BooleanOperator.And, OperationType.NotEqual, new Column(table, column), parameter);
-        public static Condition GreaterThan(string table, string column, Parameter parameter)
-            => new Condition(BooleanOperator.And, OperationType.GreaterThan, new Column(table, column), parameter);
-        public static Condition GreaterThanOrEqual(string table, string column, Parameter parameter)
-            => new Condition(BooleanOperator.And, OperationType.GreaterThanOrEqual, new Column(table, column), parameter);
-        public static Condition LessThan(string table, string column, Parameter parameter)
-            => new Condition(BooleanOperator.And, OperationType.LessThan, new Column(table, column), parameter);
-        public static Condition LessThanOrEqual(string table, string column, Parameter parameter)
-            => new Condition(BooleanOperator.And, OperationType.LessThanOrEqual, new Column(table, column), parameter);
+        public static Condition Equal(string table, string column, ISqlElement value)
+            => new Condition(BooleanOperator.And, OperationType.Equal, new Column(table, column), value);
+        public static Condition NotEqual(string table, string column, ISqlElement value)
+            => new Condition(BooleanOperator.And, OperationType.NotEqual, new Column(table, column), value);
+        public static Condition GreaterThan(string table, string column, ISqlElement value)
+            => new Condition(BooleanOperator.And, OperationType.GreaterThan, new Column(table, column), value);
+        public static Condition GreaterThanOrEqual(string table, string column, ISqlElement value)
+            => new Condition(BooleanOperator.And, OperationType.GreaterThanOrEqual, new Column(table, column), value);
+        public static Condition LessThan(string table, string column, ISqlElement value)
+            => new Condition(BooleanOperator.And, OperationType.LessThan, new Column(table, column), value);
+        public static Condition LessThanOrEqual(string table, string column, ISqlElement value)
+            => new Condition(BooleanOperator.And, OperationType.LessThanOrEqual, new Column(table, column), value);
 
         // exists and not exists in query
 
@@ -203,33 +203,33 @@ namespace TranceSql.Language
 
         // Automatic column + explicit parameter
 
-        public static Condition Equal(string column, Parameter parameter)
-            => new Condition(BooleanOperator.Or, OperationType.Equal, new Column(column), parameter);
-        public static Condition NotEqual(string column, Parameter parameter)
-            => new Condition(BooleanOperator.Or, OperationType.NotEqual, new Column(column), parameter);
-        public static Condition GreaterThan(string column, Parameter parameter)
-            => new Condition(BooleanOperator.Or, OperationType.GreaterThan, new Column(column), parameter);
-        public static Condition GreaterThanOrEqual(string column, Parameter parameter)
-            => new Condition(BooleanOperator.Or, OperationType.GreaterThanOrEqual, new Column(column), parameter);
-        public static Condition LessThan(string column, Parameter parameter)
-            => new Condition(BooleanOperator.Or, OperationType.LessThan, new Column(column), parameter);
-        public static Condition LessThanOrEqual(string column, Parameter parameter)
-            => new Condition(BooleanOperator.Or, OperationType.LessThanOrEqual, new Column(column), parameter);
+        public static Condition Equal(string column, ISqlElement value)
+            => new Condition(BooleanOperator.Or, OperationType.Equal, new Column(column), value);
+        public static Condition NotEqual(string column, ISqlElement value)
+            => new Condition(BooleanOperator.Or, OperationType.NotEqual, new Column(column), value);
+        public static Condition GreaterThan(string column, ISqlElement value)
+            => new Condition(BooleanOperator.Or, OperationType.GreaterThan, new Column(column), value);
+        public static Condition GreaterThanOrEqual(string column, ISqlElement value)
+            => new Condition(BooleanOperator.Or, OperationType.GreaterThanOrEqual, new Column(column), value);
+        public static Condition LessThan(string column, ISqlElement value)
+            => new Condition(BooleanOperator.Or, OperationType.LessThan, new Column(column), value);
+        public static Condition LessThanOrEqual(string column, ISqlElement value)
+            => new Condition(BooleanOperator.Or, OperationType.LessThanOrEqual, new Column(column), value);
 
         // Automatic column w/table + explicit parameter
 
-        public static Condition Equal(string table, string column, Parameter parameter)
-            => new Condition(BooleanOperator.Or, OperationType.Equal, new Column(table, column), parameter);
-        public static Condition NotEqual(string table, string column, Parameter parameter)
-            => new Condition(BooleanOperator.Or, OperationType.NotEqual, new Column(table, column), parameter);
-        public static Condition GreaterThan(string table, string column, Parameter parameter)
-            => new Condition(BooleanOperator.Or, OperationType.GreaterThan, new Column(table, column), parameter);
-        public static Condition GreaterThanOrEqual(string table, string column, Parameter parameter)
-            => new Condition(BooleanOperator.Or, OperationType.GreaterThanOrEqual, new Column(table, column), parameter);
-        public static Condition LessThan(string table, string column, Parameter parameter)
-            => new Condition(BooleanOperator.Or, OperationType.LessThan, new Column(table, column), parameter);
-        public static Condition LessThanOrEqual(string table, string column, Parameter parameter)
-            => new Condition(BooleanOperator.Or, OperationType.LessThanOrEqual, new Column(table, column), parameter);
+        public static Condition Equal(string table, string column, ISqlElement value)
+            => new Condition(BooleanOperator.Or, OperationType.Equal, new Column(table, column), value);
+        public static Condition NotEqual(string table, string column, ISqlElement value)
+            => new Condition(BooleanOperator.Or, OperationType.NotEqual, new Column(table, column), value);
+        public static Condition GreaterThan(string table, string column, ISqlElement value)
+            => new Condition(BooleanOperator.Or, OperationType.GreaterThan, new Column(table, column), value);
+        public static Condition GreaterThanOrEqual(string table, string column, ISqlElement value)
+            => new Condition(BooleanOperator.Or, OperationType.GreaterThanOrEqual, new Column(table, column), value);
+        public static Condition LessThan(string table, string column, ISqlElement value)
+            => new Condition(BooleanOperator.Or, OperationType.LessThan, new Column(table, column), value);
+        public static Condition LessThanOrEqual(string table, string column, ISqlElement value)
+            => new Condition(BooleanOperator.Or, OperationType.LessThanOrEqual, new Column(table, column), value);
 
         // exists and not exists in query
 
@@ -353,33 +353,33 @@ namespace TranceSql.Language
 
         // Automatic column + explicit parameter
 
-        public static Condition Equal(string column, Parameter parameter)
-            => new Condition(BooleanOperator.And, OperationType.Equal, new Column(column), parameter);
-        public static Condition NotEqual(string column, Parameter parameter)
-            => new Condition(BooleanOperator.And, OperationType.NotEqual, new Column(column), parameter);
-        public static Condition GreaterThan(string column, Parameter parameter)
-            => new Condition(BooleanOperator.And, OperationType.GreaterThan, new Column(column), parameter);
-        public static Condition GreaterThanOrEqual(string column, Parameter parameter)
-            => new Condition(BooleanOperator.And, OperationType.GreaterThanOrEqual, new Column(column), parameter);
-        public static Condition LessThan(string column, Parameter parameter)
-            => new Condition(BooleanOperator.And, OperationType.LessThan, new Column(column), parameter);
-        public static Condition LessThanOrEqual(string column, Parameter parameter)
-            => new Condition(BooleanOperator.And, OperationType.LessThanOrEqual, new Column(column), parameter);
+        public static Condition Equal(string column, ISqlElement value)
+            => new Condition(BooleanOperator.And, OperationType.Equal, new Column(column), value);
+        public static Condition NotEqual(string column, ISqlElement value)
+            => new Condition(BooleanOperator.And, OperationType.NotEqual, new Column(column), value);
+        public static Condition GreaterThan(string column, ISqlElement value)
+            => new Condition(BooleanOperator.And, OperationType.GreaterThan, new Column(column), value);
+        public static Condition GreaterThanOrEqual(string column, ISqlElement value)
+            => new Condition(BooleanOperator.And, OperationType.GreaterThanOrEqual, new Column(column), value);
+        public static Condition LessThan(string column, ISqlElement value)
+            => new Condition(BooleanOperator.And, OperationType.LessThan, new Column(column), value);
+        public static Condition LessThanOrEqual(string column, ISqlElement value)
+            => new Condition(BooleanOperator.And, OperationType.LessThanOrEqual, new Column(column), value);
 
         // Automatic column w/table + explicit parameter
 
-        public static Condition Equal(string table, string column, Parameter parameter)
-            => new Condition(BooleanOperator.And, OperationType.Equal, new Column(table, column), parameter);
-        public static Condition NotEqual(string table, string column, Parameter parameter)
-            => new Condition(BooleanOperator.And, OperationType.NotEqual, new Column(table, column), parameter);
-        public static Condition GreaterThan(string table, string column, Parameter parameter)
-            => new Condition(BooleanOperator.And, OperationType.GreaterThan, new Column(table, column), parameter);
-        public static Condition GreaterThanOrEqual(string table, string column, Parameter parameter)
-            => new Condition(BooleanOperator.And, OperationType.GreaterThanOrEqual, new Column(table, column), parameter);
-        public static Condition LessThan(string table, string column, Parameter parameter)
-            => new Condition(BooleanOperator.And, OperationType.LessThan, new Column(table, column), parameter);
-        public static Condition LessThanOrEqual(string table, string column, Parameter parameter)
-            => new Condition(BooleanOperator.And, OperationType.LessThanOrEqual, new Column(table, column), parameter);
+        public static Condition Equal(string table, string column, ISqlElement value)
+            => new Condition(BooleanOperator.And, OperationType.Equal, new Column(table, column), value);
+        public static Condition NotEqual(string table, string column, ISqlElement value)
+            => new Condition(BooleanOperator.And, OperationType.NotEqual, new Column(table, column), value);
+        public static Condition GreaterThan(string table, string column, ISqlElement value)
+            => new Condition(BooleanOperator.And, OperationType.GreaterThan, new Column(table, column), value);
+        public static Condition GreaterThanOrEqual(string table, string column, ISqlElement value)
+            => new Condition(BooleanOperator.And, OperationType.GreaterThanOrEqual, new Column(table, column), value);
+        public static Condition LessThan(string table, string column, ISqlElement value)
+            => new Condition(BooleanOperator.And, OperationType.LessThan, new Column(table, column), value);
+        public static Condition LessThanOrEqual(string table, string column, ISqlElement value)
+            => new Condition(BooleanOperator.And, OperationType.LessThanOrEqual, new Column(table, column), value);
 
         // exists and not exists in query
 
