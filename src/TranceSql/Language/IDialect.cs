@@ -21,6 +21,11 @@ namespace TranceSql.Language
         LimitBehavior LimitBehavior { get; }
 
         /// <summary>
+        /// Gets the offset behavior and support used by this dialect.
+        /// </summary>
+        OffsetBehavior OffsetBehavior { get; }
+
+        /// <summary>
         /// Formats a date constant.
         /// </summary>
         /// <param name="date">The date to format.</param>

@@ -7,6 +7,8 @@ namespace TranceSql.SqlServer
     {
         public LimitBehavior LimitBehavior => LimitBehavior.Top;
 
+        public OffsetBehavior OffsetBehavior => OffsetBehavior.None;
+
         public string FormatDate(DateTime date) => $"'{date}'";
         
         public string FormatDate(DateTimeOffset date) => $"'{date}'";

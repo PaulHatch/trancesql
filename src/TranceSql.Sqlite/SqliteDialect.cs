@@ -7,14 +7,16 @@ namespace TranceSql.Sqlite
 {
     public class SqliteDialect : IDialect
     {
-        public LimitBehavior LimitBehavior => LimitBehavior.Top;
+        public LimitBehavior LimitBehavior => LimitBehavior.Limit;
+
+        public OffsetBehavior OffsetBehavior => OffsetBehavior.Offset;
 
         public string FormatDate(DateTime date) => $"'{date}'";
 
         public string FormatDate(DateTimeOffset date) => $"'{date}'";
 
-        public string FormatIdentifier(string identifier) => $"[{identifier}]";
+        public string FormatIdentifier(string identifier) => $"\"{identifier}\"";
 
-        public string FormatString(string value) => $"N'{value.Replace("'", "''")}'";
+        public string FormatString(string value) => $"'{value.Replace("'", "''")}'";
     }
 }

@@ -285,16 +285,16 @@ namespace TranceSql.Test
         }
 
         [Theory]
-        [InlineData(LimitBehavior.Top, "SELECT TOP 5 Column\nFROM Table;")]
-        [InlineData(LimitBehavior.Limit, "SELECT Column\nFROM Table\nLIMIT 5;")]
-        [InlineData(LimitBehavior.LimitAndOffset, "SELECT Column\nFROM Table\nLIMIT 5;")]
-        [InlineData(LimitBehavior.FetchFirst, "SELECT Column\nFROM Table\nFETCH FIRST 5 ROWS ONLY;")]
-        [InlineData(LimitBehavior.FetchFirstAndOffset, "SELECT Column\nFROM Table\nFETCH FIRST 5 ROWS ONLY;")]
-        [InlineData(LimitBehavior.RowNum, "SELECT Column\nFROM (\nSELECT Column,ROW_NUMBER() OVER (ORDER BY (SELECT 1)) AS rownumber\nFROM Table)\nWHERE rownumber <= 5;")]
-        [InlineData(LimitBehavior.RowNumAutomatic, "SELECT *\nFROM (\nSELECT Column\nFROM Table)\nWHERE RowNum <= 5;")]
-        public void LimitBehaviorTypes(LimitBehavior behavior, string expectedResult)
+        [InlineData(LimitBehavior.Top, OffsetBehavior.None, "SELECT TOP 5 Column\nFROM Table;")]
+        [InlineData(LimitBehavior.Limit, OffsetBehavior.None, "SELECT Column\nFROM Table\nLIMIT 5;")]
+        [InlineData(LimitBehavior.Limit, OffsetBehavior.Offset, "SELECT Column\nFROM Table\nLIMIT 5;")]
+        [InlineData(LimitBehavior.FetchFirst, OffsetBehavior.None, "SELECT Column\nFROM Table\nFETCH FIRST 5 ROWS ONLY;")]
+        [InlineData(LimitBehavior.FetchFirst, OffsetBehavior.Offset, "SELECT Column\nFROM Table\nFETCH FIRST 5 ROWS ONLY;")]
+        [InlineData(LimitBehavior.RowNum, OffsetBehavior.None, "SELECT Column\nFROM (\nSELECT Column,ROW_NUMBER() OVER (ORDER BY (SELECT 1)) AS rownumber\nFROM Table)\nWHERE rownumber <= 5;")]
+        [InlineData(LimitBehavior.RowNumAutomatic, OffsetBehavior.None, "SELECT *\nFROM (\nSELECT Column\nFROM Table)\nWHERE RowNum <= 5;")]
+        public void LimitBehaviorTypes(LimitBehavior limitBehavior, OffsetBehavior offsetBehavior, string expectedResult)
         {
-            var dialect = new GenericDialect { LimitBehavior = behavior };
+            var dialect = new GenericDialect { LimitBehavior = limitBehavior, OffsetBehavior = offsetBehavior };
             var context = new RenderContext(dialect);
 
             var sut = new Select

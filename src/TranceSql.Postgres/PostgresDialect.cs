@@ -5,7 +5,9 @@ namespace TranceSql.Postgres
 {
     public class PostgresDialect : IDialect
     {
-        public LimitBehavior LimitBehavior => LimitBehavior.LimitAndOffset;
+        public LimitBehavior LimitBehavior => LimitBehavior.Limit;
+
+        public OffsetBehavior OffsetBehavior => OffsetBehavior.None;
 
         public string FormatDate(DateTime date) => $"'{date}'";
         

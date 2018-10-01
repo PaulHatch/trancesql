@@ -10,7 +10,9 @@ namespace TranceSql.Language
     /// </summary>
     public class GenericDialect : IDialect
     {
-        public LimitBehavior LimitBehavior { get; set; } = LimitBehavior.LimitAndOffset;
+        public LimitBehavior LimitBehavior { get; set; } = LimitBehavior.Limit;
+
+        public OffsetBehavior OffsetBehavior { get; set; } = OffsetBehavior.Offset;
 
         public string FormatDate(DateTime date) => $"'{date}'";
 

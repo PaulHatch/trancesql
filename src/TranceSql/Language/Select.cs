@@ -170,10 +170,9 @@ namespace TranceSql.Language
 
                 if (Offset.HasValue)
                 {
-                    switch (context.Dialect.LimitBehavior)
+                    switch (context.Dialect.OffsetBehavior)
                     {
-                        case LimitBehavior.FetchFirstAndOffset:
-                        case LimitBehavior.LimitAndOffset:
+                        case OffsetBehavior.Offset:
                             context.WriteLine();
                             context.Write($"OFFSET {Offset}");
                             break;
@@ -187,12 +186,10 @@ namespace TranceSql.Language
                     switch (context.Dialect.LimitBehavior)
                     {
                         case LimitBehavior.FetchFirst:
-                        case LimitBehavior.FetchFirstAndOffset:
                             context.WriteLine();
                             context.Write($"FETCH FIRST {Limit} ROWS ONLY");
                             break;
                         case LimitBehavior.Limit:
-                        case LimitBehavior.LimitAndOffset:
                             context.WriteLine();
                             context.Write($"LIMIT {Limit}");
                             break;
