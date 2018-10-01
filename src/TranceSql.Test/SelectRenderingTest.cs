@@ -239,6 +239,51 @@ namespace TranceSql.Test
             Assert.Equal("SELECT Column1 AS C\nFROM Table;", result);
         }
 
+        [Fact]
+        public void UnionRender()
+        {
+            var sut = new Union
+            {
+                new Select
+                {
+                    Columns = { Column("Column1") },
+                    From = Table("Table")
+                },
+                new Select
+                {
+                    Columns = { Column("Column1") },
+                    From = Table("Table")
+                }
+            };
+
+            var result = sut.ToString();
+
+            Assert.Equal("SELECT Column1\nFROM Table\nUNION\nSELECT Column1\nFROM Table;", result);
+        }
+
+        [Fact]
+        public void UnionAllRender()
+        {
+            var sut = new Union
+            {
+                new Select
+                {
+                    Columns = { Column("Column1") },
+                    From = Table("Table")
+                },
+                UnionType.UnionAll,
+                new Select
+                {
+                    Columns = { Column("Column1") },
+                    From = Table("Table")
+                }
+            };
+
+            var result = sut.ToString();
+
+            Assert.Equal("SELECT Column1\nFROM Table\nUNION ALL\nSELECT Column1\nFROM Table;", result);
+        }
+
         [Theory]
         [InlineData(LimitBehavior.Top, "SELECT TOP 5 Column\nFROM Table;")]
         [InlineData(LimitBehavior.Limit, "SELECT Column\nFROM Table\nLIMIT 5;")]

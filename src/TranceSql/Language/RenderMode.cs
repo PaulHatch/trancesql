@@ -1,5 +1,8 @@
 ﻿namespace TranceSql.Language
 {
+    /// <summary>
+    /// Represents the mode to render SQL elements in.
+    /// </summary>
     public enum RenderMode
     {
         /// <summary>
@@ -9,6 +12,11 @@
         /// <summary>
         /// Indicates that a nested statement is being rendered.
         /// </summary>
-        Nested
+        Nested,
+        /// <summary>
+        /// Indicates that multiple statements are being rendered together
+        /// such as in a union statement.
+        /// </summary>
+        MultiStatment
     }
 }

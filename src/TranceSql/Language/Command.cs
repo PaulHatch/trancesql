@@ -52,6 +52,179 @@ namespace TranceSql.Language
 
         #region Execution
 
+        #region Cached
+
+
+        /// <summary>
+        /// Creates a delegate from current command and returns the result as 
+        /// an enumerable list.
+        /// </summary>
+        /// <typeparam name="TResult">Result item type</typeparam>
+        /// <returns>Result of command as a list.</returns>
+        public Func<Task<IEnumerable<TResult>>> FetchListCached<TResult>()
+        {
+            var cached = new CachedContext(Render());
+            return () => _manager.ExecuteListResultAsync<TResult>(cached);
+        }
+
+        /// <summary>
+        /// Creates a delegate from current command to return the result as an enumerable list.
+        /// </summary>
+        /// <typeparam name="TResult">Result item type</typeparam>
+        /// <typeparam name="TParameter">The type of the parameter.</typeparam>
+        /// <param name="parameter">The parameter.</param>
+        /// <returns>Result of command as a list.</returns>
+        public Func<TParameter, Task<IEnumerable<TResult>>> FetchListCached<TResult, TParameter>(Parameter parameter)
+        {
+            var cached = new CachedContext(Render());
+            return p => _manager.ExecuteListResultAsync<TResult>(cached.WithParameters(new Dictionary<string, object> { { parameter.Name, p } }));
+        }
+
+
+        /// <summary>
+        /// Creates a delegate from current command and returns a single row as
+        /// the specified type.
+        /// </summary>
+        /// <typeparam name="TResult">Result item type</typeparam>
+        /// <param name="defaultValue">Value to return if result is null or command returns no values.</param>
+        /// <returns>Result of command.</returns>
+        public Func<Task<TResult>> FetchCached<TResult>(TResult defaultValue = default(TResult))
+        {
+            var cached = new CachedContext(Render());
+            return () => _manager.ExecuteResultAsync<TResult>(Render(), defaultValue, null);
+        }
+
+        /// <summary>
+        /// Creates a delegate from current command and returns a single row as
+        /// the specified type.
+        /// </summary>
+        /// <typeparam name="TResult">Result item type</typeparam>
+        /// <param name="collections">A list of IEnumerable property selectors that should be populated from the command.
+        /// These properties should appear in the same order as their select command.</param>
+        /// <returns>The result of the SQL command.</returns>
+        /// <returns>
+        /// Result of command.
+        /// </returns>
+        public Func<Task<TResult>> FetchCached<TResult>(params Expression<Func<TResult, IEnumerable>>[] collections)
+        {
+            var cached = new CachedContext(Render());
+            return () => _manager.ExecuteResultAsync<TResult>(Render(), default(TResult), collections.Select(c => c.GetPropertyInfo()));
+        }
+
+        /// <summary>
+        /// Creates a delegate from current command and returns a single row as
+        /// the specified type.
+        /// </summary>
+        /// <typeparam name="TResult">Result item type</typeparam>
+        /// <param name="collections">A list of IEnumerable property selectors that should be populated from the command.
+        /// These properties should appear in the same order as their select command.</param>
+        /// <returns>The result of the SQL command.</returns>
+        /// <returns>
+        /// Result of command.
+        /// </returns>
+        public Func<Task<TResult>> FetchCached<TResult>(IEnumerable<PropertyInfo> collections)
+        {
+            if (!collections.All(p => p.PropertyType.ImplementsInterface<IEnumerable>()))
+            {
+                throw new ArgumentException("All properties must be collections", "collections");
+            }
+
+            var cached = new CachedContext(Render());
+            return () => _manager.ExecuteResultAsync<TResult>(Render(), default(TResult), collections);
+        }
+
+        /// <summary>
+        /// Creates a delegate from current command and maps multiple commands to a single result class. Use
+        /// this method to populate a result with multiple commands.
+        /// </summary>
+        /// <typeparam name="TResult">Result item type</typeparam>
+        /// <param name="map">A list of IEnumerable property selectors that should be populated from the command.
+        /// These properties should appear in the same order as their select command.</param>
+        /// <returns>The result of the SQL command.</returns>
+        /// <returns>
+        /// Result of command.
+        /// </returns>
+        public Func<Task<TResult>> FetchMappedResultCached<TResult>(params Expression<Func<TResult, object>>[] map)
+            where TResult : new()
+        {
+            var mappedProperties = MapProperties<TResult>(map);
+            var cached = new CachedContext(Render());
+            return () => _manager.ExecuteMapResultAsync<TResult>(Render(), mappedProperties);
+        }
+        
+        /// <summary>
+        /// Creates a delegate from current command and maps multiple commands to a single result class. Use
+        /// this method to populate a result with multiple commands.
+        /// </summary>
+        /// <typeparam name="TResult">Result item type</typeparam>
+        /// <param name="map">A list of properties that should be populated from the command.
+        /// These properties should appear in the same order as their select command.</param>
+        /// <returns>The result of the SQL command.</returns>
+        /// <returns>
+        /// Result of command.
+        /// </returns>
+        public Func<Task<TResult>> FetchMappedResultCached<TResult>(IEnumerable<PropertyInfo> map)
+            where TResult : new()
+        {
+            var cached = new CachedContext(Render());
+            return () => _manager.ExecuteMapResultAsync<TResult>(Render(), MapProperties(map));
+        }
+
+        /// <summary>
+        /// Creates a delegate from current command and performs a custom action
+        /// to create the result type.
+        /// </summary>
+        /// <typeparam name="TResult">Result item type</typeparam>
+        /// <param name="valueProvider">
+        /// Delegate function to convert the result to the specified type.
+        /// </param>
+        /// <returns>Result of command.</returns>
+        public Func<Task<TResult>> FetchCustomResultCached<TResult>(CreateEntity<TResult> valueProvider)
+        {
+            var cached = new CachedContext(Render());
+            return () => _manager.ExecuteCustomAsync<TResult>(Render(), valueProvider);
+        }
+
+        /// <summary>
+        /// Creates a delegate from current command and returns the first two columns of the result as
+        /// a dictionary.
+        /// </summary>
+        /// <typeparam name="TKey">The type of the key.</typeparam>
+        /// <typeparam name="TValue">The type of the value.</typeparam>
+        /// <returns>
+        /// Result of command as a dictionary.
+        /// </returns>
+        public Func<Task<IDictionary<TKey, TValue>>> FetchRowKeyedDictionaryCached<TKey, TValue>()
+        {
+            var cached = new CachedContext(Render());
+            return () => _manager.ExecuteRowKeyedDictionaryResultAsync<TKey, TValue>(Render());
+        }
+
+        /// <summary>
+        /// Fetches the first row of command as a dictionary with the column names as keys
+        /// and the result row values as values.
+        /// </summary>
+        /// <param name="columns">The columns to return. If null, all columns will be returned.</param>
+        /// <returns>Result of command as a dictionary.</returns>
+        public Func<Task<IDictionary<string, object>>> FetchColumnKeyedDictionaryCached(params string[] columns)
+        {
+            var cached = new CachedContext(Render());
+            return () => _manager.ExecuteColumnKeyedDictionaryResultAsync(Render(), columns);
+        }
+
+        /// <summary>
+        /// Creates a delegate from current command and returns a count of the
+        /// number of rows affected.
+        /// </summary>
+        /// <returns>The number of rows affected by the command.</returns>
+        public Func<Task<int>> ExecuteCached()
+        {
+            var cached = new CachedContext(Render());
+            return () => _manager.ExecuteAsync(Render());
+        }
+        
+        #endregion
+
         #region Synchronous
 
         /// <summary>
