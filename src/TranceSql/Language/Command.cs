@@ -25,7 +25,7 @@ namespace TranceSql.Language
         /// Initializes a new instance of the <see cref="Command"/> class.
         /// </summary>
         /// <param name="connection">The connection to use when rendering and executing the command.</param>
-        public Command(Connection connection)
+        public Command(Database connection)
         {
             _manager = connection.Manager;
             Dialect = connection.Dialect;
@@ -33,12 +33,12 @@ namespace TranceSql.Language
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Command" /> class for executing deferred commands.
-        /// If deferred execution is not being used, the <see cref="Command(Connection connection)"/> constructor
+        /// If deferred execution is not being used, the <see cref="Command(Database connection)"/> constructor
         /// is a better choice.
         /// </summary>
         /// <param name="connection">The connection to use when rendering and executing the command.</param>
         /// <param name="deferContext">The defer context for this command.</param>
-        public Command(Connection connection, DeferContext deferContext)
+        public Command(Database connection, DeferContext deferContext)
             : this(connection)
         {
             _deferContext = deferContext;

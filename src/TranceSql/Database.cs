@@ -7,16 +7,16 @@ using TranceSql.Processing;
 namespace TranceSql
 {
     /// <summary>
-    /// Holds the command manager and dialect for a command.
+    /// Represents a specific database to connect a command to.
     /// </summary>
-    public class Connection
+    public class Database
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Connection"/> class.
+        /// Initializes a new instance of the <see cref="Database"/> class.
         /// </summary>
         /// <param name="manager">The SQL command manager.</param>
         /// <param name="dialect">The language dialect.</param>
-        public Connection(SqlCommandManager manager, IDialect dialect)
+        public Database(SqlCommandManager manager, IDialect dialect)
         {
             Manager = manager;
             Dialect = dialect;
@@ -31,7 +31,6 @@ namespace TranceSql
         /// Gets the dialect for this connection.
         /// </summary>
         public IDialect Dialect { get; }
-
 
         /// <summary>
         /// Creates a new context for running deferred commands using this connection's manager.

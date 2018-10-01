@@ -21,7 +21,8 @@ generation simple.
 ```csharp
 public string GetUsername(int id)
 {
-	var command = new Command(msSqlConnection)
+	var database = new SqlServerDatabase(connectionString);
+	var command = new Command(database)
 	{
 		new Select
 		{

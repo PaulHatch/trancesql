@@ -22,10 +22,7 @@ namespace TranceSql.Processing
 
         /// <summary>Connection factory delegate for target database.</summary>
         protected Func<DbConnection> ConnectionFactory { get; }
-
-        /// <summary>Data adapter factory delegate for target database.</summary>
-        protected Func<DbDataAdapter> AdapterFactory { get; }
-
+        
         /// <summary>Provides parameter value from input object instances.</summary>
         protected IParameterValueExtractor ValueExtractor { get; }
 
@@ -37,17 +34,14 @@ namespace TranceSql.Processing
         /// </summary>
         /// <param name="connectionString">Connection string to target database.</param>
         /// <param name="connectionFactory">Delegate to create connections for current database.</param>
-        /// <param name="adapterFactory">Delegate to create data adapters for current database.</param>
         /// <param name="valueExtractor">Provides parameter value from input object instances.</param>
         public SqlCommandManager(
             string connectionString,
             Func<DbConnection> connectionFactory,
-            Func<DbDataAdapter> adapterFactory,
             IParameterValueExtractor valueExtractor)
         {
             ConnectionString = connectionString;
             ConnectionFactory = connectionFactory;
-            AdapterFactory = adapterFactory;
             ValueExtractor = valueExtractor;
         }
 
@@ -78,13 +72,6 @@ namespace TranceSql.Processing
             var newConnection = ConnectionFactory();
             newConnection.ConnectionString = ConnectionString;
             return newConnection;
-        }
-
-        /// <summary>Creates a data adapter for this transaction.</summary>
-        /// <returns>A DbConnection instance for this transaction's target database.</returns>
-        protected virtual DbDataAdapter CreateAdapter()
-        {
-            return AdapterFactory();
         }
 
         #region Async Execution

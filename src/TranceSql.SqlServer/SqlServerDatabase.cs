@@ -9,26 +9,26 @@ using TranceSql.Processing;
 namespace TranceSql.SqlServer
 {
     /// <summary>
-    /// Creates command parameters for a Microsoft SQL Server connection.
+    /// Creates command parameters for a Microsoft SQL Server database reference.
     /// </summary>
-    public class SqlServerConnection : Connection
+    public class SqlServerDatabase : Database
     {
         /// <summary>
-        /// Creates command parameters for a Microsoft SQL Server connection.
+        /// Creates command parameters for a Microsoft SQL Server database reference.
         /// </summary>
         /// <param name="connectionString">The connection string.</param>
-        public SqlServerConnection(string connectionString)
-            : base(new SqlCommandManager(connectionString, GetConnection, GetAdapter, new DefaultValueExtractor()), new SqlServerDialect())
+        public SqlServerDatabase(string connectionString)
+            : base(new SqlCommandManager(connectionString, GetConnection, new DefaultValueExtractor()), new SqlServerDialect())
         {
         }
 
         /// <summary>
-        /// Creates command parameters for a Microsoft SQL Server connection.
+        /// Creates command parameters for a Microsoft SQL Server database reference.
         /// </summary>
         /// <param name="connectionString">The connection string.</param>
         /// <param name="extractor">The extractor.</param>
-        public SqlServerConnection(string connectionString, IParameterValueExtractor extractor)
-            : base(new SqlCommandManager(connectionString, GetConnection, GetAdapter, extractor), new SqlServerDialect())
+        public SqlServerDatabase(string connectionString, IParameterValueExtractor extractor)
+            : base(new SqlCommandManager(connectionString, GetConnection, extractor), new SqlServerDialect())
         {
         }
 
