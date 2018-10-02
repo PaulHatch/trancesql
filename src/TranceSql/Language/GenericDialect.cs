@@ -21,5 +21,10 @@ namespace TranceSql.Language
         public string FormatIdentifier(string identifier) => identifier;
 
         public string FormatString(string value) => $"'{value.Replace("'", "''")}'";
+
+        public string FormatType(SqlTypeClass typeClass, int? parameter)
+        {
+            return typeClass.ToString().ToUpper() + (parameter.HasValue ? $"({parameter.Value})" : String.Empty);
+        }
     }
 }

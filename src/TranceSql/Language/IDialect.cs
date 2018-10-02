@@ -45,5 +45,13 @@ namespace TranceSql.Language
         /// <param name="value">The string value to format.</param>
         /// <returns>A formatted string constant.</returns>
         string FormatString(string value);
+
+        /// <summary>
+        /// Creates a string representing the specified type.
+        /// </summary>
+        /// <param name="typeClass">The SQL type class.</param>
+        /// <param name="parameter">The type parameter, if any.</param>
+        /// <returns></returns>
+        string FormatType(SqlTypeClass typeClass, int? parameter);
     }
 }

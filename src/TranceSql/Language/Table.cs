@@ -12,7 +12,7 @@ namespace TranceSql.Language
         public Table(string schema, string name)
             : this(name)
         {
-            Schema = schema;
+            Schema = schema ?? throw new ArgumentNullException(nameof(schema));
         }
 
         public string Schema { get; set; }

@@ -17,5 +17,9 @@ namespace TranceSql.Postgres
 
         public string FormatString(string value) => $"'{value.Replace("'","''")}'";
 
+        public string FormatType(SqlTypeClass typeClass, int? parameter)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
