@@ -24,7 +24,14 @@ namespace TranceSql.IntegrationTest
             _database = new SqliteDatabase("Data Source=test.db");
             new Command(_database)
             {
-                new Raw ("create table sample (id int, column1 text);")
+                new CreateTable("sample")
+                {
+                    Columns = {
+                        { "id", SqlType.From<int>() },
+                        { "column1", SqlType.From<string>() },
+                    }
+                }
+                //new Raw ("create table sample (id int, column1 text);")
             }.Execute();
         }
 

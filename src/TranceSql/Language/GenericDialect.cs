@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Text;
 
 namespace TranceSql.Language
@@ -22,9 +23,9 @@ namespace TranceSql.Language
 
         public string FormatString(string value) => $"'{value.Replace("'", "''")}'";
 
-        public string FormatType(SqlTypeClass typeClass, int? parameter)
+        public string FormatType(DbType type, int? parameter)
         {
-            return typeClass.ToString().ToUpper() + (parameter.HasValue ? $"({parameter.Value})" : String.Empty);
+            return type.ToString().ToUpper() + (parameter.HasValue ? $"({parameter.Value})" : String.Empty);
         }
     }
 }

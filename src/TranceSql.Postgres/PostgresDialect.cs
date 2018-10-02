@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using TranceSql.Language;
 
 namespace TranceSql.Postgres
@@ -17,7 +18,7 @@ namespace TranceSql.Postgres
 
         public string FormatString(string value) => $"'{value.Replace("'","''")}'";
 
-        public string FormatType(SqlTypeClass typeClass, int? parameter)
+        public string FormatType(DbType type, int? parameter)
         {
             throw new NotImplementedException();
         }

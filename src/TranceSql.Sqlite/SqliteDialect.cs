@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Microsoft.Data.Sqlite;
+using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Text;
 using TranceSql.Language;
 
@@ -19,30 +21,30 @@ namespace TranceSql.Sqlite
 
         public string FormatString(string value) => $"'{value.Replace("'", "''")}'";
 
-        public string FormatType(SqlTypeClass typeClass, int? parameter)
+        public string FormatType(DbType type, int? parameter)
         {
-            return parameter.HasValue ? $"{GetType(typeClass)}({parameter.Value})" : GetType(typeClass);
+            return parameter.HasValue ? $"{GetType(type)}({parameter.Value})" : GetType(type);
         }
 
-        private string GetType(SqlTypeClass typeClass)
+        private string GetType(DbType type)
         {
-            switch (typeClass)
+            var parameter = new SqliteParameter
             {
-                case SqlTypeClass.VarChar:
-                case SqlTypeClass.Text:
-                case SqlTypeClass.Char:
-                    return "TEXT";
-                case SqlTypeClass.Boolean:
-                case SqlTypeClass.Integer:
-                case SqlTypeClass.UnsignedInteger:
+                DbType = type
+            };
+
+            switch (parameter.SqliteType)
+            {
+                case SqliteType.Integer:
                     return "INTEGER";
-                case SqlTypeClass.Float:
-                case SqlTypeClass.Fixed:
+                case SqliteType.Real:
                     return "REAL";
-                case SqlTypeClass.Binary:
+                case SqliteType.Text:
+                    return "TEXT";
+                case SqliteType.Blob:
                     return "BLOB";
                 default:
-                    throw new NotSupportedException($"SQLite does not support the {typeClass} type.");
+                    throw new InvalidCommandException($"The type {parameter.SqliteType} is not supported");
             }
         }
     }

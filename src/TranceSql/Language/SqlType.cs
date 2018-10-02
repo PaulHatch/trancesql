@@ -1,34 +1,46 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Data;
 
 namespace TranceSql.Language
 {
-    public enum SqlTypeClass
-    {
-        Text,
-        Boolean,
-        Integer,
-        UnsignedInteger,
-        Float,
-        Fixed,
-        Binary,
-        VarChar,
-        Char,
-        Date,
-        Time,
-        DateTime,
-        TimeSpan
-    }
-
     public class SqlType : ISqlElement
     {
         public string ExplicitTypeName { get; set; }
-        public SqlTypeClass TypeClass { get; set; }
+        public DbType Type { get; set; }
         public int? Parameter { get; set; }
         public bool AllowNull { get; set; }
 
-        public SqlType(SqlTypeClass typeClass, int? parameter, bool allowNull)
+        static readonly IReadOnlyDictionary<Type, DbType> _typeMap = new Dictionary<Type, DbType>
         {
-            TypeClass = typeClass;
+            { typeof(byte), DbType.Byte },
+            { typeof(sbyte), DbType.SByte },
+            { typeof(short), DbType.Int16 },
+            { typeof(ushort), DbType.UInt16 },
+            { typeof(int), DbType.Int32 },
+            { typeof(uint), DbType.UInt32 },
+            { typeof(long), DbType.Int64 },
+            { typeof(ulong), DbType.UInt64 },
+            { typeof(float), DbType.Single },
+            { typeof(double), DbType.Double },
+            { typeof(decimal), DbType.Decimal },
+            { typeof(bool), DbType.Boolean },
+            { typeof(string), DbType.String },
+            { typeof(char), DbType.StringFixedLength },
+            { typeof(Guid), DbType.Guid },
+            { typeof(DateTime), DbType.DateTime },
+            { typeof(DateTimeOffset), DbType.DateTimeOffset },
+            { typeof(byte[]), DbType.Binary },
+            { typeof(byte?), DbType.Byte },
+            { typeof(sbyte?), DbType.SByte },
+            { typeof(short?), DbType.Int16 },
+            { typeof(ushort?), DbType.UInt16 },
+        };
+
+
+        public SqlType(DbType typeClass, int? parameter, bool allowNull)
+        {
+            Type = typeClass;
             Parameter = parameter;
             AllowNull = allowNull;
         }
@@ -44,34 +56,23 @@ namespace TranceSql.Language
             AllowNull = allowNull;
         }
 
-        public static SqlType From<T>(int? parameter = null, bool? allowNull = true)
+        public static SqlType From<T>(int? parameter = null, bool? allowNull = null)
         {
             var type = typeof(T);
+            var nullableType = Nullable.GetUnderlyingType(type);
 
             // if no allow null value was specified and a nullable type was used, default to allow null
-            if(!allowNull.HasValue && Nullable.GetUnderlyingType(type) != null)
+            if (!allowNull.HasValue && nullableType != null)
             {
                 allowNull = true;
             }
 
-            if (type == typeof(string)) { return new SqlType(SqlTypeClass.Text, parameter, allowNull ?? false); }
-            if (type == typeof(char)) { return new SqlType(SqlTypeClass.Char, parameter ?? 1, allowNull ?? false); }
-            if (type == typeof(char[])) { return new SqlType(SqlTypeClass.Char, parameter ?? 1, allowNull ?? false); }
-            if (type == typeof(byte)) { return new SqlType(SqlTypeClass.Integer, parameter ?? 1, allowNull ?? false); }
-            if (type == typeof(short)) { return new SqlType(SqlTypeClass.Integer, parameter ?? 2, allowNull ?? false); }
-            if (type == typeof(int)) { return new SqlType(SqlTypeClass.Integer, parameter ?? 4, allowNull ?? false); }
-            if (type == typeof(long)) { return new SqlType(SqlTypeClass.Integer, parameter ?? 8, allowNull ?? false); }
-            if (type == typeof(float)) { return new SqlType(SqlTypeClass.Integer, parameter ?? 4, allowNull ?? false); }
-            if (type == typeof(double)) { return new SqlType(SqlTypeClass.Integer, parameter ?? 8, allowNull ?? false); }
-            if (type == typeof(DateTime)) { return new SqlType(SqlTypeClass.DateTime, parameter, allowNull ?? false); }
-            if (type == typeof(DateTimeOffset)) { return new SqlType(SqlTypeClass.DateTime, parameter, allowNull ?? false); }
-            if (type == typeof(TimeSpan)) { return new SqlType(SqlTypeClass.TimeSpan, parameter, allowNull ?? false); }
-            if (type == typeof(byte[])) { return new SqlType(SqlTypeClass.Binary, parameter, allowNull ?? false); }
+            if(_typeMap.ContainsKey(nullableType ?? type))
+            {
+                return new SqlType(_typeMap[nullableType ?? type], parameter, allowNull ?? true);
+            }
 
-            if (type == typeof(ushort)) { return new SqlType(SqlTypeClass.UnsignedInteger, parameter ?? 2, allowNull ?? false); }
-            if (type == typeof(uint)) { return new SqlType(SqlTypeClass.UnsignedInteger, parameter ?? 4, allowNull ?? false); }
-            if (type == typeof(ulong)) { return new SqlType(SqlTypeClass.UnsignedInteger, parameter ?? 8, allowNull ?? false); }
-            
+
             throw new ArgumentException($"Error in  SqlType.From<{type.Name}>() Automatic mapping is not supported for the type '{type.FullName}'.", nameof(T));
         }
 
@@ -79,7 +80,7 @@ namespace TranceSql.Language
         {
             if (string.IsNullOrEmpty(ExplicitTypeName))
             {
-                context.Write(context.Dialect.FormatType(TypeClass, Parameter));
+                context.Write(context.Dialect.FormatType(Type, Parameter));
             }
             else
             {

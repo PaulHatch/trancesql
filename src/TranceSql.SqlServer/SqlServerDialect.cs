@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using TranceSql.Language;
 
 namespace TranceSql.SqlServer
@@ -16,5 +17,10 @@ namespace TranceSql.SqlServer
         public string FormatIdentifier(string identifier) => $"[{identifier}]";
 
         public string FormatString(string value) => $"N'{value.Replace("'","''")}'";
+
+        public string FormatType(DbType type, int? parameter)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
