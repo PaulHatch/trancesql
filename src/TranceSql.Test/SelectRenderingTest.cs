@@ -196,6 +196,36 @@ namespace TranceSql.Test
         }
 
         [Fact]
+        public void OrderByAscRender()
+        {
+            var sut = new Select
+            {
+                Columns = { "*" },
+                From = { "Table" },
+                OrderBy = { { "Column2", Direction.Ascending } }
+            };
+
+            var result = sut.ToString();
+
+            Assert.Equal("SELECT *\nFROM Table\nORDER BY Column2 ASC;", result);
+        }
+
+        [Fact]
+        public void OrderByDescRender()
+        {
+            var sut = new Select
+            {
+                Columns = { "*" },
+                From = { "Table" },
+                OrderBy = { { "Column2", Direction.Descending } }
+            };
+
+            var result = sut.ToString();
+
+            Assert.Equal("SELECT *\nFROM Table\nORDER BY Column2 DESC;", result);
+        }
+
+        [Fact]
         public void DynamicWhereRender()
         {
             var sut = new Select

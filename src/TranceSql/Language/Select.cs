@@ -42,10 +42,10 @@ namespace TranceSql.Language
             set => _where = value;
         }
 
-        public ColumnCollection _orderBy;
-        public ColumnCollection OrderBy
+        public ColumnOrderCollection _orderBy;
+        public ColumnOrderCollection OrderBy
         {
-            get => _orderBy = _orderBy ?? new ColumnCollection();
+            get => _orderBy = _orderBy ?? new ColumnOrderCollection();
             set => _orderBy = value;
         }
 
