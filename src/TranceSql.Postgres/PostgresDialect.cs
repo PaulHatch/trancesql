@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using TranceSql.Language;
+using Npgsql;
+using System.Linq;
 
 namespace TranceSql.Postgres
 {
@@ -18,9 +21,27 @@ namespace TranceSql.Postgres
 
         public string FormatString(string value) => $"'{value.Replace("'","''")}'";
 
-        public string FormatType(DbType type, int? parameter)
+        public string FormatType(DbType type, IEnumerable<object> parameters)
         {
-            throw new NotImplementedException();
+            var typeName = GetType(type);
+            if (parameters?.Any() == true)
+            {
+                return $"{type}({String.Join(", ", parameters)})";
+            }
+            else
+            {
+                return typeName;
+            }
+        }
+
+        private string GetType(DbType type)
+        {
+            var parameter = new NpgsqlParameter
+            {
+                DbType = type
+            };
+
+            return parameter.NpgsqlDbType.ToString().ToUpper();
         }
     }
 }

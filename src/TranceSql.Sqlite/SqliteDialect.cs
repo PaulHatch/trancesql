@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Text;
 using TranceSql.Language;
 
@@ -21,9 +22,17 @@ namespace TranceSql.Sqlite
 
         public string FormatString(string value) => $"'{value.Replace("'", "''")}'";
 
-        public string FormatType(DbType type, int? parameter)
+        public string FormatType(DbType type, IEnumerable<object> parameters)
         {
-            return parameter.HasValue ? $"{GetType(type)}({parameter.Value})" : GetType(type);
+            var typeName = GetType(type);
+            if (parameters?.Any() == true)
+            {
+                return $"{type}({String.Join(", ", parameters)})";
+            }
+            else
+            {
+                return typeName;
+            }
         }
 
         private string GetType(DbType type)
@@ -33,19 +42,7 @@ namespace TranceSql.Sqlite
                 DbType = type
             };
 
-            switch (parameter.SqliteType)
-            {
-                case SqliteType.Integer:
-                    return "INTEGER";
-                case SqliteType.Real:
-                    return "REAL";
-                case SqliteType.Text:
-                    return "TEXT";
-                case SqliteType.Blob:
-                    return "BLOB";
-                default:
-                    throw new InvalidCommandException($"The type {parameter.SqliteType} is not supported");
-            }
+            return parameter.SqliteType.ToString().ToUpper();
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 
 namespace TranceSql.Language
@@ -51,8 +52,8 @@ namespace TranceSql.Language
         /// Creates a string representing the specified type.
         /// </summary>
         /// <param name="type">The SQL type class.</param>
-        /// <param name="parameter">The type parameter, if any.</param>
-        /// <returns></returns>
-        string FormatType(DbType type, int? parameter);
+        /// <param name="parameters">The type parameters, if any.</param>
+        /// <returns>The name of the parameter type for this dialect.</returns>
+        string FormatType(DbType type, IEnumerable<object> parameters);
     }
 }

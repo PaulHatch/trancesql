@@ -8,7 +8,7 @@ namespace TranceSql.Language
     {
         public string ExplicitTypeName { get; set; }
         public DbType Type { get; set; }
-        public int? Parameter { get; set; }
+        public IEnumerable<object> Parameters { get; set; }
         public bool AllowNull { get; set; }
 
         static readonly IReadOnlyDictionary<Type, DbType> _typeMap = new Dictionary<Type, DbType>
@@ -38,10 +38,10 @@ namespace TranceSql.Language
         };
 
 
-        public SqlType(DbType typeClass, int? parameter, bool allowNull)
+        public SqlType(DbType typeClass, IEnumerable<object> parameters, bool allowNull)
         {
             Type = typeClass;
-            Parameter = parameter;
+            Parameters = parameters;
             AllowNull = allowNull;
         }
 
@@ -56,9 +56,15 @@ namespace TranceSql.Language
             AllowNull = allowNull;
         }
 
-        public static SqlType From<T>(int? parameter = null, bool? allowNull = null)
+        public static SqlType From<T>(bool? allowNull = null, params object[] parameters) => From(typeof(T), allowNull, parameters);
+
+        public static SqlType From(Type type, bool? allowNull = null, params object[] parameters)
         {
-            var type = typeof(T);
+            if (type == null)
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
+
             var nullableType = Nullable.GetUnderlyingType(type);
 
             // if no allow null value was specified and a nullable type was used, default to allow null
@@ -69,18 +75,17 @@ namespace TranceSql.Language
 
             if(_typeMap.ContainsKey(nullableType ?? type))
             {
-                return new SqlType(_typeMap[nullableType ?? type], parameter, allowNull ?? true);
+                return new SqlType(_typeMap[nullableType ?? type], parameters, allowNull ?? true);
             }
 
-
-            throw new ArgumentException($"Error in  SqlType.From<{type.Name}>() Automatic mapping is not supported for the type '{type.FullName}'.", nameof(T));
+            throw new ArgumentException($"Error in SqlType.From conversion: Automatic mapping is not supported for the type '{type.FullName}'.", nameof(type));
         }
 
         void ISqlElement.Render(RenderContext context)
         {
             if (string.IsNullOrEmpty(ExplicitTypeName))
             {
-                context.Write(context.Dialect.FormatType(Type, Parameter));
+                context.Write(context.Dialect.FormatType(Type, Parameters));
             }
             else
             {

@@ -9,5 +9,10 @@ namespace TranceSql.Language
         {
             Add(new ColumnDefinition(name, sqlType));
         }
+
+        public void Add(IEnumerable<ColumnDefinition> columns)
+        {
+            AddRange(columns);
+        }
     }
 }
