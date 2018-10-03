@@ -39,7 +39,7 @@ namespace TranceSql.Language
             }
             else
             {
-                context.Write(context.Dialect.FormatIdentifier(Name));
+                context.WriteIdentifier(Name);
             }
         }
 

@@ -26,7 +26,7 @@ namespace TranceSql.Language
 
         void ISqlElement.Render(RenderContext context)
         {
-            context.Write(context.Dialect.FormatIdentifier(Name));
+            context.WriteIdentifier(Name);
             context.Write(' ');
             context.Render(Type);
             foreach (var constraint in Constraints)

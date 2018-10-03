@@ -24,7 +24,7 @@ namespace TranceSql.Language
                 context.Write("CREATE INDEX ");
             }
 
-            context.Write(context.Dialect.FormatIdentifier(Name));
+            context.WriteIdentifier(Name);
             context.WriteLine();
             context.Write("ON ");
             context.Render(On);
