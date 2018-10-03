@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using TranceSql.Language;
-using static TranceSql.Language.UsingStatic;
 using Xunit;
+using static TranceSql.Language.UsingStatic;
 
 namespace TranceSql.Test
 {
@@ -54,7 +54,7 @@ namespace TranceSql.Test
         [Fact]
         public void LeftParentheticalRender()
         {
-            var sut = 
+            var sut =
                 Condition.Nested(
                     Parameter("P1") == Parameter("P2") &
                     Parameter("P3") == Parameter("P4")) |
@@ -66,13 +66,26 @@ namespace TranceSql.Test
         [Fact]
         public void RightParentheticalRender()
         {
-            var sut = 
+            var sut =
                 Parameter("P1") == Parameter("P2") &
                 Condition.Nested(
                     Parameter("P3") == Parameter("P4") |
                     Parameter("P5") == Parameter("P6"));
 
             Assert.Equal("@P1 = @P2 AND (@P3 = @P4 OR @P5 = @P6)", sut.ToString());
+        }
+        [Fact]
+        public void IfRender()
+        {
+            var sut = new If(Value(1) == Value(2))
+            {
+                Then = new StatementBlock { new Select { Columns = { new Constant(1) } } },
+                Else = new Select { Columns = { new Constant(2) } }
+            };
+
+            var result = sut.ToString();
+
+            Assert.Equal("IF (@P1 = @P2)\nBEGIN\nSELECT 1;\nEND\nELSE\nSELECT 2;", result);
         }
     }
 }

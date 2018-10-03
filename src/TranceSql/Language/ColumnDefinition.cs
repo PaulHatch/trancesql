@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace TranceSql.Language
 {
@@ -9,8 +10,9 @@ namespace TranceSql.Language
     {
         private string Name { get; }
         private SqlType Type { get; }
+        public IEnumerable<IConstraint> Constraints { get; }
 
-        public ColumnDefinition(string name, SqlType sqlType)
+        public ColumnDefinition(string name, SqlType sqlType, IEnumerable<IConstraint> constraints)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -19,6 +21,7 @@ namespace TranceSql.Language
 
             Name = name;
             Type = sqlType ?? throw new ArgumentNullException(nameof(sqlType));
+            Constraints = constraints ?? Array.Empty<IConstraint>();
         }
 
         void ISqlElement.Render(RenderContext context)
@@ -26,6 +29,11 @@ namespace TranceSql.Language
             context.Write(context.Dialect.FormatIdentifier(Name));
             context.Write(' ');
             context.Render(Type);
+            foreach (var constraint in Constraints)
+            {
+                context.Write(' ');
+                context.Render(constraint);
+            }
         }
 
         public override string ToString() => this.RenderDebug();

@@ -125,6 +125,11 @@ namespace TranceSql.Language
             }
         }
 
+        public void WriteIdentifier(string value)
+        {
+            _result.Append(Dialect.FormatIdentifier(value));
+        }
+
         public void WriteLine()
         {
             _result.Append(LineDelimiter);

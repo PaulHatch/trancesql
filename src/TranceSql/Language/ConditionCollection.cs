@@ -93,11 +93,11 @@ namespace TranceSql.Language
         /// <summary>
         /// Performs an implicit conversion from <see cref="Condition"/> to <see cref="ConditionCollection"/>.
         /// </summary>
-        /// <param name="where">The where clause.</param>
+        /// <param name="condition">The where clause.</param>
         /// <returns>
         /// A new collection containing the specified clause.
         /// </returns>
-        public static implicit operator ConditionCollection(Condition where) => new ConditionCollection { where };
+        public static implicit operator ConditionCollection(Condition condition) => new ConditionCollection { condition };
 
 
         public bool IsNested { get; set; }

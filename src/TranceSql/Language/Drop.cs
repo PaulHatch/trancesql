@@ -55,6 +55,8 @@ namespace TranceSql.Language
                 case DropType.Table:
                     context.Write("TABLE ");
                     break;
+                case DropType.Constraint:
+                    throw new NotImplementedException();
                 default:
                     throw new InvalidCommandException($"Unrecognized drop type '{Type}'");
             }

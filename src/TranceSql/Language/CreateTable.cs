@@ -31,6 +31,7 @@ namespace TranceSql.Language
         public Table Name { get; set; }
 
         public ColumnDefinitionCollection Columns { get; } = new ColumnDefinitionCollection();
+        public ICollection<IConstraint> Constraints { get; } = new List<IConstraint>();
 
         void ISqlElement.Render(RenderContext context)
         {
@@ -44,6 +45,11 @@ namespace TranceSql.Language
             context.WriteLine();
             context.WriteLine("(");
             context.RenderDelimited(Columns, "," + context.LineDelimiter);
+            foreach (var constraint in Constraints)
+            {
+                context.WriteLine(",");
+                context.Render(constraint);
+            }
             context.WriteLine();
             context.Write(");");
         }
@@ -64,7 +70,7 @@ namespace TranceSql.Language
             var properties = type
                 .GetProperties(BindingFlags.Public | BindingFlags.Instance)
                 .Where(p => p.CanRead && p.CanWrite)
-                .Select(p => new ColumnDefinition(p.Name, SqlType.From(p.PropertyType)));
+                .Select(p => new ColumnDefinition(p.Name, SqlType.From(p.PropertyType), null));
 
             var table = String.IsNullOrWhiteSpace(schema) ? new Table(name ?? type.Name) : new Table(schema, name ?? type.Name);
 

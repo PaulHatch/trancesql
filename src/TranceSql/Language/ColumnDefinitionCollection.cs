@@ -7,7 +7,17 @@ namespace TranceSql.Language
     {
         public void Add(string name, SqlType sqlType)
         {
-            Add(new ColumnDefinition(name, sqlType));
+            Add(new ColumnDefinition(name, sqlType, null));
+        }
+
+        public void Add(string name, SqlType sqlType, IConstraint constraint)
+        {
+            Add(new ColumnDefinition(name, sqlType, new[] { constraint }));
+        }
+
+        public void Add(string name, SqlType sqlType, params IConstraint[] constraints)
+        {
+            Add(new ColumnDefinition(name, sqlType, constraints));
         }
 
         public void Add(IEnumerable<ColumnDefinition> columns)

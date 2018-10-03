@@ -2,6 +2,8 @@
 {
     public enum DropType
     {
-        Table
+        Table,
+        Constraint,
+        Index
     }
 }
