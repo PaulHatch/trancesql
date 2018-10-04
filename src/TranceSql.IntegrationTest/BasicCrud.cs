@@ -24,7 +24,14 @@ namespace TranceSql.IntegrationTest
             _database = new SqliteDatabase("Data Source=test.db");
             new Command(_database)
             {
-                CreateTable.From<Sample>()
+                new CreateTable("sample")
+                {
+                    Columns =
+                    {
+                        { "id", SqlType.From<int>() },
+                        { "column1", SqlType.From<string>() }
+                    }
+                }
             }.Execute();
         }
 
@@ -50,7 +57,7 @@ namespace TranceSql.IntegrationTest
                 new Select
                 {
                     From = "sample",
-                    Columns = new Column("column1").As("Column1"),
+                    Columns = new Column("column1"),
                     Where = Condition.Equal("id", 1)
                 }
             }.FetchAsync<Sample>();
@@ -74,7 +81,7 @@ namespace TranceSql.IntegrationTest
                 new Select
                 {
                     From = "sample",
-                    Columns = new Column("column1").As("Column1"),
+                    Columns = new Column("column1"),
                     Where = Condition.Equal("id", 1)
                 }
             }.FetchAsync<Sample>();
@@ -97,7 +104,7 @@ namespace TranceSql.IntegrationTest
                 new Select
                 {
                     From = "sample",
-                    Columns = new Column("column1").As("Column1"),
+                    Columns = new Column("column1"),
                     Where = Condition.Equal("id", 1)
                 }
             }.FetchAsync<Sample>();
