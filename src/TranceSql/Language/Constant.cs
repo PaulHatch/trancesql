@@ -6,7 +6,7 @@ using System.Text;
 
 namespace TranceSql.Language
 {
-    public class Constant : ISqlElement
+    public class Constant : ExpressionElement, ISqlElement
     {
         const string _stringWarning = "Warning, string constants are vulnerable to SQL injection attacks. Using a parameter is the preferred method of passing string values. The 'Value' class can be used to supply a string which will automatically be passed to the command as a parameter. To create string constant expression, call the 'Constant.Unsafe(string)' method.";
         private object _value;
