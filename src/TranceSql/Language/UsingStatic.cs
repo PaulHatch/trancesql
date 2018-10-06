@@ -22,5 +22,16 @@ namespace TranceSql.Language
         public static Values Values(object first, object second, object third) => new Values { first, second, third };
         public static Values Values(params object[] values) => new Values(values);
 
+        public static Function Count() => new Function("COUNT", new Column("*"));
+        public static Function Max(ISqlElement element) => new Function("MAX", element);
+        public static Function Min(ISqlElement element) => new Function("MIN", element);
+        public static Function Sum(ISqlElement element) => new Function("SUM", element);
+        public static Function Coalesce(params ISqlElement[] elements) => new Function("COALESCE", elements);
+
+        public static Function Avg(ISqlElement element) => new Function("AVG", element);
+        public static Function Abs(ISqlElement element) => new Function("ABG", element);
+        public static Function Ceiling(ISqlElement element) => new Function("CEILING", element);
+        public static Function Floor(ISqlElement element) => new Function("Floor", element);
+
     }
 }

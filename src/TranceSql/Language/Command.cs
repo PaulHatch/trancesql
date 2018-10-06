@@ -54,13 +54,14 @@ namespace TranceSql.Language
 
         #region Cached
 
+        #region Fetch List
 
         /// <summary>
         /// Creates a delegate from current command and returns the result as 
         /// an enumerable list.
         /// </summary>
         /// <typeparam name="TResult">Result item type</typeparam>
-        /// <returns>Result of command as a list.</returns>
+        /// <returns>Delegate for specified command.</returns>
         public Func<Task<IEnumerable<TResult>>> FetchListCached<TResult>()
         {
             var cached = new CachedContext(Render());
@@ -72,14 +73,68 @@ namespace TranceSql.Language
         /// </summary>
         /// <typeparam name="TResult">Result item type</typeparam>
         /// <typeparam name="TParameter">The type of the parameter.</typeparam>
-        /// <param name="parameter">The parameter.</param>
-        /// <returns>Result of command as a list.</returns>
+        /// <param name="parameter">The parameter, should be of type TParameter.</param>
+        /// <returns>Delegate for specified command.</returns>
         public Func<TParameter, Task<IEnumerable<TResult>>> FetchListCached<TResult, TParameter>(Parameter parameter)
         {
             var cached = new CachedContext(Render());
             return p => _manager.ExecuteListResultAsync<TResult>(cached.WithParameters(new Dictionary<string, object> { { parameter.Name, p } }));
         }
 
+        /// <summary>
+        /// Creates a delegate from current command to return the result as an enumerable list.
+        /// </summary>
+        /// <typeparam name="TResult">Result item type</typeparam>
+        /// <typeparam name="TParameter1">The type of the first parameter.</typeparam>
+        /// <typeparam name="TParameter2">The type of the second parameter.</typeparam>
+        /// <param name="firstParameter">The first parameter, should be of type TParameter1.</param>
+        /// <param name="secondParameter">The second parameter, should be of type TParameter2.</param>
+        /// <returns>Delegate for specified command.</returns>
+        public Func<TParameter1, TParameter2, Task<IEnumerable<TResult>>> FetchListCached<TResult, TParameter1, TParameter2>(Parameter firstParameter, Parameter secondParameter)
+        {
+            var cached = new CachedContext(Render());
+            return (p1, p2) => _manager.ExecuteListResultAsync<TResult>(cached.WithParameters(new Dictionary<string, object> { { firstParameter.Name, p1 }, { secondParameter.Name, p2 } }));
+        }
+
+        /// <summary>
+        /// Creates a delegate from current command to return the result as an enumerable list.
+        /// </summary>
+        /// <typeparam name="TResult">Result item type</typeparam>
+        /// <typeparam name="TParameter1">The type of the first parameter.</typeparam>
+        /// <typeparam name="TParameter2">The type of the second parameter.</typeparam>
+        /// <typeparam name="TParameter3">The type of the third parameter.</typeparam>
+        /// <param name="firstParameter">The first parameter, should be of type TParameter1.</param>
+        /// <param name="secondParameter">The second parameter, should be of type TParameter2.</param>
+        /// <param name="thirdParameter">The third parameter, should be of type TParameter3.</param>
+        /// <returns>Delegate for specified command.</returns>
+        public Func<TParameter1, TParameter2, TParameter3, Task<IEnumerable<TResult>>> FetchListCached<TResult, TParameter1, TParameter2, TParameter3>(Parameter firstParameter, Parameter secondParameter, Parameter thirdParameter)
+        {
+            var cached = new CachedContext(Render());
+            return (p1, p2, p3) => _manager.ExecuteListResultAsync<TResult>(cached.WithParameters(new Dictionary<string, object> { { firstParameter.Name, p1 }, { secondParameter.Name, p2 }, { thirdParameter.Name, p3 } }));
+        }
+
+        /// <summary>
+        /// Creates a delegate from current command to return the result as an enumerable list.
+        /// </summary>
+        /// <typeparam name="TResult">Result item type</typeparam>
+        /// <typeparam name="TParameter1">The type of the first parameter.</typeparam>
+        /// <typeparam name="TParameter2">The type of the second parameter.</typeparam>
+        /// <typeparam name="TParameter3">The type of the third parameter.</typeparam>
+        /// <typeparam name="TParameter4">The type of the fourth parameter.</typeparam>
+        /// <param name="firstParameter">The first parameter, should be of type TParameter1.</param>
+        /// <param name="secondParameter">The second parameter, should be of type TParameter2.</param>
+        /// <param name="thirdParameter">The third parameter, should be of type TParameter3.</param>
+        /// <param name="fourthParameter">The fourth parameter, should be of type TParameter4.</param>
+        /// <returns>Delegate for specified command.</returns>
+        public Func<TParameter1, TParameter2, TParameter3, TParameter4, Task<IEnumerable<TResult>>> FetchListCached<TResult, TParameter1, TParameter2, TParameter3, TParameter4>(Parameter firstParameter, Parameter secondParameter, Parameter thirdParameter, Parameter fourthParameter)
+        {
+            var cached = new CachedContext(Render());
+            return (p1, p2, p3, p4) => _manager.ExecuteListResultAsync<TResult>(cached.WithParameters(new Dictionary<string, object> { { firstParameter.Name, p1 }, { secondParameter.Name, p2 }, { thirdParameter.Name, p3 }, { fourthParameter.Name, p4 } }));
+        }
+
+        #endregion
+
+        #region Fetch
 
         /// <summary>
         /// Creates a delegate from current command and returns a single row as
@@ -93,6 +148,79 @@ namespace TranceSql.Language
             var cached = new CachedContext(Render());
             return () => _manager.ExecuteResultAsync<TResult>(Render(), defaultValue, null);
         }
+
+        /// <summary>
+        /// Creates a delegate from current command and returns a single row as
+        /// the specified type.
+        /// </summary>
+        /// <typeparam name="TResult">Result item type</typeparam>
+        /// <typeparam name="TParameter">The type of the parameter.</typeparam>
+        /// <param name="parameter">The first parameter, should be of type TParameter1.</param>
+        /// <param name="defaultValue">The default value.</param>
+        /// <returns>Delegate for specified command.</returns>
+        public Func<TParameter, Task<TResult>> FetchCached<TResult, TParameter>(Parameter parameter, TResult defaultValue = default(TResult))
+        {
+            var cached = new CachedContext(Render());
+            return p => _manager.ExecuteResultAsync<TResult>(cached.WithParameters(new Dictionary<string, object> { { parameter.Name, p } }), defaultValue, null);
+        }
+
+        /// <summary>
+        /// Creates a delegate from current command and returns a single row as
+        /// the specified type.
+        /// </summary>
+        /// <typeparam name="TResult">Result item type</typeparam>
+        /// <typeparam name="TParameter1">The type of the first parameter.</typeparam>
+        /// <typeparam name="TParameter2">The type of the second parameter.</typeparam>
+        /// <param name="firstParameter">The first parameter, should be of type TParameter1.</param>
+        /// <param name="secondParameter">The second parameter, should be of type TParameter2.</param>
+        /// <param name="defaultValue">The default value.</param>
+        /// <returns>Delegate for specified command.</returns>
+        public Func<TParameter1, TParameter2, Task<TResult>> FetchCached<TResult, TParameter1, TParameter2>(Parameter firstParameter, Parameter secondParameter, TResult defaultValue = default(TResult))
+        {
+            var cached = new CachedContext(Render());
+            return (p1, p2) => _manager.ExecuteResultAsync<TResult>(cached.WithParameters(new Dictionary<string, object> { { firstParameter.Name, p1 }, { secondParameter.Name, p2 } }), defaultValue, null);
+        }
+
+        /// <summary>
+        /// Creates a delegate from current command and returns a single row as
+        /// the specified type.
+        /// </summary>
+        /// <typeparam name="TResult">Result item type</typeparam>
+        /// <typeparam name="TParameter1">The type of the first parameter.</typeparam>
+        /// <typeparam name="TParameter2">The type of the second parameter.</typeparam>
+        /// <typeparam name="TParameter3">The type of the third parameter.</typeparam>
+        /// <param name="firstParameter">The first parameter, should be of type TParameter1.</param>
+        /// <param name="secondParameter">The second parameter, should be of type TParameter2.</param>
+        /// <param name="thirdParameter">The third parameter, should be of type TParameter3.</param>
+        /// <param name="defaultValue">The default value.</param>
+        /// <returns>Delegate for specified command.</returns>
+        public Func<TParameter1, TParameter2, TParameter3, Task<TResult>> FetchCached<TResult, TParameter1, TParameter2, TParameter3>(Parameter firstParameter, Parameter secondParameter, Parameter thirdParameter, TResult defaultValue = default(TResult))
+        {
+            var cached = new CachedContext(Render());
+            return (p1, p2, p3) => _manager.ExecuteResultAsync<TResult>(cached.WithParameters(new Dictionary<string, object> { { firstParameter.Name, p1 }, { secondParameter.Name, p2 }, { thirdParameter.Name, p3 } }), defaultValue, null);
+        }
+
+        /// <summary>
+        /// Creates a delegate from current command and returns a single row as
+        /// the specified type.
+        /// </summary>
+        /// <typeparam name="TResult">Result item type</typeparam>
+        /// <typeparam name="TParameter1">The type of the first parameter.</typeparam>
+        /// <typeparam name="TParameter2">The type of the second parameter.</typeparam>
+        /// <typeparam name="TParameter3">The type of the third parameter.</typeparam>
+        /// <typeparam name="TParameter4">The type of the fourth parameter.</typeparam>
+        /// <param name="firstParameter">The first parameter, should be of type TParameter1.</param>
+        /// <param name="secondParameter">The second parameter, should be of type TParameter2.</param>
+        /// <param name="thirdParameter">The third parameter, should be of type TParameter3.</param>
+        /// <param name="fourthParameter">The fourth parameter, should be of type TParameter4.</param>
+        /// <returns>Delegate for specified command.</returns>
+        public Func<TParameter1, TParameter2, TParameter3, TParameter4, Task<TResult>> FetchCached<TResult, TParameter1, TParameter2, TParameter3, TParameter4>(Parameter firstParameter, Parameter secondParameter, Parameter thirdParameter, Parameter fourthParameter, TResult defaultValue = default(TResult))
+        {
+            var cached = new CachedContext(Render());
+            return (p1, p2, p3, p4) => _manager.ExecuteResultAsync<TResult>(cached.WithParameters(new Dictionary<string, object> { { firstParameter.Name, p1 }, { secondParameter.Name, p2 }, { thirdParameter.Name, p3 }, { fourthParameter.Name, p4 } }), defaultValue, null);
+        }
+
+        #endregion
 
         /// <summary>
         /// Creates a delegate from current command and returns a single row as
@@ -151,7 +279,7 @@ namespace TranceSql.Language
             var cached = new CachedContext(Render());
             return () => _manager.ExecuteMapResultAsync<TResult>(Render(), mappedProperties);
         }
-        
+
         /// <summary>
         /// Creates a delegate from current command and maps multiple commands to a single result class. Use
         /// this method to populate a result with multiple commands.
@@ -212,17 +340,87 @@ namespace TranceSql.Language
             return () => _manager.ExecuteColumnKeyedDictionaryResultAsync(Render(), columns);
         }
 
+        #region Execute
+
         /// <summary>
         /// Creates a delegate from current command and returns a count of the
         /// number of rows affected.
         /// </summary>
-        /// <returns>The number of rows affected by the command.</returns>
+        /// <returns>Delegate for specified command.</returns>
         public Func<Task<int>> ExecuteCached()
         {
             var cached = new CachedContext(Render());
             return () => _manager.ExecuteAsync(Render());
         }
-        
+
+        /// <summary>
+        /// Creates a delegate from current command and returns a count of the
+        /// number of rows affected.
+        /// </summary>
+        /// <typeparam name="TParameter">The type of the first parameter.</typeparam>
+        /// <param name="parameter">The first parameter, should be of type TParameter1.</param>
+        /// <returns>Delegate for specified command.</returns>
+        public Func<TParameter, Task<int>> ExecuteCached<TParameter>(Parameter parameter)
+        {
+            var cached = new CachedContext(Render());
+            return p => _manager.ExecuteAsync(cached.WithParameters(new Dictionary<string, object> { { parameter.Name, p } }));
+        }
+
+        /// <summary>
+        /// Creates a delegate from current command and returns a count of the
+        /// number of rows affected.
+        /// </summary>
+        /// <typeparam name="TParameter1">The type of the first parameter.</typeparam>
+        /// <typeparam name="TParameter2">The type of the second parameter.</typeparam>
+        /// <param name="firstParameter">The first parameter, should be of type TParameter1.</param>
+        /// <param name="secondParameter">The second parameter, should be of type TParameter2.</param>
+        /// <returns>Delegate for specified command.</returns>
+        public Func<TParameter1, TParameter2, Task<int>> ExecuteCached<TParameter1, TParameter2>(Parameter firstParameter, Parameter secondParameter)
+        {
+            var cached = new CachedContext(Render());
+            return (p1, p2) => _manager.ExecuteAsync(cached.WithParameters(new Dictionary<string, object> { { firstParameter.Name, p1 }, { secondParameter.Name, p2 } }));
+        }
+
+        /// <summary>
+        /// Creates a delegate from current command and returns a count of the
+        /// number of rows affected.
+        /// </summary>
+        /// <typeparam name="TResult">Result item type</typeparam>
+        /// <typeparam name="TParameter1">The type of the first parameter.</typeparam>
+        /// <typeparam name="TParameter2">The type of the second parameter.</typeparam>
+        /// <typeparam name="TParameter3">The type of the third parameter.</typeparam>
+        /// <param name="firstParameter">The first parameter, should be of type TParameter1.</param>
+        /// <param name="secondParameter">The second parameter, should be of type TParameter2.</param>
+        /// <param name="thirdParameter">The third parameter, should be of type TParameter3.</param>
+        /// <returns>Delegate for specified command.</returns>
+        public Func<TParameter1, TParameter2, TParameter3, Task<int>> ExecuteCached<TParameter1, TParameter2, TParameter3>(Parameter firstParameter, Parameter secondParameter, Parameter thirdParameter)
+        {
+            var cached = new CachedContext(Render());
+            return (p1, p2, p3) => _manager.ExecuteAsync(cached.WithParameters(new Dictionary<string, object> { { firstParameter.Name, p1 }, { secondParameter.Name, p2 }, { thirdParameter.Name, p3 } }));
+        }
+
+        /// <summary>
+        /// Creates a delegate from current command and returns a count of the
+        /// number of rows affected.
+        /// </summary>
+        /// <typeparam name="TResult">Result item type</typeparam>
+        /// <typeparam name="TParameter1">The type of the first parameter.</typeparam>
+        /// <typeparam name="TParameter2">The type of the second parameter.</typeparam>
+        /// <typeparam name="TParameter3">The type of the third parameter.</typeparam>
+        /// <typeparam name="TParameter4">The type of the fourth parameter.</typeparam>
+        /// <param name="firstParameter">The first parameter, should be of type TParameter1.</param>
+        /// <param name="secondParameter">The second parameter, should be of type TParameter2.</param>
+        /// <param name="thirdParameter">The third parameter, should be of type TParameter3.</param>
+        /// <param name="fourthParameter">The fourth parameter, should be of type TParameter4.</param>
+        /// <returns>Delegate for specified command.</returns>
+        public Func<TParameter1, TParameter2, TParameter3, TParameter4, Task<int>> ExecuteCached<TParameter1, TParameter2, TParameter3, TParameter4>(Parameter firstParameter, Parameter secondParameter, Parameter thirdParameter, Parameter fourthParameter)
+        {
+            var cached = new CachedContext(Render());
+            return (p1, p2, p3, p4) => _manager.ExecuteAsync(cached.WithParameters(new Dictionary<string, object> { { firstParameter.Name, p1 }, { secondParameter.Name, p2 }, { thirdParameter.Name, p3 }, { fourthParameter.Name, p4 } }));
+        }
+
+        #endregion
+
         #endregion
 
         #region Synchronous
@@ -280,7 +478,9 @@ namespace TranceSql.Language
         public TResult Fetch<TResult>(IEnumerable<PropertyInfo> collections)
         {
             if (!collections.All(p => p.PropertyType.ImplementsInterface<IEnumerable>()))
+            {
                 throw new ArgumentException("All properties must be collections", "collections");
+            }
 
             return _manager.ExecuteResult<TResult>(Render(), default(TResult), collections);
         }
@@ -598,7 +798,9 @@ namespace TranceSql.Language
         public Deferred<TResult> FetchDeferred<TResult>(IEnumerable<PropertyInfo> collections)
         {
             if (!collections.All(p => p.PropertyType.ImplementsInterface<IEnumerable>()))
+            {
                 throw new ArgumentException("All properties must be collections", "collections");
+            }
 
             AssertDeferredAvailable();
 
@@ -691,10 +893,14 @@ namespace TranceSql.Language
         private void AssertDeferredAvailable()
         {
             if (_deferContext == null)
+            {
                 throw new InvalidOperationException("No deferred command context exists for this command. To execute a deferred command you must provide a context when the command instance is created.");
-            if (_deferContext.HasExecuted)
-                throw new InvalidOperationException("The deferred context for this command has already executed. To execute additional deferred commands you must create a new deferred context.");
+            }
 
+            if (_deferContext.HasExecuted)
+            {
+                throw new InvalidOperationException("The deferred context for this command has already executed. To execute additional deferred commands you must create a new deferred context.");
+            }
         }
 
         /// <summary>
