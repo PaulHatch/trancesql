@@ -63,7 +63,6 @@ information along with some page specific queries.
 Once a query command is ready to be run, the results of the query can be obtained by calling one of the fetch methods. Execution
 methods come in four flavors, _synchronous_, _asynchronous_, _cached_ and _deferred_.
 
-
 ## Results Mapping Type
 
 Each flavor of execution provides several mapping options for obtaining query results. The goal of these options is to provide
@@ -93,5 +92,14 @@ ensure that the first column is unique, otherwise an exception will be thrown.
 
 A column-keyed dictionary supports any number of columns (again, column names must be unique), but only maps a single row. This
 method can be useful for dynamically generated queries as it does not require a predefined schema.
+
+## Streaming Results
+
+For iterating over large results, the `Command.FetchStream<T>()` method will create an enumerable result
+which when enumerated will iterate over the results of the query. Unlike the `Command.FetchList<T>()`
+method which loads the entire result into memory, the enumerable returned by `FetchStream` will keep an
+open database connection.
+
+No connection is attempted until the result is enumerated, and each enumeration will execute the command.
 
 

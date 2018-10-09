@@ -65,8 +65,6 @@ namespace TranceSql.Processing
             {
                 // else if requested type must be mapped from the result row
 
-                var readEntity = EntityMapping.GetEntityFunc<TResult>();
-
                 result = reader.CreateInstance<TResult>(_defaultResult);
 
                 // Populate collections

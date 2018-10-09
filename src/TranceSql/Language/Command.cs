@@ -915,6 +915,24 @@ namespace TranceSql.Language
 
         #endregion
 
+        /// <summary>
+        /// Creates a streaming enumerable which when executed will execute
+        /// the command and provide the results as the items of an enumeration.
+        /// This can be helpful for enumerating over large results sets without
+        /// needing to place the entire result set in memory or waiting for all'
+        /// results before execution can begin. Note that each enumeration of the
+        /// result will execute the current command!
+        /// </summary>
+        /// <typeparam name="TResult">Result item type</typeparam>
+        /// <returns>Result of command as a list.</returns>
+        public IEnumerable<TResult> FetchStream<TResult>()
+        {
+            // use a cached context here since execution may be deferred
+            var cached = new CachedContext(Render());
+            return _manager.ExecuteStream<TResult>(cached);
+        }
+
+
         #endregion
 
         private RenderContext Render()

@@ -1,10 +1,12 @@
 using System;
 using System.Data.Common;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using TranceSql.Language;
 using TranceSql.Sqlite;
 using Xunit;
+using static TranceSql.Language.UsingStatic;
 
 namespace TranceSql.IntegrationTest
 {
@@ -296,6 +298,47 @@ namespace TranceSql.IntegrationTest
             }.FetchAsync<Sample>();
 
             Assert.Null(sample);
+        }
+
+        [Fact]
+        public void StreamingExecution()
+        {
+            var count = new Command(_database)
+            {
+                new Delete { From = "sample"},
+                new Insert
+                {
+                    Into = "sample",
+                    Columns = {"id", "column1" },
+                    Values =
+                    {
+                        { 11, "data" },
+                        { 12, "data" },
+                        { 13, "data" },
+                        { 14, "data" },
+                        { 15, "data" },
+                        { 16, "data" },
+                        { 17, "data" },
+                        { 18, "data" }
+                    }
+                },
+                new Select { Columns = Count(), From = "sample" }
+            }.Fetch<int>();
+
+            var sut = new Command(_database)
+            {
+                new Select { Columns = { "id", "column1" }, From = "sample" }
+            }.FetchStream<Sample>();
+
+            var count1 = sut.Count();
+            var count2 = 0;
+            foreach (var item in sut)
+            {
+                count2++;
+            }
+
+            Assert.Equal(count, count1);
+            Assert.Equal(count, count2);
         }
 
         public void Dispose()

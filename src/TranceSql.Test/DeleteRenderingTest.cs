@@ -18,7 +18,7 @@ namespace TranceSql.Test
 
             var result = sut.ToString();
 
-            Assert.Equal("DELETE FROM Table", result);
+            Assert.Equal("DELETE FROM Table;", result);
         }
 
         [Fact]
@@ -32,7 +32,7 @@ namespace TranceSql.Test
 
             var result = sut.ToString();
 
-            Assert.Equal("DELETE FROM Table\nWHERE Column1 = @P1", result);
+            Assert.Equal("DELETE FROM Table\nWHERE Column1 = @P1;", result);
         }
 
     }

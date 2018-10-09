@@ -18,13 +18,13 @@ namespace TranceSql.Processing
     public class SqlCommandManager
     {
         /// <summary>Connection string for target database.</summary>
-        protected string ConnectionString { get; }
+        internal string ConnectionString { get; }
 
         /// <summary>Connection factory delegate for target database.</summary>
-        protected Func<DbConnection> ConnectionFactory { get; }
+        internal Func<DbConnection> ConnectionFactory { get; }
         
         /// <summary>Provides parameter value from input object instances.</summary>
-        protected IParameterValueExtractor ValueExtractor { get; }
+        internal IParameterValueExtractor ValueExtractor { get; }
 
         public DeferContext CreateDeferContext() => new DeferContext(this);
 
@@ -51,7 +51,7 @@ namespace TranceSql.Processing
         /// <param name="command">
         /// Target DbCommand instance to add parameters to.
         /// </param>
-        private void AddParametersToCommand(DbCommand command, IContext context)
+        internal void AddParametersToCommand(DbCommand command, IContext context)
         {
             // Add static parameters to command.
             foreach (var parameter in context.ParameterValues)
@@ -181,6 +181,125 @@ namespace TranceSql.Processing
 
         #endregion
 
+        #region Normal Execution
+
+        /// <summary>
+        /// Executes the specified SQL command text and binds the rows selected
+        /// to an enumerable list of the specified type.
+        /// </summary>
+        /// <typeparam name="T">Result element type.</typeparam>
+        /// <param name="context">A SQL command context which includes a SELECT command.</param>
+        /// <returns>The result of the SQL command.</returns>
+        internal IEnumerable<T> ExecuteListResult<T>(IContext context)
+        {
+            var processor = new ListResultProcessor<T>();
+            return RunCommand<IEnumerable<T>>(context, processor);
+        }
+
+        /// <summary>
+        /// Executes the specified SQL command text and binds the first row
+        /// selected to the specified type. If no rows are returned or if the
+        /// value of a simple type is null, the value specified by the default
+        /// result parameter will be returned instead.
+        /// </summary>
+        /// <typeparam name="T">Result type.</typeparam>
+        /// <param name="context">A SQL command context which includes a SELECT command.</param>
+        /// <param name="defaultResult">Value to return in case no data is present.</param>
+        /// <param name="collections">A list of IEnumerable property selectors that should be populated from the command.
+        /// These properties should appear in the same order as their select command.</param>
+        /// <returns>The result of the SQL command.</returns>
+        /// <exception cref="System.InvalidOperationException">Each collection argument must have a corresponding select command.</exception>
+        internal T ExecuteResult<T>(IContext context, T defaultResult, IEnumerable<PropertyInfo> collections)
+        {
+            var processor = new SingleResultProcessor<T>(defaultResult, collections);
+            return RunCommand<T>(context, processor);
+        }
+
+        /// <summary>
+        /// Executes the specified SQL command text and maps the results to the
+        /// specified type.
+        /// </summary>
+        /// <typeparam name="T">Result type.</typeparam>
+        /// <param name="context">A SQL command context which includes a SELECT command.</param>
+        /// <param name="defaultResult">Value to return in case no data is present.</param>
+        /// <param name="collections">
+        /// A list of properties selectors that should be populated from the command.
+        /// These properties should appear in the same order as their select command.
+        /// </param>
+        /// <returns>The result of the SQL command.</returns>
+        /// <exception cref="System.InvalidOperationException">Each collection argument must have a corresponding select command.</exception>
+        internal T ExecuteMapResult<T>(IContext context, IEnumerable<Tuple<PropertyInfo, Type>> map)
+            where T : new()
+        {
+            var processor = new MappedResultProcessor<T>(map);
+            return RunCommand<T>(context, processor);
+        }
+
+        /// <summary>
+        /// Executes a non-query SQL command and returns the number of rows affected.
+        /// </summary>
+        /// <param name="sql">SQL command text to run.</param>
+        /// <returns>The number of rows affected.</returns>
+        internal int Execute(IContext context)
+        {
+            return RunCommand<int>(context, null);
+        }
+
+        /// <summary>
+        /// Executes the specified SQL command text and runs a custom delegate
+        /// to process the results.
+        /// </summary>
+        /// <typeparam name="T">Result type.</typeparam>
+        /// <param name="context">A SQL command context which includes a SELECT command.</param>
+        /// <param name="valueProvider">Custom delegate to create the result.</param>
+        /// <returns>The result of the SQL command.</returns>
+        internal T ExecuteCustom<T>(IContext context, CreateEntity<T> valueProvider)
+        {
+            var processor = new CustomResultProcessor<T>(valueProvider);
+            return RunCommand<T>(context, processor);
+        }
+
+        /// <summary>
+        /// Executes the specified SQL command text and bind the selected rows to
+        /// a dictionary from the first two columns of the results.
+        /// </summary>
+        /// <typeparam name="TKey">The key type.</typeparam>
+        /// <typeparam name="TValue">The key type.</typeparam>
+        /// <param name="context">A SQL command context which includes a SELECT command.</param>
+        /// <returns>The result of the SQL command.</returns>
+        internal IDictionary<TKey, TValue> ExecuteRowKeyedDictionaryResult<TKey, TValue>(IContext context)
+        {
+            var processor = new RowKeyedDictionaryResultProcessor<TKey, TValue>();
+            return RunCommand<IDictionary<TKey, TValue>>(context, processor);
+        }
+
+        /// <summary>
+        /// Executes the specified SQL command text and binds the selected row to
+        /// a dictionary from the columns names and values of the result.
+        /// </summary>
+        /// <param name="context">A SQL command context which includes a SELECT command.</param>
+        /// <param name="columns">The columns to return. If null, all columns will be returned.</param>
+        /// <returns>The result of the SQL command.</returns>
+        internal IDictionary<string, object> ExecuteColumnKeyedDictionaryResult(IContext context, IEnumerable<string> columns)
+        {
+            var processor = new ColumnKeyedDictionaryResultProcessor(columns);
+            return RunCommand<IDictionary<string, object>>(context, processor);
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Returns a stream which when enumerated will execute the specified SQL command text
+        /// and bind the results as an enumeration.
+        /// </summary>
+        /// <typeparam name="T">Result type.</typeparam>
+        /// <param name="context">A SQL command context which includes a SELECT command.</param>
+        /// <returns>The result of the SQL command.</returns>
+        internal IEnumerable<T> ExecuteStream<T>(IContext context)
+        {
+            return new ResultStream<T>(context, this);
+        }
+
         /// <summary>
         /// Runs the specified SQL as an asynchronous operation.
         /// </summary>
@@ -217,7 +336,6 @@ namespace TranceSql.Processing
                 }
             }
         }
-
 
         /// <summary>
         /// Runs the specified SQL as an asynchronous operation.
@@ -351,113 +469,6 @@ namespace TranceSql.Processing
                 throw new ArgumentException($"Attempted to run a non-query command with the return type '{typeof(T).FullName}'. Non-query commands must return the type 'int'.", "T");
             }
         }
-
-        #region Normal Execution
-
-        /// <summary>
-        /// Executes the specified SQL command text and binds the rows selected
-        /// to an enumerable list of the specified type.
-        /// </summary>
-        /// <typeparam name="T">Result element type.</typeparam>
-        /// <param name="context">A SQL command context which includes a SELECT command.</param>
-        /// <returns>The result of the SQL command.</returns>
-        internal IEnumerable<T> ExecuteListResult<T>(IContext context)
-        {
-            var processor = new ListResultProcessor<T>();
-            return RunCommand<IEnumerable<T>>(context, processor);
-        }
-
-        /// <summary>
-        /// Executes the specified SQL command text and binds the first row
-        /// selected to the specified type. If no rows are returned or if the
-        /// value of a simple type is null, the value specified by the default
-        /// result parameter will be returned instead.
-        /// </summary>
-        /// <typeparam name="T">Result type.</typeparam>
-        /// <param name="context">A SQL command context which includes a SELECT command.</param>
-        /// <param name="defaultResult">Value to return in case no data is present.</param>
-        /// <param name="collections">A list of IEnumerable property selectors that should be populated from the command.
-        /// These properties should appear in the same order as their select command.</param>
-        /// <returns>The result of the SQL command.</returns>
-        /// <exception cref="System.InvalidOperationException">Each collection argument must have a corresponding select command.</exception>
-        internal T ExecuteResult<T>(IContext context, T defaultResult, IEnumerable<PropertyInfo> collections)
-        {
-            var processor = new SingleResultProcessor<T>(defaultResult, collections);
-            return RunCommand<T>(context, processor);
-        }
-
-        /// <summary>
-        /// Executes the specified SQL command text and maps the results to the
-        /// specified type.
-        /// </summary>
-        /// <typeparam name="T">Result type.</typeparam>
-        /// <param name="context">A SQL command context which includes a SELECT command.</param>
-        /// <param name="defaultResult">Value to return in case no data is present.</param>
-        /// <param name="collections">
-        /// A list of properties selectors that should be populated from the command.
-        /// These properties should appear in the same order as their select command.
-        /// </param>
-        /// <returns>The result of the SQL command.</returns>
-        /// <exception cref="System.InvalidOperationException">Each collection argument must have a corresponding select command.</exception>
-        internal T ExecuteMapResult<T>(IContext context, IEnumerable<Tuple<PropertyInfo, Type>> map)
-            where T : new()
-        {
-            var processor = new MappedResultProcessor<T>(map);
-            return RunCommand<T>(context, processor);
-        }
-
-        /// <summary>
-        /// Executes a non-query SQL command and returns the number of rows affected.
-        /// </summary>
-        /// <param name="sql">SQL command text to run.</param>
-        /// <returns>The number of rows affected.</returns>
-        internal int Execute(IContext context)
-        {
-            return RunCommand<int>(context, null);
-        }
-
-        /// <summary>
-        /// Executes the specified SQL command text and runs a custom delegate
-        /// to process the results.
-        /// </summary>
-        /// <typeparam name="T">Result type.</typeparam>
-        /// <param name="context">A SQL command context which includes a SELECT command.</param>
-        /// <param name="valueProvider">Custom delegate to create the result.</param>
-        /// <returns>The result of the SQL command.</returns>
-        internal T ExecuteCustom<T>(IContext context, CreateEntity<T> valueProvider)
-        {
-            var processor = new CustomResultProcessor<T>(valueProvider);
-            return RunCommand<T>(context, processor);
-        }
-
-        /// <summary>
-        /// Executes the specified SQL command text and bind the selected rows to
-        /// a dictionary from the first two columns of the results.
-        /// </summary>
-        /// <typeparam name="TKey">The key type.</typeparam>
-        /// <typeparam name="TValue">The key type.</typeparam>
-        /// <param name="context">A SQL command context which includes a SELECT command.</param>
-        /// <returns>The result of the SQL command.</returns>
-        internal IDictionary<TKey, TValue> ExecuteRowKeyedDictionaryResult<TKey, TValue>(IContext context)
-        {
-            var processor = new RowKeyedDictionaryResultProcessor<TKey, TValue>();
-            return RunCommand<IDictionary<TKey, TValue>>(context, processor);
-        }
-
-        /// <summary>
-        /// Executes the specified SQL command text and bind the selected row to
-        /// a dictionary from the columns names and values of the result.
-        /// </summary>
-        /// <param name="context">A SQL command context which includes a SELECT command.</param>
-        /// <param name="columns">The columns to return. If null, all columns will be returned.</param>
-        /// <returns>The result of the SQL command.</returns>
-        internal IDictionary<string, object> ExecuteColumnKeyedDictionaryResult(IContext context, IEnumerable<string> columns)
-        {
-            var processor = new ColumnKeyedDictionaryResultProcessor(columns);
-            return RunCommand<IDictionary<string, object>>(context, processor);
-        }
-
-        #endregion
     }
 }
 

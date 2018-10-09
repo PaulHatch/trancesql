@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Text;
-using System.Data.Common;
 
 namespace TranceSql
 {
@@ -24,14 +24,18 @@ namespace TranceSql
         public static IEnumerable<T> ReadData<T>(this DbDataReader reader)
         {
             if (reader == null)
+            {
                 throw new ArgumentNullException("reader");
+            }
 
             var result = new List<T>();
 
             if (EntityMapping.IsSimpleType<T>())
             {
                 while (reader.Read())
+                {
                     result.Add(Convert.IsDBNull(reader[0]) ? default(T) : (T)reader[0]);
+                }
             }
             else
             {
@@ -53,7 +57,7 @@ namespace TranceSql
         /// <typeparam name="TValue">The key type.</typeparam>
         /// <param name="reader">An open reader ready to be read to a list.</param>
         /// <returns>A dictionary created from the first two columns of the data reader.</returns>
-        public static IDictionary<TKey,TValue> CreateRowKeyedDictionary<TKey,TValue>(this DbDataReader reader)
+        public static IDictionary<TKey, TValue> CreateRowKeyedDictionary<TKey, TValue>(this DbDataReader reader)
         {
             if (reader == null)
             {

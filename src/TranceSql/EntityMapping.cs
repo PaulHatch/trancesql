@@ -107,7 +107,12 @@ namespace TranceSql
                         }
                     }
 
-                    return (T)result;
+                    if (result is T r)
+                    {
+                        return r;
+                    }
+
+                    return (T)Convert.ChangeType(result, typeof(T));
                 }
                 else
                 {

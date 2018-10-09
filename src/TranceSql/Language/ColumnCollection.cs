@@ -29,10 +29,10 @@ namespace TranceSql.Language
         public static implicit operator ColumnCollection(string column)
             => new ColumnCollection { column };
 
-        public static implicit operator ColumnCollection(Column column)
-            => new ColumnCollection { column };
-
         public static implicit operator ColumnCollection(Alias aliasedElement)
             => new ColumnCollection { aliasedElement };
+
+        public static implicit operator ColumnCollection(ExpressionElement element)
+            => new ColumnCollection { element };
     }
 }

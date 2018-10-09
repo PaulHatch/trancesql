@@ -58,6 +58,7 @@ namespace TranceSql.Language
                     context.Write("WHERE ");
                     context.Render(_where);
                 }
+                context.Write(';');
             }
         }
 
