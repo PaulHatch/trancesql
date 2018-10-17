@@ -3,11 +3,15 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>TranceSql</AssemblyName>
-    <PackageId>NorthAtlantic.FluentSql</PackageId>
+    <PackageId>TranceSql</PackageId>
     <Authors>Trance Development Team</Authors>
     <PackageTags>SQL Database Client</PackageTags>
     <Copyright>2018</Copyright>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>C:\git\fluentsql\src\TranceSql\TranceSql.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
