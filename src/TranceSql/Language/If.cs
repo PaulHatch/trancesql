@@ -4,24 +4,41 @@ using System.Text;
 
 namespace TranceSql.Language
 {
+    /// <summary>
+    /// Represents an IF statement.
+    /// </summary>
     public class If : ISqlStatement
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="If"/> class.
+        /// </summary>
         public If()
         {
 
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="If"/> class.
+        /// </summary>
+        /// <param name="condition">The statement conditions.</param>
         public If(ConditionCollection condition)
         {
             Conditions = condition;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="If"/> class.
+        /// </summary>
+        /// <param name="condition">The statement condition.</param>
         public If(Condition condition)
         {
             Conditions = condition;
         }
 
         private ConditionCollection _conditions;
+        /// <summary>
+        /// Gets or sets the statement conditions.
+        /// </summary>
         public ConditionCollection Conditions
         {
             get => _conditions = _conditions ?? new ConditionCollection();
@@ -40,7 +57,6 @@ namespace TranceSql.Language
         /// </summary>
         public ISqlStatement Else { get; set; }
 
-
         void ISqlElement.Render(RenderContext context)
         {
             context.Write("IF (");
@@ -53,10 +69,14 @@ namespace TranceSql.Language
                 context.WriteLine("ELSE");
                 context.Render(Else);
             }
-
-
         }
 
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
         public override string ToString() => this.RenderDebug();
     }
 }

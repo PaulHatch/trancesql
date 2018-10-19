@@ -5,6 +5,9 @@ using System.Text;
 
 namespace TranceSql.Language
 {
+    /// <summary>
+    /// Represents an UPDATE TABLE statement.
+    /// </summary>
     public class Update : ISqlStatement
     {
         // Here we have a property of type Any<T1,T2> with an AnyOf<T1,T2,T3> used as a
@@ -15,6 +18,11 @@ namespace TranceSql.Language
         // - Allows straightforward inspection and access to the table values by external code
 
         private AnyOf<Table, Alias, ISqlElement> _table;
+        /// <summary>
+        /// Gets or sets the table to update. This can be set to a <see cref="Table"/>, a
+        /// <see cref="Alias"/> of a table, or a <see cref="string"/> which will be converted
+        /// to a <see cref="Table"/>.
+        /// </summary>
         public Any<Table, Alias, string> Table
         {
             get
@@ -47,6 +55,9 @@ namespace TranceSql.Language
         }
 
         private AssignmentCollection _set;
+        /// <summary>
+        /// Gets or sets the assignment collection for this statement.
+        /// </summary>
         public AssignmentCollection Set
         {
             get => _set = _set ?? new AssignmentCollection();
@@ -54,6 +65,9 @@ namespace TranceSql.Language
         }
 
         private ConditionCollection _where;
+        /// <summary>
+        /// Gets or sets the condition filter this statement applies to.
+        /// </summary>
         public ConditionCollection Where
         {
             get => _where = _where ?? new ConditionCollection();
@@ -79,6 +93,12 @@ namespace TranceSql.Language
             }
         }
 
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
         public override string ToString() => this.RenderDebug();
     }
 }

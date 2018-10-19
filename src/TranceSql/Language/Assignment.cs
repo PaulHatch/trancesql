@@ -22,7 +22,14 @@ namespace TranceSql.Language
             Value = value;
         }
 
+        /// <summary>
+        /// Gets the target element to update.
+        /// </summary>
         public ISqlElement Target { get; }
+        
+        /// <summary>
+        /// Gets the value to be assigned.
+        /// </summary>
         public ISqlElement Value { get; }
 
         void ISqlElement.Render(RenderContext context)

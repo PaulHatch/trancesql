@@ -5,6 +5,9 @@ using System.Text;
 
 namespace TranceSql.Language
 {
+    /// <summary>
+    /// Represents the context of a command being rendered for execution.
+    /// </summary>
     public class RenderContext : IContext
     {
         private int _index = 1;
@@ -60,10 +63,10 @@ namespace TranceSql.Language
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RenderContext"/> class.
+        /// Initializes a new instance of the <see cref="RenderContext" /> class.
         /// </summary>
         /// <param name="dialect">The dialect to render in.</param>
-        /// 
+        /// <param name="deferContext">The context for deferred commands.</param>
         public RenderContext(IDialect dialect, DeferContext deferContext)
         {
             Dialect = dialect;
@@ -113,9 +116,24 @@ namespace TranceSql.Language
             element.Render(this);
         }
 
+        /// <summary>
+        /// Writes the specified string to the rendered output.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
         public void Write(string value) => _result.Append(value);
+
+        /// <summary>
+        /// Writes the specified char to the rendered output.
+        /// </summary>
+        /// <param name="value">The value.</param>
         public void Write(char value) => _result.Append(value);
 
+        /// <summary>
+        /// Writes a string using the current dialect's identifier formating rules
+        /// followed by a '.' mark. if the string provided isn't empty, no action 
+        /// is taken.
+        /// </summary>
+        /// <param name="value">The identifier to write.</param>
         public void WriteIdentifierPrefix(string value)
         {
             if (!String.IsNullOrEmpty(value))
@@ -125,16 +143,27 @@ namespace TranceSql.Language
             }
         }
 
+        /// <summary>
+        /// Writes a string using the current dialect's identifier formating rules.
+        /// </summary>
+        /// <param name="value">The identifier to write.</param>
         public void WriteIdentifier(string value)
         {
             _result.Append(Dialect.FormatIdentifier(value));
         }
 
+        /// <summary>
+        /// Writes a line using the configured line delimiter.
+        /// </summary>
         public void WriteLine()
         {
             _result.Append(LineDelimiter);
         }
 
+        /// <summary>
+        /// Writes a line using the configured line delimiter.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
         public void WriteLine(string value)
         {
             _result.Append(value);

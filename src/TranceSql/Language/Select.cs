@@ -4,24 +4,48 @@ using System.Text;
 
 namespace TranceSql.Language
 {
-
+    /// <summary>
+    /// Represents a SELECT statement.
+    /// </summary>
     public class Select : ISqlStatement, IDataSource
     {
+        /// <summary>
+        /// Gets or sets the offset for this command. Not all SQL dialects
+        /// support this option.
+        /// </summary>
         public long? Offset { get; set; }
+
+        /// <summary>
+        /// Gets or sets maximum results to return.
+        /// </summary>
         public long? Limit { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether this <see cref="Select"/> uses
+        /// the DISTINCT keyword.
+        /// </summary>
         public bool Distinct { get; set; }
 
-        public ColumnCollection _columns;
+        private ColumnCollection _columns;
+
+        /// <summary>
+        /// Gets or sets the collection of columns or other elements to select.
+        /// </summary>
         public ColumnCollection Columns
         {
             get => _columns = _columns ?? new ColumnCollection();
             set => _columns = value;
         }
 
+        /// <summary>
+        /// Gets or sets the table for a SELECT INTO statement.
+        /// </summary>
         public Table Into { get; set; }
 
         private DataSourceCollection _from;
+        /// <summary>
+        /// Gets or sets table or tables for the from clause of this statement.
+        /// </summary>
         public DataSourceCollection From
         {
             get => _from = _from ?? new DataSourceCollection();
@@ -29,6 +53,9 @@ namespace TranceSql.Language
         }
 
         private JoinCollection _join;
+        /// <summary>
+        /// Gets or sets the join clauses for this statement.
+        /// </summary>
         public JoinCollection Join
         {
             get => _join = _join ?? new JoinCollection();
@@ -36,13 +63,19 @@ namespace TranceSql.Language
         }
 
         private ConditionCollection _where;
+        /// <summary>
+        /// Gets or sets the where condition for this statement.
+        /// </summary>
         public ConditionCollection Where
         {
             get => _where = _where ?? new ConditionCollection();
             set => _where = value;
         }
 
-        public ColumnOrderCollection _orderBy;
+        private ColumnOrderCollection _orderBy;
+        /// <summary>
+        /// Gets or sets the order by clauses for this statement.
+        /// </summary>
         public ColumnOrderCollection OrderBy
         {
             get => _orderBy = _orderBy ?? new ColumnOrderCollection();
@@ -50,7 +83,10 @@ namespace TranceSql.Language
         }
 
 
-        public ColumnCollection _groupBy;
+        private ColumnCollection _groupBy;
+        /// <summary>
+        /// Gets or sets the group by clauses for this statement.
+        /// </summary>
         public ColumnCollection GroupBy
         {
             get => _groupBy = _groupBy ?? new ColumnCollection();
@@ -58,6 +94,9 @@ namespace TranceSql.Language
         }
 
         private ConditionCollection _having;
+        /// <summary>
+        /// Gets or sets the having condition for this statement.
+        /// </summary>
         public ConditionCollection Having
         {
             get => _having = _having ?? new ConditionCollection();

@@ -5,9 +5,16 @@ using System.Text;
 
 namespace TranceSql.Language
 {
+    /// <summary>
+    /// Represents a DELETE FROM statement.
+    /// </summary>
     public class Delete : ISqlStatement
     {
         private AnyOf<Table, Alias, ISqlElement> _from;
+        
+        /// <summary>
+        /// Gets or sets table to delete from.
+        /// </summary>
         public Any<Table, Alias, string> From
         {
             get
@@ -40,6 +47,9 @@ namespace TranceSql.Language
         }
 
         private ConditionCollection _where;
+        /// <summary>
+        /// Gets or sets the where filter for this statement.
+        /// </summary>
         public ConditionCollection Where
         {
             get => _where = _where ?? new ConditionCollection();
@@ -62,6 +72,12 @@ namespace TranceSql.Language
             }
         }
 
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
         public override string ToString() => this.RenderDebug();
     }
 }

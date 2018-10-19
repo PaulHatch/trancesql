@@ -4,29 +4,57 @@ using System.Linq;
 
 namespace TranceSql.Language
 {
+    /// <summary>
+    /// Represents a collection of condition clauses.
+    /// </summary>
     public class ConditionCollection : List<ICondition>, ICondition
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConditionCollection"/> class.
+        /// </summary>
         public ConditionCollection()
         {
-
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConditionCollection" /> class.
+        /// </summary>
+        /// <param name="nested">
+        /// True if this collection is nested (wrapped in parentheses.
+        /// </param>
         public ConditionCollection(bool nested)
         {
             IsNested = nested;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConditionCollection"/> class.
+        /// </summary>
+        /// <param name="type">
+        /// The operator used to combine this collection with previous conditions.
+        /// </param>
         public ConditionCollection(BooleanOperator type)
         {
             BooleanOperator = type;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConditionCollection"/> class.
+        /// </summary>
+        /// <param name="type">
+        /// The operator used to combine this collection with previous conditions.
+        /// </param>
+        /// <param name="nested">True if this collection is nested (wrapped in parentheses.</param>
         public ConditionCollection(BooleanOperator type, bool nested)
         {
             BooleanOperator = type;
         }
 
 
+        /// <summary>
+        /// Adds the specified collection of conditions.
+        /// </summary>
+        /// <param name="collection">The collection to add.</param>
         public void Add(IEnumerable<ICondition> collection)
         {
             if (collection is ICondition condition)
@@ -100,6 +128,9 @@ namespace TranceSql.Language
         public static implicit operator ConditionCollection(Condition condition) => new ConditionCollection { condition };
 
 
+        /// <summary>
+        /// Gets or sets a value indicating whether this instance is a nested collection.
+        /// </summary>
         public bool IsNested { get; set; }
 
         private static ConditionCollection Combine(ICondition left, ICondition right, BooleanOperator type)
@@ -129,24 +160,82 @@ namespace TranceSql.Language
             throw new ArgumentException("Either left or right condition must be a collection");
         }
 
+        // These bool operators cover combining condition collections and mixed condition
+        // collections and conditions. The condition class contains additional bool operators
+        // for combining only conditions.
+
+        /// <summary>
+        /// Creates a new operation
+        /// </summary>
+        /// <param name="left">The left expression.</param>
+        /// <param name="right">The right expression.</param>
+        /// <returns>
+        /// The result of the operator.
+        /// </returns>
         public static ConditionCollection operator &(ConditionCollection left, Condition right)
             => Combine(left, right, BooleanOperator.And);
 
+        /// <summary>
+        /// Creates a new operation
+        /// </summary>
+        /// <param name="left">The left expression.</param>
+        /// <param name="right">The right expression.</param>
+        /// <returns>
+        /// The result of the operator.
+        /// </returns>
         public static ConditionCollection operator &(ConditionCollection left, ConditionCollection right)
             => Combine(left, right, BooleanOperator.And);
 
+        /// <summary>
+        /// Creates a new operation
+        /// </summary>
+        /// <param name="left">The left expression.</param>
+        /// <param name="right">The right expression.</param>
+        /// <returns>
+        /// The result of the operator.
+        /// </returns>
         public static ConditionCollection operator &(Condition left, ConditionCollection right)
             => Combine(left, right, BooleanOperator.And);
 
+        /// <summary>
+        /// Creates a new operation
+        /// </summary>
+        /// <param name="left">The left expression.</param>
+        /// <param name="right">The right expression.</param>
+        /// <returns>
+        /// The result of the operator.
+        /// </returns>
         public static ConditionCollection operator |(ConditionCollection left, Condition right)
             => Combine(left, right, BooleanOperator.Or);
 
+        /// <summary>
+        /// Creates a new operation
+        /// </summary>
+        /// <param name="left">The left expression.</param>
+        /// <param name="right">The right expression.</param>
+        /// <returns>
+        /// The result of the operator.
+        /// </returns>
         public static ConditionCollection operator |(ConditionCollection left, ConditionCollection right)
             => Combine(left, right, BooleanOperator.Or);
 
+        /// <summary>
+        /// Creates a new operation
+        /// </summary>
+        /// <param name="left">The left expression.</param>
+        /// <param name="right">The right expression.</param>
+        /// <returns>
+        /// The result of the operator.
+        /// </returns>
         public static ConditionCollection operator |(Condition left, ConditionCollection right)
             => Combine(left, right, BooleanOperator.Or);
-        
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
         public override string ToString() => this.RenderDebug();
     }
 }

@@ -34,5 +34,7 @@ namespace TranceSql.Language
         {
             context.Write(context.GetParameter(this));
         }
+
+        public override string ToString() => this.RenderDebug();
     }
 }

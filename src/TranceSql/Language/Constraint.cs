@@ -20,7 +20,7 @@ namespace TranceSql.Language
         /// </summary>
         public string Name { get; set; }
 
-        public ColumnCollection _on;
+        private ColumnCollection _on;
         /// <summary>
         /// Gets or sets the columns to create the constraint on.
         /// </summary>
@@ -66,7 +66,7 @@ namespace TranceSql.Language
         /// </summary>
         public string Name { get; set; }
 
-        public ColumnOrderCollection _on;
+        private ColumnOrderCollection _on;
         /// <summary>
         /// Gets or sets the columns to create this primary key on.
         /// </summary>

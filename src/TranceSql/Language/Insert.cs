@@ -5,11 +5,20 @@ using System.Text;
 
 namespace TranceSql.Language
 {
+    /// <summary>
+    /// Represents an INSERT statement
+    /// </summary>
     public class Insert : ISqlStatement
     {
+        /// <summary>
+        /// Gets or sets the table to insert into.
+        /// </summary>
         public Table Into { get; set; }
 
         public ColumnCollection _columns;
+        /// <summary>
+        /// Gets or sets the insert columns.
+        /// </summary>
         public ColumnCollection Columns
         {
             get => _columns = _columns ?? new ColumnCollection();
@@ -17,6 +26,10 @@ namespace TranceSql.Language
         }
 
         public ValuesCollection _values;
+        /// <summary>
+        /// Gets or sets the values to be inserted. This value can be
+        /// assigned a <see cref="Select"/> statement as well as values.
+        /// </summary>
         public ValuesCollection Values
         {
             get => _values = _values ?? new ValuesCollection();
@@ -122,6 +135,12 @@ namespace TranceSql.Language
             }
         }
 
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
         public override string ToString() => this.RenderDebug();
     }
 }

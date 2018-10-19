@@ -7,12 +7,22 @@ using System.Text;
 
 namespace TranceSql.Language
 {
+    /// <summary>
+    /// Represents a CREATE TABLE statement.
+    /// </summary>
     public class CreateTable : ISqlStatement
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CreateTable"/> class.
+        /// </summary>
         public CreateTable()
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CreateTable"/> class.
+        /// </summary>
+        /// <param name="name">The table name.</param>
         public CreateTable(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
@@ -23,14 +33,29 @@ namespace TranceSql.Language
             Name = new Table(name);
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CreateTable"/> class.
+        /// </summary>
+        /// <param name="schema">The table schema.</param>
+        /// <param name="name">The table name.</param>
         public CreateTable(string schema, string name)
         {
             Name = new Table(schema, name);
         }
 
+        /// <summary>
+        /// Gets or sets the table name.
+        /// </summary>
         public Table Name { get; set; }
 
+        /// <summary>
+        /// Gets the column definition collection.
+        /// </summary>
         public ColumnDefinitionCollection Columns { get; } = new ColumnDefinitionCollection();
+
+        /// <summary>
+        /// Gets the table constraints collection.
+        /// </summary>
         public ICollection<IConstraint> Constraints { get; } = new List<IConstraint>();
 
         void ISqlElement.Render(RenderContext context)
@@ -54,6 +79,12 @@ namespace TranceSql.Language
             context.Write(");");
         }
 
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
         public override string ToString() => this.RenderDebug();
 
         /// <summary>

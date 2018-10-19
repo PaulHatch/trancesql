@@ -10,6 +10,12 @@ using TranceSql.Processing;
 
 namespace TranceSql.Language
 {
+    /// <summary>
+    /// <see cref="Command"/> is the main class in TranceSQL operations. It is a
+    /// collection of <see cref="ISqlStatement"/> (i.e. <see cref="Select"/>,
+    /// <see cref="Update"/>, <see cref="Insert"/>, etc.) and provides a variety of
+    /// methods for executing the SQL statements defined for the command.
+    /// </summary>
     public class Command : IEnumerable<ISqlStatement>
     {
         private List<ISqlStatement> _statements = new List<ISqlStatement>();
@@ -33,7 +39,7 @@ namespace TranceSql.Language
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Command" /> class for executing deferred commands.
-        /// If deferred execution is not being used, the <see cref="Command(Database connection)"/> constructor
+        /// If deferred execution is not being used, the <see cref="Command(Database)"/> constructor
         /// is a better choice.
         /// </summary>
         /// <param name="connection">The connection to use when rendering and executing the command.</param>
@@ -174,7 +180,9 @@ namespace TranceSql.Language
         /// <param name="firstParameter">The first parameter, should be of type TParameter1.</param>
         /// <param name="secondParameter">The second parameter, should be of type TParameter2.</param>
         /// <param name="defaultValue">The default value.</param>
-        /// <returns>Delegate for specified command.</returns>
+        /// <returns>
+        /// Delegate for specified command.
+        /// </returns>
         public Func<TParameter1, TParameter2, Task<TResult>> FetchCached<TResult, TParameter1, TParameter2>(Parameter firstParameter, Parameter secondParameter, TResult defaultValue = default(TResult))
         {
             var cached = new CachedContext(Render());
@@ -193,7 +201,9 @@ namespace TranceSql.Language
         /// <param name="secondParameter">The second parameter, should be of type TParameter2.</param>
         /// <param name="thirdParameter">The third parameter, should be of type TParameter3.</param>
         /// <param name="defaultValue">The default value.</param>
-        /// <returns>Delegate for specified command.</returns>
+        /// <returns>
+        /// Delegate for specified command.
+        /// </returns>
         public Func<TParameter1, TParameter2, TParameter3, Task<TResult>> FetchCached<TResult, TParameter1, TParameter2, TParameter3>(Parameter firstParameter, Parameter secondParameter, Parameter thirdParameter, TResult defaultValue = default(TResult))
         {
             var cached = new CachedContext(Render());
@@ -213,7 +223,10 @@ namespace TranceSql.Language
         /// <param name="secondParameter">The second parameter, should be of type TParameter2.</param>
         /// <param name="thirdParameter">The third parameter, should be of type TParameter3.</param>
         /// <param name="fourthParameter">The fourth parameter, should be of type TParameter4.</param>
-        /// <returns>Delegate for specified command.</returns>
+        /// <param name="defaultValue">The default value.</param>
+        /// <returns>
+        /// Delegate for specified command.
+        /// </returns>
         public Func<TParameter1, TParameter2, TParameter3, TParameter4, Task<TResult>> FetchCached<TResult, TParameter1, TParameter2, TParameter3, TParameter4>(Parameter firstParameter, Parameter secondParameter, Parameter thirdParameter, Parameter fourthParameter, TResult defaultValue = default(TResult))
         {
             var cached = new CachedContext(Render());
@@ -374,7 +387,9 @@ namespace TranceSql.Language
         /// <typeparam name="TParameter2">The type of the second parameter.</typeparam>
         /// <param name="firstParameter">The first parameter, should be of type TParameter1.</param>
         /// <param name="secondParameter">The second parameter, should be of type TParameter2.</param>
-        /// <returns>Delegate for specified command.</returns>
+        /// <returns>
+        /// Delegate for specified command.
+        /// </returns>
         public Func<TParameter1, TParameter2, Task<int>> ExecuteCached<TParameter1, TParameter2>(Parameter firstParameter, Parameter secondParameter)
         {
             var cached = new CachedContext(Render());
@@ -385,14 +400,15 @@ namespace TranceSql.Language
         /// Creates a delegate from current command and returns a count of the
         /// number of rows affected.
         /// </summary>
-        /// <typeparam name="TResult">Result item type</typeparam>
         /// <typeparam name="TParameter1">The type of the first parameter.</typeparam>
         /// <typeparam name="TParameter2">The type of the second parameter.</typeparam>
         /// <typeparam name="TParameter3">The type of the third parameter.</typeparam>
         /// <param name="firstParameter">The first parameter, should be of type TParameter1.</param>
         /// <param name="secondParameter">The second parameter, should be of type TParameter2.</param>
         /// <param name="thirdParameter">The third parameter, should be of type TParameter3.</param>
-        /// <returns>Delegate for specified command.</returns>
+        /// <returns>
+        /// Delegate for specified command.
+        /// </returns>
         public Func<TParameter1, TParameter2, TParameter3, Task<int>> ExecuteCached<TParameter1, TParameter2, TParameter3>(Parameter firstParameter, Parameter secondParameter, Parameter thirdParameter)
         {
             var cached = new CachedContext(Render());
@@ -403,7 +419,6 @@ namespace TranceSql.Language
         /// Creates a delegate from current command and returns a count of the
         /// number of rows affected.
         /// </summary>
-        /// <typeparam name="TResult">Result item type</typeparam>
         /// <typeparam name="TParameter1">The type of the first parameter.</typeparam>
         /// <typeparam name="TParameter2">The type of the second parameter.</typeparam>
         /// <typeparam name="TParameter3">The type of the third parameter.</typeparam>
@@ -412,7 +427,9 @@ namespace TranceSql.Language
         /// <param name="secondParameter">The second parameter, should be of type TParameter2.</param>
         /// <param name="thirdParameter">The third parameter, should be of type TParameter3.</param>
         /// <param name="fourthParameter">The fourth parameter, should be of type TParameter4.</param>
-        /// <returns>Delegate for specified command.</returns>
+        /// <returns>
+        /// Delegate for specified command.
+        /// </returns>
         public Func<TParameter1, TParameter2, TParameter3, TParameter4, Task<int>> ExecuteCached<TParameter1, TParameter2, TParameter3, TParameter4>(Parameter firstParameter, Parameter secondParameter, Parameter thirdParameter, Parameter fourthParameter)
         {
             var cached = new CachedContext(Render());
@@ -426,11 +443,13 @@ namespace TranceSql.Language
         #region Synchronous
 
         /// <summary>
-        /// Executes the current command and returns the result as 
+        /// Executes the current command and returns the result as
         /// an enumerable list.
         /// </summary>
         /// <typeparam name="TResult">Result item type</typeparam>
-        /// <returns>Result of command as a list.</returns>
+        /// <returns>
+        /// Result of command as a list.
+        /// </returns>
         public IEnumerable<TResult> FetchList<TResult>()
         {
             return _manager.ExecuteListResult<TResult>(Render());
@@ -492,9 +511,8 @@ namespace TranceSql.Language
         /// <typeparam name="TResult">Result item type</typeparam>
         /// <param name="map">A list of IEnumerable property selectors that should be populated from the command.
         /// These properties should appear in the same order as their select command.</param>
-        /// <returns>The result of the SQL command.</returns>
         /// <returns>
-        /// Result of command.
+        /// The result of the SQL command.
         /// </returns>
         public TResult FetchMappedResult<TResult>(params Expression<Func<TResult, object>>[] map)
             where TResult : new()
@@ -656,7 +674,9 @@ namespace TranceSql.Language
         /// </summary>
         /// <typeparam name="TResult">The entity type to select.</typeparam>
         /// <param name="map">A list of property select expressions.</param>
-        /// <returns>A list of properties and their types.</returns>
+        /// <returns>
+        /// A list of properties and their types.
+        /// </returns>
         private static IEnumerable<Tuple<PropertyInfo, Type>> MapProperties<TResult>(IEnumerable<Expression<Func<TResult, object>>> map)
         {
             return MapProperties(map.Select(c => c.GetPropertyInfo()));
@@ -666,7 +686,9 @@ namespace TranceSql.Language
         /// Maps a list of properties to their property types.
         /// </summary>
         /// <param name="properties">The properties to map.</param>
-        /// <returns>A list of properties and their types.</returns>
+        /// <returns>
+        /// A list of properties and their types.
+        /// </returns>
         private static IEnumerable<Tuple<PropertyInfo, Type>> MapProperties(IEnumerable<PropertyInfo> properties)
         {
             return properties.Select(p => new Tuple<PropertyInfo, Type>(p, p.PropertyType.GetCollectionType() ?? p.PropertyType));
@@ -924,7 +946,9 @@ namespace TranceSql.Language
         /// result will execute the current command!
         /// </summary>
         /// <typeparam name="TResult">Result item type</typeparam>
-        /// <returns>Result of command as a list.</returns>
+        /// <returns>
+        /// Result of command as a list.
+        /// </returns>
         public IEnumerable<TResult> FetchStream<TResult>()
         {
             // use a cached context here since execution may be deferred

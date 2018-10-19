@@ -6,10 +6,19 @@ using System.Text;
 
 namespace TranceSql.Language
 {
+    /// <summary>
+    /// Defines a constant. Consider using <see cref="Value"/> if applicable.
+    /// </summary>
     public class Constant : ExpressionElement, ISqlElement
     {
         const string _stringWarning = "Warning, string constants are vulnerable to SQL injection attacks. Using a parameter is the preferred method of passing string values. The 'Value' class can be used to supply a string which will automatically be passed to the command as a parameter. To create string constant expression, call the 'Constant.Unsafe(string)' method.";
         private object _value;
+        
+        /// <summary>
+        /// Gets or sets the value of this constant. Setting this value directly
+        /// to a <see cref="string"/> instance will result in a runtime error, you
+        /// must use <see cref="Constant.Unsafe(string)"/> to define a string constant.
+        /// </summary>
         public object Value
         {
             get => _value;
@@ -24,10 +33,24 @@ namespace TranceSql.Language
             }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Constant"/> class.
+        /// </summary>
         public Constant() { }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Constant"/> class.
+        /// </summary>
+        /// <param name="value">The value.</param>
         public Constant(object value) { Value = value; }
 
+        /// <summary>
+        /// This constructor is to prevent accidentally introducing a SQL injection
+        /// vulnerability, requiring the use of <see cref="Constant.Unsafe(string)"/>
+        /// to create string constants. Using this constructor will result in a compile
+        /// time error.
+        /// </summary>
+        /// <param name="value">The value.</param>
         [Obsolete(_stringWarning, true)]
         public Constant(string value) {  }
 
@@ -99,5 +122,13 @@ namespace TranceSql.Language
                 throw new InvalidCommandException($"Unsupported constant type {type.Name}");
             }
         }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+        public override string ToString() => this.RenderDebug();
     }
 }

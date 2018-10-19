@@ -5,7 +5,8 @@ using System.Text;
 namespace TranceSql.Language
 {
     /// <summary>
-    /// Represents a parameter in a SQL statement.
+    /// Represents a parameter in a SQL statement. For automatic parameter
+    /// creation, use the <see cref="Value"/> element.
     /// </summary>
     public class Parameter : ExpressionElement, ISqlElement
     {
@@ -26,7 +27,6 @@ namespace TranceSql.Language
         public Parameter() { }
 
         private string _name;
-
         /// <summary>
         /// Gets or sets the name. The name will automatically be prefixed with 
         /// '@' if none is present.
@@ -42,6 +42,12 @@ namespace TranceSql.Language
             context.Write(Name ?? throw new InvalidOperationException("Parameter name cannot be null"));
         }
 
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
         public override string ToString() => this.RenderDebug();
     }
 }

@@ -12,6 +12,12 @@ namespace TranceSql.Language
         private SqlType Type { get; }
         public IEnumerable<IConstraint> Constraints { get; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ColumnDefinition"/> class.
+        /// </summary>
+        /// <param name="name">The column name. Must not be null or whitespace.</param>
+        /// <param name="sqlType">The SQL type of the column. Must not be null.</param>
+        /// <param name="constraints">The column constraints.</param>
         public ColumnDefinition(string name, SqlType sqlType, IEnumerable<IConstraint> constraints)
         {
             if (string.IsNullOrWhiteSpace(name))
@@ -36,6 +42,12 @@ namespace TranceSql.Language
             }
         }
 
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
         public override string ToString() => this.RenderDebug();
     }
 }

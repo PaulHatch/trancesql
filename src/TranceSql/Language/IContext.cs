@@ -2,6 +2,10 @@
 
 namespace TranceSql.Language
 {
+    /// <summary>
+    /// Defines a context available for execution in a <see cref="Command"/>
+    /// execution method.
+    /// </summary>
     public interface IContext
     {
         /// <summary>
