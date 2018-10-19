@@ -13,7 +13,7 @@ namespace TranceSql.Processing
     /// <typeparam name="TResult">Result type to return.</typeparam>
     internal class CustomResultProcessor<TResult> : IResultProcessor
     {
-        private CreateEntity<TResult> _valueProvider;
+        private readonly CreateEntity<TResult> _valueProvider;
 
         /// <summary>
         /// Result processor that returns a string/object dictionary for a single row of a result

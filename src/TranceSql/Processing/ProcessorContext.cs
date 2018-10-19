@@ -7,7 +7,7 @@ namespace TranceSql.Processing
     internal class ProcessorContext
     {
         public IResultProcessor Processer { get; set; }
-        public Deferred Deferred { get; set; }
+        public IDeferred Deferred { get; set; }
     }
 
 }

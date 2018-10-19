@@ -9,7 +9,6 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using TranceSql.Language;
 using TranceSql.Processing;
 
 namespace TranceSql.Processing
@@ -26,6 +25,10 @@ namespace TranceSql.Processing
         /// <summary>Provides parameter value from input object instances.</summary>
         internal IParameterValueExtractor ValueExtractor { get; }
 
+        /// <summary>
+        /// Creates a new defer context for this command.
+        /// </summary>
+        /// <returns>A new defer context instance.</returns>
         public DeferContext CreateDeferContext() => new DeferContext(this);
 
         /// <summary>
@@ -48,9 +51,8 @@ namespace TranceSql.Processing
         /// <summary>
         /// Adds the parameters in this transaction to the specified command.
         /// </summary>
-        /// <param name="command">
-        /// Target DbCommand instance to add parameters to.
-        /// </param>
+        /// <param name="command">Target DbCommand instance to add parameters to.</param>
+        /// <param name="context">The SQL context to run.</param>
         internal void AddParametersToCommand(DbCommand command, IContext context)
         {
             // Add static parameters to command.
@@ -114,13 +116,10 @@ namespace TranceSql.Processing
         /// </summary>
         /// <typeparam name="T">Result type.</typeparam>
         /// <param name="context">A SQL command context which includes a SELECT command.</param>
-        /// <param name="defaultResult">Value to return in case no data is present.</param>
-        /// <param name="collections">
-        /// A list of properties selectors that should be populated from the command.
-        /// These properties should appear in the same order as their select command.
-        /// </param>
-        /// <returns>The result of the SQL command.</returns>
-        /// <exception cref="System.InvalidOperationException">Each collection argument must have a corresponding select command.</exception>
+        /// <param name="map">The map.</param>
+        /// <returns>
+        /// The result of the SQL command.
+        /// </returns>
         internal Task<T> ExecuteMapResultAsync<T>(IContext context, IEnumerable<Tuple<PropertyInfo, Type>> map)
             where T : new()
         {
@@ -131,7 +130,7 @@ namespace TranceSql.Processing
         /// <summary>
         /// Executes a non-query SQL command and returns the number of rows affected.
         /// </summary>
-        /// <param name="sql">SQL command text to run.</param>
+        /// <param name="context">The SQL context to run.</param>
         /// <returns>The number of rows affected.</returns>
         internal Task<int> ExecuteAsync(IContext context)
         {
@@ -221,13 +220,10 @@ namespace TranceSql.Processing
         /// </summary>
         /// <typeparam name="T">Result type.</typeparam>
         /// <param name="context">A SQL command context which includes a SELECT command.</param>
-        /// <param name="defaultResult">Value to return in case no data is present.</param>
-        /// <param name="collections">
-        /// A list of properties selectors that should be populated from the command.
-        /// These properties should appear in the same order as their select command.
-        /// </param>
-        /// <returns>The result of the SQL command.</returns>
-        /// <exception cref="System.InvalidOperationException">Each collection argument must have a corresponding select command.</exception>
+        /// <param name="map">The map.</param>
+        /// <returns>
+        /// The result of the SQL command.
+        /// </returns>
         internal T ExecuteMapResult<T>(IContext context, IEnumerable<Tuple<PropertyInfo, Type>> map)
             where T : new()
         {
@@ -238,7 +234,7 @@ namespace TranceSql.Processing
         /// <summary>
         /// Executes a non-query SQL command and returns the number of rows affected.
         /// </summary>
-        /// <param name="sql">SQL command text to run.</param>
+        /// <param name="context">The SQL context to run.</param>
         /// <returns>The number of rows affected.</returns>
         internal int Execute(IContext context)
         {
@@ -303,7 +299,7 @@ namespace TranceSql.Processing
         /// <summary>
         /// Runs the specified SQL as an asynchronous operation.
         /// </summary>
-        /// <param name="sql">The SQL command to run.</param>
+        /// <param name="context">The SQL context to run.</param>
         /// <param name="processors">The processors to use for the result sets.</param>
         /// <returns>A task for the operation.</returns>
         internal void RunCommandSet(IContext context, IEnumerable<ProcessorContext> processors)
@@ -340,7 +336,7 @@ namespace TranceSql.Processing
         /// <summary>
         /// Runs the specified SQL as an asynchronous operation.
         /// </summary>
-        /// <param name="sql">The SQL command to run.</param>
+        /// <param name="context">The SQL context to run.</param>
         /// <param name="processors">The processors to use for the result sets.</param>
         /// <returns>A task for the operation.</returns>
         internal async Task RunCommandSetAsync(IContext context, IEnumerable<ProcessorContext> processors)
@@ -422,7 +418,7 @@ namespace TranceSql.Processing
         /// Run the specified SQL command as an normal, thread-blocking operation.
         /// </summary>
         /// <typeparam name="T">The expected result type.</typeparam>
-        /// <param name="sql">The SQL query to run.</param>
+        /// <param name="context">The SQL context to run.</param>
         /// <param name="processor">
         /// The query processor. If this value is null, a non-query type command
         /// is assumed and the integer type will be assumed.

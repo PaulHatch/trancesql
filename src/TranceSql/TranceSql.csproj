@@ -4,14 +4,21 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>TranceSql</AssemblyName>
     <PackageId>TranceSql</PackageId>
-    <Authors>Trance Development Team</Authors>
+    <Authors>Paul Hatcherian</Authors>
     <PackageTags>SQL Database Client</PackageTags>
     <Copyright>2018</Copyright>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Company />
+    <PackageLicenseUrl>https://raw.githubusercontent.com/PaulHatch/simpleelastic/master/license.txt</PackageLicenseUrl>
+    <PackageProjectUrl>https://www.trancesql.com</PackageProjectUrl>
+    <PackageIconUrl>https://www.trancesql.com/logo.png</PackageIconUrl>
+    <RepositoryUrl>https://github.com/PaulHatch/simpleelastic</RepositoryUrl>
+    <Description>TranceSQL provides an easy to use, high performance data access interface for SQL databases. It is minimally abstract compared to ORMs such as Entity Framework. When using TranceSQL, queries are
+constructing using a structured API that closely resembles the final SQL query.</Description>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>C:\git\fluentsql\src\TranceSql\TranceSql.xml</DocumentationFile>
+    <DocumentationFile></DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

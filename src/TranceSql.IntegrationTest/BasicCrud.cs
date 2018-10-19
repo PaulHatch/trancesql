@@ -3,10 +3,9 @@ using System.Data.Common;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using TranceSql.Language;
 using TranceSql.Sqlite;
 using Xunit;
-using static TranceSql.Language.UsingStatic;
+using static TranceSql.UsingStatic;
 
 namespace TranceSql.IntegrationTest
 {
@@ -38,7 +37,7 @@ namespace TranceSql.IntegrationTest
             }.Execute();
         }
 
-        private Database _database;
+        private readonly Database _database;
 
         [Fact]
         public async Task UniqueConstraint()

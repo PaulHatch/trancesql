@@ -7,14 +7,22 @@ using System.Threading.Tasks;
 namespace TranceSql
 {
     /// <summary>
-    /// Base class for  deferred 
+    /// Defines a deferred result of SQL execution.
     /// </summary>
-    public abstract class Deferred
+    internal interface IDeferred
     {
-        internal abstract void SetValue(object value);
+        /// <summary>
+        /// Sets the value of this deferred result.
+        /// </summary>
+        /// <param name="value">The value to set.</param>
+        void SetValue(object value);
     }
 
-    public sealed class Deferred<T> : Deferred
+    /// <summary>
+    /// Represents the deferred result of SQL execution.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public sealed class Deferred<T> : IDeferred
     {
         private T _result;
         private DeferContext _context;
@@ -24,21 +32,32 @@ namespace TranceSql
             _context = context;
         }
 
-        public T GetResult()
+        /// <summary>
+        /// Gets the result of this operation using synchronous execution if this 
+        /// is the first result from the deferrer context being retrieved.
+        /// </summary>
+        public T Result
         {
-            _context.Run();
-
-            return _result;
+            get
+            {
+                _context.Run();
+                return _result;
+            }
         }
 
-        public async Task<T> GetResultAsync()
+        /// <summary>
+        /// Gets the result of this operation using asynchronous execution if this
+        /// is the first result from the deferrer context being retrieved.
+        /// </summary>
+        public Task<T> ResultAsync => GetResultAsync();
+
+        private async Task<T> GetResultAsync()
         {
             await _context.RunAsync();
-            
             return _result;
         }
 
-        internal override void SetValue(object value)
+        void IDeferred.SetValue(object value)
         {
             _result = (T)value;
         }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data.Common;
 using Npgsql;
 using System.Text;
-using TranceSql.Language;
 using TranceSql.Processing;
 
 namespace TranceSql.Postgres

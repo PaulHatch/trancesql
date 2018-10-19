@@ -13,7 +13,7 @@ namespace TranceSql.Processing
     /// </summary>
     internal class ColumnKeyedDictionaryResultProcessor : IResultProcessor
     {
-        private IEnumerable<string> _columns;
+        private readonly IEnumerable<string> _columns;
 
         /// <summary>
         /// Result processor that returns the a string/object dictionary for a single row of a result

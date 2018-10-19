@@ -5,7 +5,6 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using TranceSql.Language;
 using TranceSql.Processing;
 
 namespace TranceSql
@@ -61,7 +60,7 @@ namespace TranceSql
         /// Queues a command and returns a deferred reference to the result.
         /// </summary>
         /// <typeparam name="TResult">The type of the t result.</typeparam>
-        /// <param name="sql">The SQL.</param>
+        /// <param name="context">The SQL context.</param>
         /// <returns>Deferred&lt;IEnumerable&lt;TResult&gt;&gt;.</returns>
         internal Deferred<IEnumerable<TResult>> ExecuteListResultDeferred<TResult>(IContext context)
         {
@@ -72,7 +71,7 @@ namespace TranceSql
         /// Queues a command and returns a deferred reference to the result.
         /// </summary>
         /// <typeparam name="TResult">The type of the t result.</typeparam>
-        /// <param name="sql">The SQL.</param>
+        /// <param name="context">The SQL context.</param>
         /// <param name="defaultValue">The default value.</param>
         /// <param name="properties">The properties.</param>
         /// <returns>Deferred&lt;TResult&gt;.</returns>
@@ -85,7 +84,7 @@ namespace TranceSql
         /// Queues a command and returns a deferred reference to the result.
         /// </summary>
         /// <typeparam name="TResult">The type of the t result.</typeparam>
-        /// <param name="sql">The SQL.</param>
+        /// <param name="context">The SQL context.</param>
         /// <param name="mappedProperties">The mapped properties.</param>
         /// <returns>Deferred&lt;TResult&gt;.</returns>
         internal Deferred<TResult> ExecuteMapResultDeferred<TResult>(IContext context, IEnumerable<Tuple<PropertyInfo, Type>> mappedProperties)
@@ -98,7 +97,7 @@ namespace TranceSql
         /// Queues a command and returns a deferred reference to the result.
         /// </summary>
         /// <typeparam name="TResult">The type of the t result.</typeparam>
-        /// <param name="sql">The SQL.</param>
+        /// <param name="context">The SQL context.</param>
         /// <param name="valueProvider">The value provider.</param>
         /// <returns>Deferred&lt;TResult&gt;.</returns>
         internal Deferred<TResult> ExecuteCustomDeferred<TResult>(IContext context, CreateEntity<TResult> valueProvider)
@@ -111,7 +110,7 @@ namespace TranceSql
         /// </summary>
         /// <typeparam name="TKey">The type of the t key.</typeparam>
         /// <typeparam name="TValue">The type of the t value.</typeparam>
-        /// <param name="sql">The SQL.</param>
+        /// <param name="context">The SQL context.</param>
         /// <returns>Deferred&lt;IDictionary&lt;TKey, TValue&gt;&gt;.</returns>
         internal Deferred<IDictionary<TKey, TValue>> ExecuteRowKeyedDictionaryResultDeferred<TKey, TValue>(IContext context)
         {
@@ -121,7 +120,7 @@ namespace TranceSql
         /// <summary>
         /// Queues a command and returns a deferred reference to the result.
         /// </summary>
-        /// <param name="sql">The SQL.</param>
+        /// <param name="context">The SQL context.</param>
         /// <param name="columns">The columns.</param>
         /// <returns>Deferred&lt;IDictionary&lt;System.String, System.Object&gt;&gt;.</returns>
         internal Deferred<IDictionary<string, object>> ExecuteColumnKeyedDictionaryResultDeferred(IContext context, string[] columns)
@@ -132,7 +131,7 @@ namespace TranceSql
         /// <summary>
         /// Queues a command without a result.
         /// </summary>
-        /// <param name="sql">The SQL to add.</param>
+        /// <param name="context">The SQL context.</param>
         internal void ExecuteDeferred(IContext context)
         {
             _context.Append(context);

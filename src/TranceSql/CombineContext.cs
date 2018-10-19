@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Text;
-using TranceSql.Language;
 
 namespace TranceSql
 {

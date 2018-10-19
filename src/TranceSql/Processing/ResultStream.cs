@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Text;
-using TranceSql.Language;
 
 namespace TranceSql.Processing
 {
@@ -13,8 +12,8 @@ namespace TranceSql.Processing
     /// <typeparam name="T">Type of the enumeration.</typeparam>
     internal class ResultStream<T> : IEnumerable<T>
     {
-        private IContext _context;
-        private SqlCommandManager _manager;
+        private readonly IContext _context;
+        private readonly SqlCommandManager _manager;
 
         public ResultStream(IContext context, SqlCommandManager manager)
         {
@@ -36,8 +35,8 @@ namespace TranceSql.Processing
     /// <typeparam name="T">Type of the enumeration.</typeparam>
     internal class ResultStreamEnumerator<T> : IEnumerator<T>
     {
-        private bool _isSimpleType;
-        private CreateEntity<T> _readEntity;
+        private readonly bool _isSimpleType;
+        private readonly CreateEntity<T> _readEntity;
         private DbConnection _connection;
         private DbCommand _command;
         private DbDataReader _reader;
@@ -47,7 +46,6 @@ namespace TranceSql.Processing
         {
             _isSimpleType = EntityMapping.IsSimpleType<T>();
             _readEntity = _isSimpleType ? GetSimple : EntityMapping.GetEntityFunc<T>();
-
 
             _connection = manager.ConnectionFactory();
             _connection.ConnectionString = manager.ConnectionString;

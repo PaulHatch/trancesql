@@ -1,7 +1,6 @@
 using System;
-using TranceSql.Language;
 using Xunit;
-using static TranceSql.Language.UsingStatic;
+using static TranceSql.UsingStatic;
 
 namespace TranceSql.Test
 {

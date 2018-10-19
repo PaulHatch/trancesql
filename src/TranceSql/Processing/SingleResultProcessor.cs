@@ -15,8 +15,8 @@ namespace TranceSql.Processing
     /// </summary>
     internal class SingleResultProcessor<TResult> : IResultProcessor
     {
-        private TResult _defaultResult;
-        private IEnumerable<PropertyInfo> _properties;
+        private readonly TResult _defaultResult;
+        private readonly IEnumerable<PropertyInfo> _properties;
         private static readonly MethodInfo readData = typeof(EntityMappingHelper).GetMethod("ReadData");
 
         /// <summary>

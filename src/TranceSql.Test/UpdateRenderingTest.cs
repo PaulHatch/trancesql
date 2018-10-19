@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using TranceSql.Language;
-using static TranceSql.Language.UsingStatic;
+using static TranceSql.UsingStatic;
 using Xunit;
 
 namespace TranceSql.Test

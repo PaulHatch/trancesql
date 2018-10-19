@@ -15,8 +15,8 @@ namespace TranceSql
         /// <summary>
         /// Sets the parameter value to be used for the given object.
         /// </summary>
+        /// <param name="parameter">The parameter to set.</param>
         /// <param name="value">The input value.</param>
-        /// <returns>A value suitable to be used for a parameter</returns>
         void SetValue(DbParameter parameter, object value);
     }
 }
