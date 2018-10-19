@@ -2,30 +2,20 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyName>TranceSql</AssemblyName>
     <PackageId>TranceSql</PackageId>
     <Authors>Paul Hatcherian</Authors>
-    <PackageTags>SQL Database Client</PackageTags>
+    <PackageTags>Trance TranceSQL SQL Database Client</PackageTags>
     <Copyright>2018</Copyright>
-    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Company />
     <PackageLicenseUrl>https://raw.githubusercontent.com/PaulHatch/simpleelastic/master/license.txt</PackageLicenseUrl>
     <PackageProjectUrl>https://www.trancesql.com</PackageProjectUrl>
     <PackageIconUrl>https://www.trancesql.com/logo.png</PackageIconUrl>
     <RepositoryUrl>https://github.com/PaulHatch/simpleelastic</RepositoryUrl>
-    <Description>TranceSQL provides an easy to use, high performance data access interface for SQL databases. It is minimally abstract compared to ORMs such as Entity Framework. When using TranceSQL, queries are
-constructing using a structured API that closely resembles the final SQL query.</Description>
+    <Description>
+      TranceSQL provides an easy to use, high performance data access interface for SQL databases. It is minimally abstract compared to ORMs such as Entity Framework. When using TranceSQL, queries are constructing using a structured API that closely resembles the final SQL query.
+    </Description>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile></DocumentationFile>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="Elements\**" />
-    <EmbeddedResource Remove="Elements\**" />
-    <None Remove="Elements\**" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="System.Data.Common" Version="4.1.0" />

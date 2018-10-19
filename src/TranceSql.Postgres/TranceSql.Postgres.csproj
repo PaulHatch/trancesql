@@ -1,11 +1,22 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-  </PropertyGroup>
+    <PackageId>TranceSql.Postgres</PackageId>
+    <Authors>Paul Hatcherian</Authors>
+    <PackageTags>Trance TranceSQL SQL Database Client Postgres PostgreSQL</PackageTags>
+    <Copyright>2018 Paul Hatcherian</Copyright>
+    <Company />
+    <PackageLicenseUrl>https://raw.githubusercontent.com/PaulHatch/simpleelastic/master/license.txt</PackageLicenseUrl>
+    <PackageProjectUrl>https://www.trancesql.com</PackageProjectUrl>
+    <PackageIconUrl>https://www.trancesql.com/logo.png</PackageIconUrl>
+    <RepositoryUrl>https://github.com/PaulHatch/simpleelastic</RepositoryUrl>
+    <Description>
+      This is the PostgreSQL driver for TranceSQL.
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile></DocumentationFile>
+TranceSQL provides an easy to use, high performance data access interface for SQL databases. It is minimally abstract compared to ORMs such as Entity Framework. When using TranceSQL, queries are constructing using a structured API that closely resembles the final SQL query.
+    </Description>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
