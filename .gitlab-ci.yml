@@ -1,0 +1,59 @@
+---
+
+image: docker:stable-git
+
+variables:
+  DOCKER_HOST: tcp://docker:2375/
+  DOCKER_DRIVER: overlay2
+  LATEST_TAG: $CI_REGISTRY_IMAGE:latest
+  IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+
+services:
+  - docker:dind
+
+before_script:
+  - docker info
+  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+
+stages:
+  - build
+  - test
+  - publish-preview
+  - publish
+
+Build:
+    stage: build
+    script: 
+     - TAG=$(git describe --abbrev=0)
+     - REV=$(git rev-list ${TAG}..HEAD --count)
+     - VERSION="${TAG}-CI${REV}"
+     - docker pull $IMAGE_TAG
+     - docker build --build-arg VERSION=${VERSION} -t $LATEST_TAG -t $IMAGE_TAG -t ${CI_REGISTRY_IMAGE}/build:latest .
+     - docker push $IMAGE_TAG
+
+Unit Test:
+    stage: test
+    script:
+     - docker pull $IMAGE_TAG
+     - mkdir /var/reports
+     - docker run --rm -n testing $IMAGE_TAG --test
+     - docker cp testing:/reports/results.xml /var/reports/results.xml
+    artifacts:
+      reports:
+        junit: /var/reports/results.xml
+
+Publish Preview:
+    stage: publish-preview
+    script:
+      - docker pull $IMAGE_TAG
+      - docker run --rm $IMAGE_TAG --pack $VERSION
+      - docker run --rm $IMAGE_TAG --publish --source $MYGET_URL --api-key $MYGET_KEY
+
+Publish:
+    stage: publish
+    when: manual
+    script:
+      - docker pull $IMAGE_TAG
+      - docker run --rm $IMAGE_TAG --pack $REV
+      - docker run --rm $IMAGE_TAG --publish --source $MYGET_URL --api-key $MYGET_KEY
+    
