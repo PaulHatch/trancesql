@@ -31,16 +31,21 @@ Build:
      - docker build --build-arg VERSION=${VERSION} -t $LATEST_TAG -t $IMAGE_TAG -t ${CI_REGISTRY_IMAGE}/build:latest .
      - docker push $IMAGE_TAG
 
-Unit Test:
+Unit Tests:
     stage: test
     script:
      - docker pull $IMAGE_TAG
      - mkdir /var/reports
-     - docker run --rm -n testing $IMAGE_TAG --test
+     - docker run --rm --name testing $IMAGE_TAG --test
      - docker cp testing:/reports/results.xml /var/reports/results.xml
     artifacts:
       reports:
         junit: /var/reports/results.xml
+
+Integration Tests:
+    stage: test
+    script:
+      - echo Skipped
 
 Publish Preview:
     stage: publish-preview
