@@ -5,10 +5,11 @@ VisualStudioVersion = 15.0.26228.9
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{297E8D6F-CF15-4856-8B95-07CF6E353E9B}"
 	ProjectSection(SolutionItems) = preProject
+		.gitlab-ci.yml = .gitlab-ci.yml
+		build.sh = build.sh
+		Dockerfile = Dockerfile
 		readme.md = readme.md
 	EndProjectSection
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TranceSql.Test", "src\TranceSql.Test\TranceSql.Test.csproj", "{D35EB6D7-AB1C-427E-BB14-8977D1FCDA50}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TranceSql.Postgres", "src\TranceSql.Postgres\TranceSql.Postgres.csproj", "{62837D59-F3E7-4A95-B134-0BFBE56B6B2A}"
 EndProject
@@ -24,7 +25,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TranceSql", "src\TranceSql\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Drivers", "Drivers", "{77F3D7B2-82C3-47BF-BF59-D0DA6E333746}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TranceSql.IntegrationTest", "src\TranceSql.IntegrationTest\TranceSql.IntegrationTest.csproj", "{6D0022A8-0C3D-4172-840C-2AD27DAC1083}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TranceSql.Test", "src\TranceSql.Test\TranceSql.Test.csproj", "{55A220DA-43F1-4184-A939-09F83CCD7841}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TranceSql.IntegrationTest", "src\TranceSql.IntegrationTest\TranceSql.IntegrationTest.csproj", "{622A6BB3-1B2B-4CF0-8751-F98553AFEC5E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,10 +35,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{D35EB6D7-AB1C-427E-BB14-8977D1FCDA50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D35EB6D7-AB1C-427E-BB14-8977D1FCDA50}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D35EB6D7-AB1C-427E-BB14-8977D1FCDA50}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D35EB6D7-AB1C-427E-BB14-8977D1FCDA50}.Release|Any CPU.Build.0 = Release|Any CPU
 		{62837D59-F3E7-4A95-B134-0BFBE56B6B2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{62837D59-F3E7-4A95-B134-0BFBE56B6B2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{62837D59-F3E7-4A95-B134-0BFBE56B6B2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -60,10 +59,14 @@ Global
 		{D5F36F55-3AEE-45B3-8E46-7CC76147B8B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D5F36F55-3AEE-45B3-8E46-7CC76147B8B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D5F36F55-3AEE-45B3-8E46-7CC76147B8B4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6D0022A8-0C3D-4172-840C-2AD27DAC1083}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6D0022A8-0C3D-4172-840C-2AD27DAC1083}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6D0022A8-0C3D-4172-840C-2AD27DAC1083}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6D0022A8-0C3D-4172-840C-2AD27DAC1083}.Release|Any CPU.Build.0 = Release|Any CPU
+		{55A220DA-43F1-4184-A939-09F83CCD7841}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{55A220DA-43F1-4184-A939-09F83CCD7841}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55A220DA-43F1-4184-A939-09F83CCD7841}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{55A220DA-43F1-4184-A939-09F83CCD7841}.Release|Any CPU.Build.0 = Release|Any CPU
+		{622A6BB3-1B2B-4CF0-8751-F98553AFEC5E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{622A6BB3-1B2B-4CF0-8751-F98553AFEC5E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{622A6BB3-1B2B-4CF0-8751-F98553AFEC5E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{622A6BB3-1B2B-4CF0-8751-F98553AFEC5E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
