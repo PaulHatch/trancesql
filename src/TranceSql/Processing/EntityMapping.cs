@@ -225,7 +225,14 @@ namespace TranceSql.Processing
         }
 
         /// <summary>
-        /// Override thew default the constructor resolver which is used to select which
+        /// Sets up a filter which can be used to exclude properties from being set by
+        /// the TranceSQL mapping. This could be used for example to check for a "Ignore"
+        /// attribute. By default no filtering is preformed.
+        /// </summary>
+        public static Func<PropertyInfo, bool> PropertyFilter { get; set; } = p => true;
+
+        /// <summary>
+        /// Overrides the default the constructor resolver which is used to select which
         /// constructor to choose when dynamically creating a result class. By default if
         /// a parameterless constructor exists it will be chosen, if a single constructor
         /// which requires arguments exists it will be chosen, if multiple constructors are
@@ -304,7 +311,7 @@ namespace TranceSql.Processing
 
             // add public properties as bindings for class initialization
             List<MemberBinding> bindings = new List<MemberBinding>();
-            var properties = typeof(T).GetAllProperties().Where(p => p.CanWrite);
+            var properties = typeof(T).GetAllProperties().Where(p => p.CanWrite && PropertyFilter(p));
 
             // filter properties if filter was provided
             if (propertyFilter != null)
