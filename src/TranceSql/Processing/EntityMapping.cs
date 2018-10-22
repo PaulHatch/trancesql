@@ -123,7 +123,7 @@ namespace TranceSql.Processing
         }
 
         /// <summary>
-        /// Registers a CreateEntity delegate used by fluent SQL for mapping entities from a DbDataReader. If this method
+        /// Registers a CreateEntity delegate used by TranceSQL for mapping entities from a DbDataReader. If this method
         /// is called before the entity type is automatically mapped the method provided will be used instead of the default
         /// auto-generated mapper. Callers should review remarks section before utilizing this method.
         /// </summary>
@@ -157,18 +157,18 @@ namespace TranceSql.Processing
         /// Properties to be included. If a property's name is not included in this list, it will not
         /// be bound in the entity created registered for this type.
         /// </param>
-        public static void RegisterFilteredEntityCreator<T>(params string[] properties)
-        {
-            if (IsSimpleType<T>())
-            {
-                throw new ArgumentException("Cannot register entity creator for type '" + typeof(T).Name + "' because it is a simple type which will be cast directly from a result.", "T");
-            }
-
-            if (!TryRegister<T>(() => CreateEntityFunc<T>(properties)))
-            {
-                throw new InvalidOperationException("The delegate library already contains a definition for the type '" + typeof(T).Name + "'. RegisterFilteredEntityCreator must be called before the type has been bound.");
-            }
-        }
+        //internal static void RegisterFilteredEntityCreator<T>(params string[] properties)
+        //{
+        //    if (IsSimpleType<T>())
+        //    {
+        //        throw new ArgumentException("Cannot register entity creator for type '" + typeof(T).Name + "' because it is a simple type which will be cast directly from a result.", "T");
+        //    }
+        //
+        //    if (!TryRegister<T>(() => CreateEntityFunc<T>(properties)))
+        //    {
+        //        throw new InvalidOperationException("The delegate library already contains a definition for the type '" + typeof(T).Name + "'. RegisterFilteredEntityCreator must be called before the type has been bound.");
+        //    }
+        //}
 
         private static bool TryRegister<T>(Func<CreateEntity<T>> createEntity)
         {
@@ -220,8 +220,44 @@ namespace TranceSql.Processing
         internal static CreateEntity<T> GetEntityFunc<T>()
         {
             // Ensure this type is registered
-            TryRegister<T>(() => CreateEntityFunc<T>());            
+            TryRegister<T>(() => CreateEntityFunc<T>());
             return (CreateEntity<T>)_creationDelegates[typeof(T)];
+        }
+
+        /// <summary>
+        /// Override thew default the constructor resolver which is used to select which
+        /// constructor to choose when dynamically creating a result class. By default if
+        /// a parameterless constructor exists it will be chosen, if a single constructor
+        /// which requires arguments exists it will be chosen, if multiple constructors are
+        /// present and all require arguments, an exception will be thrown. To override,
+        /// set this property at the beginning of the application before any mapping 
+        /// operations have been performed.
+        /// </summary>
+        public static Func<Type, ConstructorInfo> ConstructorResolver { get; set; } = DefaultConstructorResolver;
+
+        private static ConstructorInfo DefaultConstructorResolver(Type type)
+        {
+            var constructors = type.GetConstructors();
+
+            if (!constructors.Any())
+            {
+                throw new ArgumentException($"Type {type.Name} does not define a constructor and cannot be created dynamically by TranceSQL's dynamic mapping.");
+            }
+
+            var emptyConstructorInfo = constructors.FirstOrDefault(c => !c.GetParameters().Any());
+            if (emptyConstructorInfo != null)
+            {
+                return emptyConstructorInfo;
+            }
+            else
+            {
+                if (constructors.Count() != 1)
+                {
+                    throw new ArgumentException($"Type {type.Name} constructor is ambiguous, more than one constructor requiring arguments exists. Please provide a type with either a single constructor or a parameterless constructor. Alternatively, the default global {nameof(EntityMapping)}.{nameof(EntityMapping.ConstructorResolver)} method may be replace by one which knowns how to choose the correct constructor for your application.");
+                }
+
+                return constructors.Single();
+            }
         }
 
         /// <summary>
@@ -244,22 +280,15 @@ namespace TranceSql.Processing
 
             // set up constructor
             NewExpression constructorExpression;
-            var constructors = typeof(T).GetConstructors();
+            var constructorInfo = ConstructorResolver(typeof(T));
 
-            // use empty constructor if exists
-            var emptyConstructorInfo = constructors.FirstOrDefault(c => !c.GetParameters().Any());
-            if (emptyConstructorInfo != null)
+            // Empty constructor was provided
+            if (!constructorInfo.GetParameters().Any())
             {
-                constructorExpression = Expression.New(emptyConstructorInfo);
+                constructorExpression = Expression.New(constructorInfo);
             }
             else
             {
-                if (constructors.Count() != 1)
-                {
-                    throw new ArgumentException($"Type {typeof(T).Name} constructor is ambiguous. Please provide a type with either a single constructor or a parameterless constructor.");
-                }
-
-                var constructorInfo = constructors.Single();
                 var constructorArguments = new List<Expression>();
                 foreach (var parameter in constructorInfo.GetParameters())
                 {
