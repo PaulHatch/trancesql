@@ -63,5 +63,5 @@ Publish:
       - REV=$(git rev-list ${TAG}..HEAD --count)
       - VERSION="${TAG}"
       - docker pull $IMAGE_TAG
-      - docker run --rm $IMAGE_TAG --publish $VERSION --source $MYGET_URL --api-key $MYGET_KEY
+      - docker run --rm $IMAGE_TAG --publish $VERSION --api-key $NUGET_KEY
     
