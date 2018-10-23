@@ -9,36 +9,8 @@ using static TranceSql.UsingStatic;
 
 namespace TranceSql.IntegrationTest
 {
-    public class BasicCrud : IDisposable
+    public class BasicCrud : BaseDatabaseTest
     {
-        private class Sample
-        {
-            public int ID { get; set; }
-            public string Column1 { get; set; }
-        }
-
-        public BasicCrud()
-        {
-            if (File.Exists("test.db"))
-            {
-                File.Delete("test.db");
-            }
-            _database = new SqliteDatabase("Data Source=test.db");
-            new Command(_database)
-            {
-                new CreateTable("sample")
-                {
-                    Columns =
-                    {
-                        { "id", SqlType.From<int>(), new PrimaryKeyConstraint() },
-                        { "column1", SqlType.From<string>() }
-                    }
-                }
-            }.Execute();
-        }
-
-        private readonly Database _database;
-
         [Fact]
         public async Task UniqueConstraint()
         {
@@ -338,14 +310,6 @@ namespace TranceSql.IntegrationTest
 
             Assert.Equal(count, count1);
             Assert.Equal(count, count2);
-        }
-
-        public void Dispose()
-        {
-            if (File.Exists("test.db"))
-            {
-                File.Delete("test.db");
-            }
         }
     }
 }

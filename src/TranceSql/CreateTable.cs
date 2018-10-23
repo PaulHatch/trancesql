@@ -92,10 +92,20 @@ namespace TranceSql
         /// class type using public properties which support both get and set as columns.
         /// </summary>
         /// <typeparam name="T">The class type to model</typeparam>
+        /// <param name="name">The table name, if none is provided the class name will be used instead.</param>
+        /// <returns></returns>
+        public static CreateTable From<T>(string name)
+            where T : class => From<T>(null, name);
+
+        /// <summary>
+        /// Generates a <see cref="CreateTable" /> statement by reflecting over the specified
+        /// class type using public properties which support both get and set as columns.
+        /// </summary>
+        /// <typeparam name="T">The class type to model</typeparam>
         /// <param name="schema">The schema for the table.</param>
         /// <param name="name">The table name, if none is provided the class name will be used instead.</param>
         /// <returns></returns>
-        public static CreateTable From<T>(string schema = null, string name = null)
+        public static CreateTable From<T>(string schema, string name)
             where T : class
         {
             var type = typeof(T);
