@@ -53,8 +53,9 @@ Publish Preview:
       - REV=$(git rev-list ${TAG}..HEAD --count)
       - VERSION="${TAG}-CI${REV}"
       - RELEASE_NOTES="$(git tag -l --format='%(contents)' ${TAG})"
+      - echo "$RELEASE_NOTES"
       - docker pull $IMAGE_TAG
-      - docker run --rm $IMAGE_TAG --publish $VERSION $RELEASE_NOTES --source $MYGET_URL --api-key $MYGET_KEY
+      - docker run --rm $IMAGE_TAG --publish $VERSION "$RELEASE_NOTES" --source $MYGET_URL --api-key $MYGET_KEY
 
 Publish:
     stage: publish

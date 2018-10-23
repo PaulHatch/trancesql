@@ -20,7 +20,6 @@ ARG VERSION
 WORKDIR /sln 
 
 COPY . .
-
 RUN dotnet build /p:Version=$VERSION -c Release --no-restore 
 
 ENTRYPOINT ["sh", "/sln/build.sh"]
