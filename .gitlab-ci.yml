@@ -52,8 +52,9 @@ Publish Preview:
       - TAG=$(git describe --abbrev=0)
       - REV=$(git rev-list ${TAG}..HEAD --count)
       - VERSION="${TAG}-CI${REV}"
+      - RELEASE_NOTES="$(git tag -l --format='%(contents)' ${TAG})"
       - docker pull $IMAGE_TAG
-      - docker run --rm $IMAGE_TAG --publish $VERSION --source $MYGET_URL --api-key $MYGET_KEY
+      - docker run --rm $IMAGE_TAG --publish $VERSION $RELEASE_NOTES --source $MYGET_URL --api-key $MYGET_KEY
 
 Publish:
     stage: publish
@@ -62,6 +63,7 @@ Publish:
       - TAG=$(git describe --abbrev=0)
       - REV=$(git rev-list ${TAG}..HEAD --count)
       - VERSION="${TAG}"
+      - RELEASE_NOTES="$(git tag -l --format='%(contents)' ${TAG})"
       - docker pull $IMAGE_TAG
-      - docker run --rm $IMAGE_TAG --publish $VERSION --source $NUGET_URL --api-key $NUGET_KEY
+      - docker run --rm $IMAGE_TAG --publish $VERSION $RELEASE_NOTES --source $NUGET_URL --api-key $NUGET_KEY
     
