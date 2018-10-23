@@ -34,7 +34,6 @@ Unit Tests:
     stage: test
     script:
      - docker pull $IMAGE_TAG
-     - mkdir /var/reports
      - docker run --name testing $IMAGE_TAG --test
      - docker cp testing:/sln/results.xml .
     artifacts:
