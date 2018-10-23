@@ -5,7 +5,7 @@ case "$1" in
 	shift
 	echo "Creating NuGet Packages for version ${1}"
 	echo $2
-	dotnet pack /p:Version=${1} "/p:PackageReleaseNodes=${2}" -c Release --no-build --no-restore -o /sln/artifacts
+	dotnet pack /p:Version=${1} "/p:PackageReleaseNotes=${2}" -c Release --no-build --no-restore -o /sln/artifacts
     shift
 	shift
 	echo Publishing NuGet packages
