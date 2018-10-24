@@ -14,4 +14,4 @@ services:
         image: "microsoft/mssql-server-linux"
         environment:
             SA_PASSWORD: "integration"
-            ACCEPT_EULA: "Y"
+            ACCEPT_EULA: "Y" 
