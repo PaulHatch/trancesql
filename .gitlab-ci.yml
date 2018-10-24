@@ -43,10 +43,8 @@ Unit Tests:
 SQL Server Integration Tests:
     stage: test
     script:
-      - apk --no-cache add curl
-      - curl -L "https://github.com/docker/compose/releases/download/1.22.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-      - chmod +x /usr/local/bin/docker-compose
-      - export PATH="$PATH:/usr/local/bin"
+      - apk add py-pip
+      - pip install docker-compose==1.22.0
       - docker-compose --version
       - docker-compose up --abort-on-container-exit -f docker-compose.sql-server.yml -e "IMAGE=${IMAGE_TAG}" --exit-code-from test
       - docker cp test:/sln/results.xml .
