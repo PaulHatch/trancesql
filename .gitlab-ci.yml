@@ -46,7 +46,8 @@ SQL Server Integration Tests:
       - apk add py-pip
       - pip install docker-compose==1.22.0
       - docker-compose --version
-      - docker-compose up --abort-on-container-exit -f docker-compose.sql-server.yml -e "IMAGE=${IMAGE_TAG}" --exit-code-from test
+      - docker pull $IMAGE_TAG
+      - docker-compose -f docker-compose.sql-server.yml run -e "IMAGE=${IMAGE_TAG}" test
       - docker cp test:/sln/results.xml .
     artifacts:
       reports:

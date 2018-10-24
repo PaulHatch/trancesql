@@ -3,8 +3,8 @@ services:
     test:
         build: "${IMAGE}"
         environment:
-          - CONNECTION_STRING: "Server=db;User ID: TestUser;Password=integration"
-          - DIALECT: SqlServer
+          - CONNECTION_STRING="Server=db;User ID=TestUser;Password=integration"
+          - DIALECT="SqlServer"
         depends_on:
           - db
         command: --integration
@@ -14,4 +14,4 @@ services:
         image: "microsoft/mssql-server-linux"
         environment:
             SA_PASSWORD: "integration"
-            ACCEPT_EULA: "Y" 
+            ACCEPT_EULA: "Y"

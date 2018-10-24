@@ -17,6 +17,7 @@ case "$1" in
 	export PATH="$PATH:$HOME/.dotnet/tools"
 	dotnet test -c Release --no-build --no-restore --logger:"trx;LogFileName=results.trx" -r /sln --filter type=unit /sln/src/TranceSql.Test/TranceSql.Test.csproj
 	trx2junit /sln/*.trx
+	;;
   "--integration")
 	echo Running Integration Tests
 	export PATH="$PATH:$HOME/.dotnet/tools"

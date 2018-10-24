@@ -22,6 +22,9 @@ WORKDIR /sln
 COPY . .
 RUN dotnet build /p:Version=$VERSION -c Release --no-restore 
 
+FROM build as run
+WORKDIR /sln
+
 ENTRYPOINT ["sh", "/sln/build.sh"]
 
 
