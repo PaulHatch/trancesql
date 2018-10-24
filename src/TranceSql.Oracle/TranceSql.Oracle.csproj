@@ -10,7 +10,8 @@
     <PackageLicenseUrl>https://raw.githubusercontent.com/PaulHatch/simpleelastic/master/license.txt</PackageLicenseUrl>
     <PackageProjectUrl>https://www.trancesql.com</PackageProjectUrl>
     <PackageIconUrl>https://www.trancesql.com/logo.png</PackageIconUrl>
-    <RepositoryUrl>https://github.com/PaulHatch/simpleelastic</RepositoryUrl>
+    <RepositoryUrl>https://github.com/PaulHatch/trancesql.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
     <Description>
       This is the Oracle driver for TranceSQL.
 

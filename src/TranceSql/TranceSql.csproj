@@ -10,7 +10,8 @@
     <PackageLicenseUrl>https://raw.githubusercontent.com/PaulHatch/simpleelastic/master/license.txt</PackageLicenseUrl>
     <PackageProjectUrl>https://www.trancesql.com</PackageProjectUrl>
     <PackageIconUrl>https://www.trancesql.com/logo.png</PackageIconUrl>
-    <RepositoryUrl>https://github.com/PaulHatch/simpleelastic</RepositoryUrl>
+    <RepositoryUrl>https://github.com/PaulHatch/trancesql.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
     <Description>
       TranceSQL provides an easy to use, high performance data access interface for SQL databases. It is minimally abstract compared to ORMs such as Entity Framework. When using TranceSQL, queries are constructing using a structured API that closely resembles the final SQL query.
     </Description>
