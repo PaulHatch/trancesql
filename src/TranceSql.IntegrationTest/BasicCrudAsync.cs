@@ -9,10 +9,10 @@ using static TranceSql.UsingStatic;
 
 namespace TranceSql.IntegrationTest
 {
-    public class BasicCrud : BaseDatabaseTest
+    public class BasicCrudAsync : BaseDatabaseTest
     {
         [Fact]
-        public void UniqueConstraint()
+        public async Task UniqueConstraint()
         {
             // Create a table with a unique constraint and insert duplicates in to blow it up
             var sut = new Command(_database)
@@ -28,15 +28,15 @@ namespace TranceSql.IntegrationTest
                 new Insert { Into = "unique_table", Columns = "column1", Values = { 1 } }
             };
 
-            var exception = Assert.ThrowsAny<DbException>(() => sut.Execute());
+            var exception = await Assert.ThrowsAnyAsync<DbException>(() => sut.ExecuteAsync());
             Assert.Contains("unique", exception.Message, StringComparison.InvariantCultureIgnoreCase);
         }
 
         [Fact]
-        public void CheckConstraintInline()
+        public async Task CheckConstraintInline()
         {
             // Create a table with a check constraint and insert one safe value
-            new Command(_database)
+            await new Command(_database)
             {
                 new CreateTable("check_table")
                 {
@@ -46,7 +46,7 @@ namespace TranceSql.IntegrationTest
                     }
                 },
                 new Insert { Into = "check_table", Columns = "column", Values = { 10 } }
-            }.Execute();
+            }.ExecuteAsync();
 
             // now add a value which violates the check constraint
             var sut = new Command(_database)
@@ -54,15 +54,15 @@ namespace TranceSql.IntegrationTest
                 new Insert { Into = "check_table", Columns = "column", Values = { 20 } }
             };
 
-            var exception = Assert.ThrowsAny<DbException>(() => sut.Execute());
+            var exception = await Assert.ThrowsAnyAsync<DbException>(() => sut.ExecuteAsync());
             Assert.Contains("check", exception.Message, StringComparison.InvariantCultureIgnoreCase);
         }
 
         [Fact]
-        public void CheckConstraint()
+        public async Task CheckConstraint()
         {
             // Create a table with a check constraint and insert one safe value
-            new Command(_database)
+            await new Command(_database)
             {
                 new CreateTable("check_table")
                 {
@@ -76,7 +76,7 @@ namespace TranceSql.IntegrationTest
                     }
                 },
                 new Insert { Into = "check_table", Columns = "column", Values = { 10 } }
-            }.Execute();
+            }.ExecuteAsync();
 
             // now add a value which violates the check constraint
             var sut = new Command(_database)
@@ -84,15 +84,15 @@ namespace TranceSql.IntegrationTest
                 new Insert { Into = "check_table", Columns = "column", Values = { 20 } }
             };
 
-            var exception = Assert.ThrowsAny<DbException>(() => sut.Execute());
+            var exception = await Assert.ThrowsAnyAsync<DbException>(() => sut.ExecuteAsync());
             Assert.Contains("check", exception.Message, StringComparison.InvariantCultureIgnoreCase);
         }
 
         [Fact]
-        public void NamedCheckConstraint()
+        public async Task NamedCheckConstraint()
         {
             // Create a table with a check constraint and insert one safe value
-            new Command(_database)
+            await new Command(_database)
             {
                 new CreateTable("check_table")
                 {
@@ -106,7 +106,7 @@ namespace TranceSql.IntegrationTest
                     }
                 },
                 new Insert { Into = "check_table", Columns = "column", Values = { 10 } }
-            }.Execute();
+            }.ExecuteAsync();
 
             // now add a value which violates the check constraint
             var sut = new Command(_database)
@@ -114,15 +114,15 @@ namespace TranceSql.IntegrationTest
                 new Insert { Into = "check_table", Columns = "column", Values = { 20 } }
             };
 
-            var exception = Assert.ThrowsAny<DbException>(() => sut.Execute());
+            var exception = await Assert.ThrowsAnyAsync<DbException>(() => sut.ExecuteAsync());
             Assert.Contains("check", exception.Message, StringComparison.InvariantCultureIgnoreCase);
         }
 
         [Fact]
-        public void ForeignKeyConstraint()
+        public async Task ForeignKeyConstraint()
         {
             // Create tables with a foreign constraint
-            new Command(_database)
+            await new Command(_database)
             {
                 new CreateTable("first_table")
                 {
@@ -142,22 +142,22 @@ namespace TranceSql.IntegrationTest
                 },
                 new Insert { Into = "second_table", Columns = "id", Values = { 55 } },
                 new Insert { Into = "first_table", Columns = { "id", "second_table_id" }, Values = { 5, 55 } }
-            }.Execute();
+            }.ExecuteAsync();
 
-            var firstCount = new Command(_database)
+            var firstCount = await new Command(_database)
             {
                 new Select { Columns = { new Function("COUNT", new Column("*")) }, From = "first_table" }
-            }.Fetch<int>();
+            }.FetchAsync<int>();
 
-            var deletedCount = new Command(_database)
+            var deletedCount = await new Command(_database)
             {
                 new Delete { From = "second_table" }
-            }.Execute();
+            }.ExecuteAsync();
 
-            var secondCount = new Command(_database)
+            var secondCount = await new Command(_database)
             {
                 new Select { Columns = { new Function("COUNT", new Column("*")) }, From = "first_table" }
-            }.Fetch<int>();
+            }.FetchAsync<int>();
 
             Assert.Equal(1, firstCount);
             Assert.Equal(1, deletedCount);
@@ -168,12 +168,12 @@ namespace TranceSql.IntegrationTest
                 new Insert { Into = "first_table", Columns = { "id", "second_table_id" }, Values = { 5, 55 } }
             };
 
-            var exception = Assert.ThrowsAny<DbException>(() => sut.Execute());
+            var exception = await Assert.ThrowsAnyAsync<DbException>(() => sut.ExecuteAsync());
             Assert.Contains("foreign", exception.Message, StringComparison.InvariantCultureIgnoreCase);
         }
 
         [Fact]
-        public void DefaultValue()
+        public async Task DefaultValue()
         {
             // Ensure the default value is populated in a new row
             var sut = new Command(_database)
@@ -190,16 +190,16 @@ namespace TranceSql.IntegrationTest
                 new Select { Columns = "column2", From = "default_table", Where = new Column("column1") == new Value(1) }
             };
 
-            var result = sut.Fetch<string>();
+            var result = await sut.FetchAsync<string>();
 
             Assert.Equal("hello world", result);
         }
 
 
         [Fact]
-        public void BasicTest()
+        public async Task BasicTest()
         {
-            var count = new Command(_database)
+            var count = await new Command(_database)
             {
                 new Insert
                 {
@@ -207,11 +207,11 @@ namespace TranceSql.IntegrationTest
                     Columns = { "id", "column1" },
                     Values = { 1, "hello world" }
                 }
-            }.Execute();
+            }.ExecuteAsync();
 
             Assert.Equal(1, count);
 
-            var sample = new Command(_database)
+            var sample = await new Command(_database)
             {
                 new Select
                 {
@@ -219,11 +219,11 @@ namespace TranceSql.IntegrationTest
                     Columns = new Column("column1"),
                     Where = Condition.Equal("id", 1)
                 }
-            }.Fetch<Sample>();
+            }.FetchAsync<Sample>();
 
             Assert.Equal("hello world", sample.Column1);
 
-            count = new Command(_database)
+            count = await new Command(_database)
             {
                 new Update
                 {
@@ -231,11 +231,11 @@ namespace TranceSql.IntegrationTest
                     Set = { { "column1", "hallo welt" } },
                     Where = Condition.Equal("id", 1)
                 }
-            }.Execute();
+            }.ExecuteAsync();
 
             Assert.Equal(1, count);
 
-            sample = new Command(_database)
+            sample = await new Command(_database)
             {
                 new Select
                 {
@@ -243,22 +243,22 @@ namespace TranceSql.IntegrationTest
                     Columns = new Column("column1"),
                     Where = Condition.Equal("id", 1)
                 }
-            }.Fetch<Sample>();
+            }.FetchAsync<Sample>();
 
             Assert.Equal("hallo welt", sample.Column1);
 
-            count = new Command(_database)
+            count = await new Command(_database)
             {
                 new Delete
                 {
                     From = "sample",
                     Where = Condition.Equal("id", 1)
                 }
-            }.Execute();
+            }.ExecuteAsync();
 
             Assert.Equal(1, count);
 
-            sample = new Command(_database)
+            sample = await new Command(_database)
             {
                 new Select
                 {
@@ -266,7 +266,7 @@ namespace TranceSql.IntegrationTest
                     Columns = new Column("column1"),
                     Where = Condition.Equal("id", 1)
                 }
-            }.Fetch<Sample>();
+            }.FetchAsync<Sample>();
 
             Assert.Null(sample);
         }

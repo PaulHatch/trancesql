@@ -40,10 +40,14 @@ Unit Tests:
       reports:
         junit: results.xml
 
-.Integration Tests:
+SQL Server Integration Tests:
     stage: test
     script:
-      - echo Skipped
+      - docker-compose run -f docker-compose.sql-server.yml -e "IMAGE=${IMAGE_TAG}"
+      - docker cp testing:/sln/results.xml .
+    artifacts:
+      reports:
+        junit: results.xml
 
 Publish Preview:
     stage: publish-preview

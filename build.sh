@@ -17,9 +17,14 @@ case "$1" in
 	export PATH="$PATH:$HOME/.dotnet/tools"
 	dotnet test -c Release --no-build --no-restore --logger:"trx;LogFileName=results.trx" -r /sln --filter type=unit /sln/src/TranceSql.Test/TranceSql.Test.csproj
 	trx2junit /sln/*.trx
+  "--integration")
+	echo Running Integration Tests
+	export PATH="$PATH:$HOME/.dotnet/tools"
+	dotnet test -c Release --no-build --no-restore --logger:"trx;LogFileName=results.trx" -r /sln --filter type=integration /sln/src/TranceSql.IntegrationTest/TranceSql.IntegrationTest.csproj
+	trx2junit /sln/*.trx
 	;;
   *)
-    echo Invalid command, use '--build' or '--publish'
+    echo Invalid command, use '--test', '--integration' or '--publish'
     exit 1
     ;;
 esac
