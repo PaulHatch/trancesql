@@ -43,7 +43,7 @@ Unit Tests:
 SQL Server Integration Tests:
     stage: test
     script:
-      - docker-compose run -f docker-compose.sql-server.yml -e "IMAGE=${IMAGE_TAG}"
+      - docker-compose run -f docker-compose.sql-server.yml -e "IMAGE=${IMAGE_TAG}" test
       - docker cp testing:/sln/results.xml .
     artifacts:
       reports:
