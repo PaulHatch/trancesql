@@ -4,7 +4,7 @@ services:
         image: ${IMAGE_TAG}
         environment:
           - CONNECTION_STRING="Host=db;User ID=TestUser;Password=integration"
-          - DIALECT="postgres"
+          - DIALECT="Postgres"
         depends_on:
           - db
         command: --integration

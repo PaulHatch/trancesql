@@ -41,6 +41,8 @@ namespace TranceSql.IntegrationTest
                 _dialect = Dialect.Sqlite;
             }
 
+            Console.WriteLine($"Running {_dbName} on {dialect}");
+
             switch (_dialect)
             {
                 case Dialect.MySql:
