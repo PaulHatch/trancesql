@@ -2,6 +2,10 @@
 
 # This file is run directly on the build host
 
+TAG=$(git describe --abbrev=0)
+REV=$(git rev-list ${TAG}..HEAD --count)
+ASSEMBLY_VERSION="${TAG}.${REV}"
+
 case "$1" in
   "--integration")
 	shift
