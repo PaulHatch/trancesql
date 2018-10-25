@@ -12,4 +12,8 @@ case "$1" in
 	IMAGE=${1} docker-compose -f docker-compose.${2}.yml run test
 	docker cp $(docker ps -f label=test -a -q):/sln/results.xml .
 	;;
+	*)
+  echo Invalid command, use '--build', '--test', '--integration' or '--publish'
+    exit 1
+    ;;
 esac
