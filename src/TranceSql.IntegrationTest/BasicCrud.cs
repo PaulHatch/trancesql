@@ -12,12 +12,6 @@ namespace TranceSql.IntegrationTest
     public class BasicCrud : BaseDatabaseTest
     {
         [Fact]
-        public void IntentionalFailure()
-        {
-            Assert.False(true);
-        }
-
-        [Fact]
         public void UniqueConstraint()
         {
             // Create a table with a unique constraint and insert duplicates in to blow it up

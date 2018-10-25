@@ -10,13 +10,13 @@ namespace TranceSql.MySql
     /// <summary>
     /// Creates command parameters for a MySql database reference.
     /// </summary>
-    public class PostgresDatabase : Database
+    public class MySqlDatabase : Database
     {
         /// <summary>
         /// Creates command parameters for a MySql database reference.
         /// </summary>
         /// <param name="connectionString">The connection string.</param>
-        public PostgresDatabase(string connectionString)
+        public MySqlDatabase(string connectionString)
             : base(new SqlCommandManager(connectionString, GetConnection, new DefaultValueExtractor()), new MySqlDialect())
         {
         }
@@ -26,7 +26,7 @@ namespace TranceSql.MySql
         /// </summary>
         /// <param name="connectionString">The connection string.</param>
         /// <param name="extractor">The extractor.</param>
-        public PostgresDatabase(string connectionString, IParameterValueExtractor extractor)
+        public MySqlDatabase(string connectionString, IParameterValueExtractor extractor)
             : base(new SqlCommandManager(connectionString, GetConnection, extractor), new MySqlDialect())
         {
         }

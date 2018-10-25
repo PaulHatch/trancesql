@@ -44,10 +44,16 @@ namespace TranceSql.IntegrationTest
             switch (_dialect)
             {
                 case Dialect.MySql:
+                    new Command(new MySqlDatabase(connectionString)) { new CreateDatabase(_dbName) }.Execute();
+                    _database = new MySqlDatabase(connectionString + $";Database={_dbName}");
                     break;
                 case Dialect.Oracle:
+                    new Command(new OracleDatabase(connectionString)) { new CreateDatabase(_dbName) }.Execute();
+                    _database = new OracleDatabase(connectionString + $";Database={_dbName}");
                     break;
                 case Dialect.Postgres:
+                    new Command(new PostgresDatabase(connectionString)) { new CreateDatabase(_dbName) }.Execute();
+                    _database = new PostgresDatabase(connectionString + $";Database={_dbName}");
                     break;
                 case Dialect.SqlServer:
                     new Command(new SqlServerDatabase(connectionString)) { new CreateDatabase(_dbName) }.Execute();

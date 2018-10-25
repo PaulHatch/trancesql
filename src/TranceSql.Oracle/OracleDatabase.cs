@@ -10,13 +10,13 @@ namespace TranceSql.Oracle
     /// <summary>
     /// Creates command parameters for a Oracle database reference.
     /// </summary>
-    public class PostgresDatabase : Database
+    public class OracleDatabase : Database
     {
         /// <summary>
         /// Creates command parameters for a Oracle database reference.
         /// </summary>
         /// <param name="connectionString">The connection string.</param>
-        public PostgresDatabase(string connectionString)
+        public OracleDatabase(string connectionString)
             : base(new SqlCommandManager(connectionString, GetConnection, new DefaultValueExtractor()), new OracleDialect())
         {
         }
@@ -26,7 +26,7 @@ namespace TranceSql.Oracle
         /// </summary>
         /// <param name="connectionString">The connection string.</param>
         /// <param name="extractor">The extractor.</param>
-        public PostgresDatabase(string connectionString, IParameterValueExtractor extractor)
+        public OracleDatabase(string connectionString, IParameterValueExtractor extractor)
             : base(new SqlCommandManager(connectionString, GetConnection, extractor), new OracleDialect())
         {
         }
