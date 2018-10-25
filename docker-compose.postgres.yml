@@ -3,8 +3,8 @@ services:
     test:
         image: ${IMAGE_TAG}
         environment:
-          - CONNECTION_STRING="Host=db;User ID=TestUser;Password=integration"
-          - DIALECT="Postgres"
+          - CONNECTION_STRING=Host=db;User ID=TestUser;Password=integration
+          - DIALECT=Postgres
         depends_on:
           - db
         command: --integration

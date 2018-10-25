@@ -3,7 +3,7 @@ services:
     test:
         image: ${IMAGE_TAG}
         environment:
-          - DIALECT="Sqlite"
+          - DIALECT=Sqlite
         command: --integration
         labels:
           - test

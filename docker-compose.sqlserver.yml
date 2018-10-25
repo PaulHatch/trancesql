@@ -3,8 +3,8 @@ services:
     test:
         image: ${IMAGE_TAG}
         environment:
-          - CONNECTION_STRING="Server=db;User ID=sa;Password=integration"
-          - DIALECT="SqlServer"
+          - CONNECTION_STRING=Server=db;User ID=sa;Password=integration
+          - DIALECT=SqlServer
         depends_on:
           - db
         command: --integration

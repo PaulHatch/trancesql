@@ -38,10 +38,9 @@ namespace TranceSql.IntegrationTest
             var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
             if (!Enum.TryParse<Dialect>(dialect, true, out _dialect))
             {
+                Console.WriteLine($"Warning, could not resolve DIALECT={dialect} to known dialect.");
                 _dialect = Dialect.Sqlite;
             }
-
-            Console.WriteLine($"Running {_dbName} on {dialect}");
 
             switch (_dialect)
             {
@@ -67,6 +66,8 @@ namespace TranceSql.IntegrationTest
                     _database = new SqliteDatabase($"Data Source={_dbName }.db");
                     break;
             }
+
+            Console.WriteLine($"Running {_dbName} on {dialect} ({_dialect})");
 
             new Command(_database)
             {
