@@ -12,7 +12,10 @@ case "$1" in
 	apk add py-pip
 	pip install docker-compose==1.22.0
 	IMAGE_TAG=${1} docker-compose -f docker-compose.${2}.yml run test
-	docker cp $(docker ps -f label=test -a -l -q):/sln/results.xml .
+	CONTAINER_HASH=$(docker ps -f label=test -alq)
+	EXIT_CODE=$(docker inspect ${CONTAINER_HASH} --format='{{.State.ExitCode}}')
+	docker cp $CONTAINER_HASH:/sln/results.xml .
+	exit $EXIT_CODE
 	;;
 	*)
   echo Invalid command, use '--build', '--test', '--integration' or '--publish'

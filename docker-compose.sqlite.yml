@@ -7,5 +7,3 @@ services:
         command: --integration
         labels:
           - test
-        links:
-          - db

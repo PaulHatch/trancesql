@@ -148,15 +148,15 @@ namespace TranceSql.Processing
             }
         }
 
-        /// <summary>
-        /// Initializes the entity creator for the specified type using a filtered list of properties. This setting is
-        /// applied globally.
-        /// </summary>
-        /// <typeparam name="T">Entity type to register.</typeparam>
-        /// <param name="properties">
-        /// Properties to be included. If a property's name is not included in this list, it will not
-        /// be bound in the entity created registered for this type.
-        /// </param>
+        //// <summary>
+        //// Initializes the entity creator for the specified type using a filtered list of properties. This setting is
+        //// applied globally.
+        //// </summary>
+        //// <typeparam name="T">Entity type to register.</typeparam>
+        //// <param name="properties">
+        //// Properties to be included. If a property's name is not included in this list, it will not
+        //// be bound in the entity created registered for this type.
+        //// </param>
         //internal static void RegisterFilteredEntityCreator<T>(params string[] properties)
         //{
         //    if (IsSimpleType<T>())
