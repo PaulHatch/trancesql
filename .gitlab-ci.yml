@@ -42,28 +42,28 @@ Unit Tests:
 
 SQL Server Integration Tests:
     stage: test
-    script: sh init.sh --integration $IMAGE_TAG sqlserver
+    script: ./init.sh --integration $IMAGE_TAG sqlserver
     artifacts:
       reports:
         junit: results.xml
 
 SQLite Integration Tests:
     stage: test
-    script: sh init.sh --integration $IMAGE_TAG sqlite
+    script: ./init.sh --integration $IMAGE_TAG sqlite
     artifacts:
       reports:
         junit: results.xml
 
 Postgres Integration Tests:
     stage: test
-    script: sh init.sh --integration $IMAGE_TAG postgres
+    script: ./init.sh --integration $IMAGE_TAG postgres
     artifacts:
       reports:
         junit: results.xml
 
 MySQL Integration Tests:
     stage: test
-    script: sh init.sh --integration $IMAGE_TAG mysql
+    script: ./init.sh --integration $IMAGE_TAG mysql
     artifacts:
       reports:
         junit: results.xml
