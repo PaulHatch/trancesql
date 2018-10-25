@@ -7,8 +7,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.gitlab-ci.yml = .gitlab-ci.yml
 		build.sh = build.sh
-		docker-compose.sql-server.yml = docker-compose.sql-server.yml
+		docker-compose.mysql.yml = docker-compose.mysql.yml
+		docker-compose.oracle.yml = docker-compose.oracle.yml
+		docker-compose.postgres.yml = docker-compose.postgres.yml
+		docker-compose.sqlite.yml = docker-compose.sqlite.yml
+		docker-compose.sqlserver.yml = docker-compose.sqlserver.yml
 		Dockerfile = Dockerfile
+		init.sh = init.sh
 		readme.md = readme.md
 	EndProjectSection
 EndProject

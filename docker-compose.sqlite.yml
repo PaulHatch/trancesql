@@ -1,0 +1,11 @@
+version: "3"
+services:
+    test:
+        image: ${IMAGE_TAG}
+        environment:
+          - DIALECT="Sqlite"
+        command: --integration
+        labels:
+          - test
+        links:
+          - db

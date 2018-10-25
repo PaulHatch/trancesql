@@ -5,8 +5,9 @@ image: docker:stable-git
 variables:
   DOCKER_HOST: tcp://docker:2375/
   DOCKER_DRIVER: overlay2
-  LATEST_TAG: $CI_REGISTRY_IMAGE:latest
-  IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+  IMAGE_NAME: trancesql/build
+  LATEST_TAG: $IMAGE_NAME:latest
+  IMAGE_TAG: $IMAGE_NAME:$CI_COMMIT_REF_SLUG
 
 services:
   - docker:dind
@@ -42,16 +43,32 @@ Unit Tests:
 
 SQL Server Integration Tests:
     stage: test
-    script:
-      - apk add py-pip
-      - pip install docker-compose==1.22.0
-      - docker-compose --version
-      - docker pull $IMAGE_TAG
-      - docker-compose -f docker-compose.sql-server.yml run -e "IMAGE=${IMAGE_TAG}" test
-      - docker cp test:/sln/results.xml .
+    script: sh init.sh --Integration $IMAGE_TAG sqlserver
     artifacts:
       reports:
         junit: results.xml
+
+SQLite Integration Tests:
+    stage: test
+    script: sh init.sh --Integration $IMAGE_TAG sqlite
+    artifacts:
+      reports:
+        junit: results.xml
+
+Postgres Integration Tests:
+    stage: test
+    script: sh init.sh --Integration $IMAGE_TAG postgres
+    artifacts:
+      reports:
+        junit: results.xml
+
+MySQL Integration Tests:
+    stage: test
+    script: sh init.sh --Integration $IMAGE_TAG mysql
+    artifacts:
+      reports:
+        junit: results.xml
+
 
 Publish Preview:
     stage: publish-preview

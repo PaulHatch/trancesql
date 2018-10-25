@@ -1,0 +1,18 @@
+version: "3"
+services:
+    test:
+        image: ${IMAGE_TAG}
+        environment:
+          - CONNECTION_STRING="Host=db;User ID=TestUser;Password=integration"
+          - DIALECT="postgres"
+        depends_on:
+          - db
+        command: --integration
+        labels:
+          - test
+        links:
+          - db
+    db:
+        image: "postgres"
+        environment:
+          - SA_PASSWORD="integration"

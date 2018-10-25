@@ -1,0 +1,19 @@
+version: "3"
+services:
+    test:
+        image: ${IMAGE_TAG}
+        environment:
+          - CONNECTION_STRING="Server=db;Uid=sa;Pwd=integration"
+          - DIALECT="MySql"
+        depends_on:
+          - db
+        command: --integration
+        labels:
+          - test
+        links:
+          - db
+    db:
+        image: "mysql"
+        command: --default-authentication-plugin=mysql_native_password
+        environment:
+          - MYSQL_ROOT_PASSWORD="integration"
