@@ -16,6 +16,7 @@ before_script:
   - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   - chmod +x init.sh
   - chmod +x semver.sh
+  - apk add --no-cache bash
 
 stages:
   - build
@@ -25,7 +26,7 @@ stages:
 
 Build:
     stage: build
-    script: sh init.sh --build
+    script: bash init.sh --build
 
 Unit Tests:
     stage: test
@@ -40,7 +41,7 @@ Unit Tests:
 SQL Server Integration Tests:
     stage: test
     script: 
-      - sh init.sh --integration $IMAGE_TAG sqlserver
+      - bash init.sh --integration $IMAGE_TAG sqlserver
       - exit $($?)
     artifacts:
       reports:
@@ -49,7 +50,7 @@ SQL Server Integration Tests:
 SQLite Integration Tests:
     stage: test
     script:
-      - sh init.sh --integration $IMAGE_TAG sqlite
+      - bash init.sh --integration $IMAGE_TAG sqlite
       - exit $($?)
     artifacts:
       reports:
@@ -58,7 +59,7 @@ SQLite Integration Tests:
 Postgres Integration Tests:
     stage: test
     script: 
-      - sh init.sh --integration $IMAGE_TAG postgres
+      - bash init.sh --integration $IMAGE_TAG postgres
       - exit $($?)
     artifacts:
       reports:
@@ -67,7 +68,7 @@ Postgres Integration Tests:
 MySQL Integration Tests:
     stage: test
     script: 
-      - sh init.sh --integration $IMAGE_TAG mysql
+      - bash init.sh --integration $IMAGE_TAG mysql
       - exit $($?)
     artifacts:
       reports:
@@ -76,9 +77,9 @@ MySQL Integration Tests:
 
 Publish Preview:
     stage: publish-preview
-    script: sh init.sh --publish-preview
+    script: bash init.sh --publish-preview
 
 Publish:
     stage: publish
     when: manual
-    script: sh init.sh --publish
+    script: bash init.sh --publish

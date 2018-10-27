@@ -1,12 +1,10 @@
 #!/bin/bash
 
-set -e
-
-# This file is run directly on the build host
-
 case "$1" in
   "--build")
-    VERSION=$(sh semver.sh full)
+    VERSION=$(./semver.sh full)
+	./semver.sh
+	echo ${VERSION}
 	docker build --build-arg VERSION=${VERSION} -t $LATEST_TAG -t $IMAGE_TAG -t ${CI_REGISTRY_IMAGE}/build:latest .
 	docker push $IMAGE_TAG
 	;;

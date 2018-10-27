@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -e
-
 declare TAG=$(git describe --abbrev=0)
 declare FEATURE_COUNT=$(git log --pretty="format:%s" --tags ${TAG}..HEAD | grep -c "(FEATURE)")
 declare BREAKING_COUNT=$(git log --pretty="format:%s" --tags ${TAG}..HEAD | grep -c "(BREAKING)")
