@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading;
 using TranceSql.MySql;
 using TranceSql.Oracle;
 using TranceSql.Postgres;
@@ -41,23 +42,31 @@ namespace TranceSql.IntegrationTest
                 Console.WriteLine($"Warning, could not resolve DIALECT={dialect} to known dialect.");
                 _dialect = Dialect.Sqlite;
             }
-
+            
             switch (_dialect)
             {
                 case Dialect.MySql:
-                    new Command(new MySqlDatabase(connectionString)) { new CreateDatabase(_dbName) }.Execute();
+                    _database = new MySqlDatabase(connectionString);
+                    WaitForDatabase();
+                    new Command(_database) { new CreateDatabase(_dbName) }.Execute();
                     _database = new MySqlDatabase(connectionString + $";Database={_dbName}");
                     break;
                 case Dialect.Oracle:
-                    new Command(new OracleDatabase(connectionString)) { new CreateDatabase(_dbName) }.Execute();
+                    _database = new OracleDatabase(connectionString);
+                    WaitForDatabase();
+                    new Command(_database) { new CreateDatabase(_dbName) }.Execute();
                     _database = new OracleDatabase(connectionString + $";Database={_dbName}");
                     break;
                 case Dialect.Postgres:
-                    new Command(new PostgresDatabase(connectionString)) { new CreateDatabase(_dbName) }.Execute();
+                    _database = new PostgresDatabase(connectionString);
+                    WaitForDatabase();
+                    new Command(_database) { new CreateDatabase(_dbName) }.Execute();
                     _database = new PostgresDatabase(connectionString + $";Database={_dbName}");
                     break;
                 case Dialect.SqlServer:
-                    new Command(new SqlServerDatabase(connectionString)) { new CreateDatabase(_dbName) }.Execute();
+                    _database = new SqlServerDatabase(connectionString);
+                    WaitForDatabase();
+                    new Command(_database) { new CreateDatabase(_dbName) }.Execute();
                     _database = new SqlServerDatabase(connectionString + $";Database={_dbName}");
                     break;
                 case Dialect.Sqlite:
@@ -82,6 +91,21 @@ namespace TranceSql.IntegrationTest
             }.Execute();
         }
 
+        public void WaitForDatabase()
+        {
+            for (int i = 0; i < 20; i++)
+            {
+                try
+                {
+                    new Command(_database) { new Select { Columns = new Constant(1) } }.Execute();
+                    return;
+                }
+                catch
+                {
+                    Thread.Sleep(1000);
+                }
+            }
+        }
 
         public void Dispose()
         {

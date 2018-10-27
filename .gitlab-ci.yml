@@ -15,6 +15,7 @@ before_script:
   - docker info
   - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
   - chmod +x init.sh
+  - chmod +x semver.sh
 
 stages:
   - build
@@ -24,12 +25,7 @@ stages:
 
 Build:
     stage: build
-    script: 
-     - TAG=$(git describe --abbrev=0)
-     - REV=$(git rev-list ${TAG}..HEAD --count)
-     - VERSION="${TAG}.${REV}"
-     - docker build --build-arg VERSION=${VERSION} -t $LATEST_TAG -t $IMAGE_TAG -t ${CI_REGISTRY_IMAGE}/build:latest .
-     - docker push $IMAGE_TAG
+    script: sh init.sh --build
 
 Unit Tests:
     stage: test
@@ -80,22 +76,9 @@ MySQL Integration Tests:
 
 Publish Preview:
     stage: publish-preview
-    script:
-      - TAG=$(git describe --abbrev=0)
-      - REV=$(git rev-list ${TAG}..HEAD --count)
-      - VERSION="${TAG}-CI${REV}"
-      - RELEASE_NOTES="$(git tag -l --format='%(contents)' ${TAG})"
-      - docker pull $IMAGE_TAG
-      - docker run --rm $IMAGE_TAG --publish $VERSION "$RELEASE_NOTES" --source $MYGET_URL --api-key $MYGET_KEY
+    script: sh init.sh --publish-preview
 
 Publish:
     stage: publish
     when: manual
-    script:
-      - TAG=$(git describe --abbrev=0)
-      - REV=$(git rev-list ${TAG}..HEAD --count)
-      - VERSION="${TAG}"
-      - RELEASE_NOTES="$(git tag -l --format='%(contents)' ${TAG})"
-      - docker pull $IMAGE_TAG
-      - docker run --rm $IMAGE_TAG --publish $VERSION "$RELEASE_NOTES" --source $NUGET_URL --api-key $NUGET_KEY
-    
+    script: sh init.sh --publish

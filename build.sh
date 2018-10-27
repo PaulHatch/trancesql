@@ -1,12 +1,11 @@
 #!/bin/bash
 
-case "$1" in
+case $1 in
   "--publish")
 	shift
 	echo "Creating NuGet Packages for version ${1}"
 	echo $2
-	dotnet pack /p:Version=${1} "/p:PackageReleaseNotes=${2}" -c Release --no-build --no-restore -o /sln/artifacts
-    shift
+	dotnet pack /p:Version=${1} -c Release --no-build --no-restore -o /sln/artifacts
 	shift
 	echo Publishing NuGet packages
 	# Workaround for https://github.com/NuGet/Home/issues/4393

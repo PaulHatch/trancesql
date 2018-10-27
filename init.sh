@@ -1,12 +1,20 @@
 #!/bin/bash
 
+set -e
+
 # This file is run directly on the build host
 
-TAG=$(git describe --abbrev=0)
-REV=$(git rev-list ${TAG}..HEAD --count)
-ASSEMBLY_VERSION="${TAG}.${REV}"
-
 case "$1" in
+  "--build")
+    VERSION=$(sh semver.sh full)
+	docker build --build-arg VERSION=${VERSION} -t $LATEST_TAG -t $IMAGE_TAG -t ${CI_REGISTRY_IMAGE}/build:latest .
+	docker push $IMAGE_TAG
+	;;
+  "--test")
+	docker pull $IMAGE_TAG
+	docker run --name testing $IMAGE_TAG --test
+	docker cp testing:/sln/results.xml .
+	;;
   "--integration")
 	shift
 	apk add py-pip
@@ -17,8 +25,21 @@ case "$1" in
 	docker cp $CONTAINER_HASH:/sln/results.xml .
 	exit $EXIT_CODE
 	;;
-	*)
-  echo Invalid command, use '--build', '--test', '--integration' or '--publish'
+  "--publish-preview")
+	VERSION=$(sh semver.sh ci)
+	docker pull $IMAGE_TAG
+	docker run --rm $IMAGE_TAG --publish $VERSION --source $MYGET_URL --api-key $MYGET_KEY
+	;;
+  "--publish")
+	VERSION=$(sh semver.sh next)
+	docker pull $IMAGE_TAG
+	docker run --rm $IMAGE_TAG --publish $VERSION --source $NUGET_URL --api-key $NUGET_KEY
+	git tag -a -m ${VERSION} ${VERSION}
+	git push --tags origin master
+	;;
+	
+  *)
+  echo Invalid command, use '--build', '--test', '--integration', '--publish', or '--publish'
     exit 1
     ;;
 esac
