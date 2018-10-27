@@ -3,7 +3,7 @@ services:
     test:
         image: ${IMAGE_TAG}
         environment:
-          - CONNECTION_STRING=Server=db,1433;User ID=sa;Password=integration
+          - CONNECTION_STRING=Server=db;User ID=SA;Password=Integration123
           - DIALECT=SqlServer
         depends_on:
           - db
@@ -17,5 +17,5 @@ services:
         ports:
           - '1433:1433'
         environment:
-          - SA_PASSWORD="integration"
+          - SA_PASSWORD="Integration123"
           - ACCEPT_EULA="Y"

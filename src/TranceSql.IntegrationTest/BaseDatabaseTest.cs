@@ -42,31 +42,27 @@ namespace TranceSql.IntegrationTest
                 Console.WriteLine($"Warning, could not resolve DIALECT={dialect} to known dialect.");
                 _dialect = Dialect.Sqlite;
             }
-            
+
             switch (_dialect)
             {
                 case Dialect.MySql:
                     _database = new MySqlDatabase(connectionString);
                     WaitForDatabase();
-                    new Command(_database) { new CreateDatabase(_dbName) }.Execute();
                     _database = new MySqlDatabase(connectionString + $";Database={_dbName}");
                     break;
                 case Dialect.Oracle:
                     _database = new OracleDatabase(connectionString);
                     WaitForDatabase();
-                    new Command(_database) { new CreateDatabase(_dbName) }.Execute();
                     _database = new OracleDatabase(connectionString + $";Database={_dbName}");
                     break;
                 case Dialect.Postgres:
                     _database = new PostgresDatabase(connectionString);
                     WaitForDatabase();
-                    new Command(_database) { new CreateDatabase(_dbName) }.Execute();
                     _database = new PostgresDatabase(connectionString + $";Database={_dbName}");
                     break;
                 case Dialect.SqlServer:
                     _database = new SqlServerDatabase(connectionString);
                     WaitForDatabase();
-                    new Command(_database) { new CreateDatabase(_dbName) }.Execute();
                     _database = new SqlServerDatabase(connectionString + $";Database={_dbName}");
                     break;
                 case Dialect.Sqlite:
@@ -98,6 +94,15 @@ namespace TranceSql.IntegrationTest
                 try
                 {
                     new Command(_database) { new Select { Columns = new Constant(1) } }.Execute();
+
+                    try
+                    {
+                        new Command(_database) {
+                            new CreateDatabase(_dbName)
+                        }.Execute();
+                    }
+                    catch { }
+
                     return;
                 }
                 catch
