@@ -1,4 +1,7 @@
-﻿using System;
+﻿using OpenTracing;
+using OpenTracing.Tag;
+using OpenTracing.Util;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
@@ -21,7 +24,7 @@ namespace TranceSql.Processing
 
         /// <summary>Connection factory delegate for target database.</summary>
         internal Func<DbConnection> ConnectionFactory { get; }
-        
+
         /// <summary>Provides parameter value from input object instances.</summary>
         internal IParameterValueExtractor ValueExtractor { get; }
 
@@ -31,6 +34,9 @@ namespace TranceSql.Processing
         /// <returns>A new defer context instance.</returns>
         public DeferContext CreateDeferContext() => new DeferContext(this);
 
+        private ITracer _tracer;
+        private DbInfo _dbInfo;
+
         /// <summary>
         /// Initialize a new instance of a generic ADO transaction. Use
         /// a provider-specific subclass for better performance.
@@ -38,14 +44,21 @@ namespace TranceSql.Processing
         /// <param name="connectionString">Connection string to target database.</param>
         /// <param name="connectionFactory">Delegate to create connections for current database.</param>
         /// <param name="valueExtractor">Provides parameter value from input object instances.</param>
+        /// <param name="tracer">The OpenTracing tracer instance to use. If this value is null the global tracer will
+        /// be used instead.</param>
+        /// <param name="dbInfo">The information about the connection string being used.</param>
         public SqlCommandManager(
             string connectionString,
             Func<DbConnection> connectionFactory,
-            IParameterValueExtractor valueExtractor)
+            IParameterValueExtractor valueExtractor,
+            ITracer tracer,
+            DbInfo dbInfo)
         {
             ConnectionString = connectionString;
             ConnectionFactory = connectionFactory;
             ValueExtractor = valueExtractor;
+            _tracer = tracer ?? GlobalTracer.Instance;
+            _dbInfo = dbInfo;
         }
 
         /// <summary>
@@ -296,6 +309,20 @@ namespace TranceSql.Processing
             return new ResultStream<T>(context, this);
         }
 
+        private IScope CreateScope(IContext context)
+        {
+            return _tracer
+                .BuildSpan(context.OperationName)
+                .WithTag(Tags.SpanKind.Key, Tags.SpanKindClient)
+                .WithTag(Tags.DbType, "sql")
+                .WithTag(Tags.DbUser, _dbInfo.User)
+                .WithTag(Tags.DbInstance, _dbInfo.Database)
+                .WithTag(Tags.DbStatement, context.CommandText)
+                .WithTag("peer.address", _dbInfo.Server)
+                .WithTag(Tags.Component.Key, "trancesql")
+                .StartActive(finishSpanOnDispose: true);
+        }
+
         /// <summary>
         /// Runs the specified SQL as an asynchronous operation.
         /// </summary>
@@ -313,22 +340,33 @@ namespace TranceSql.Processing
                     command.CommandText = context.CommandText;
                     AddParametersToCommand(command, context);
 
-                    connection.Open();
-                    if (processors == null || !processors.Any())
+                    using (IScope scope = CreateScope(context))
                     {
-                        command.ExecuteNonQuery();
-                    }
-                    else
-                    {
-                        using (var reader = command.ExecuteReader())
+                        try
                         {
-                            foreach (var item in processors)
+                            connection.Open();
+                            if (processors == null || !processors.Any())
                             {
-                                item.Deferred.SetValue(item.Processer.Process(reader));
+                                command.ExecuteNonQuery();
                             }
+                            else
+                            {
+                                using (var reader = command.ExecuteReader())
+                                {
+                                    foreach (var item in processors)
+                                    {
+                                        item.Deferred.SetValue(item.Processer.Process(reader));
+                                    }
+                                }
+                            }
+                            connection.Close();
+                        }
+                        catch
+                        {
+                            scope.Span.SetTag(Tags.Error, true);
+                            throw;
                         }
                     }
-                    connection.Close();
                 }
             }
         }
@@ -350,22 +388,33 @@ namespace TranceSql.Processing
                     command.CommandText = context.CommandText;
                     AddParametersToCommand(command, context);
 
-                    await connection.OpenAsync();
-                    if (processors == null || !processors.Any())
+                    using (IScope scope = CreateScope(context))
                     {
-                        await command.ExecuteNonQueryAsync();
-                    }
-                    else
-                    {
-                        using (var reader = await command.ExecuteReaderAsync())
+                        try
                         {
-                            foreach (var item in processors)
+                            await connection.OpenAsync();
+                            if (processors == null || !processors.Any())
                             {
-                                item.Deferred.SetValue(item.Processer.Process(reader));
+                                await command.ExecuteNonQueryAsync();
                             }
+                            else
+                            {
+                                using (var reader = await command.ExecuteReaderAsync())
+                                {
+                                    foreach (var item in processors)
+                                    {
+                                        item.Deferred.SetValue(item.Processer.Process(reader));
+                                    }
+                                }
+                            }
+                            connection.Close();
+                        }
+                        catch
+                        {
+                            scope.Span.SetTag(Tags.Error, true);
+                            throw;
                         }
                     }
-                    connection.Close();
                 }
             }
         }
@@ -395,19 +444,30 @@ namespace TranceSql.Processing
 
                     object result;
 
-                    await connection.OpenAsync();
-                    if (processor == null)
+                    using (IScope scope = CreateScope(context))
                     {
-                        result = await command.ExecuteNonQueryAsync();
-                    }
-                    else
-                    {
-                        using (var reader = await command.ExecuteReaderAsync())
+                        try
                         {
-                            result = processor.Process(reader);
+                            await connection.OpenAsync();
+                            if (processor == null)
+                            {
+                                result = await command.ExecuteNonQueryAsync();
+                            }
+                            else
+                            {
+                                using (var reader = await command.ExecuteReaderAsync())
+                                {
+                                    result = processor.Process(reader);
+                                }
+                            }
+                            connection.Close();
+                        }
+                        catch
+                        {
+                            scope.Span.SetTag(Tags.Error, true);
+                            throw;
                         }
                     }
-                    connection.Close();
 
                     return (T)result;
                 }
@@ -439,19 +499,31 @@ namespace TranceSql.Processing
 
                     object result;
 
-                    connection.Open();
-                    if (processor == null)
+                    using (IScope scope = CreateScope(context))
                     {
-                        result = command.ExecuteNonQuery();
-                    }
-                    else
-                    {
-                        using (var reader = command.ExecuteReader())
+                        try
                         {
-                            result = processor.Process(reader);
+
+                            connection.Open();
+                            if (processor == null)
+                            {
+                                result = command.ExecuteNonQuery();
+                            }
+                            else
+                            {
+                                using (var reader = command.ExecuteReader())
+                                {
+                                    result = processor.Process(reader);
+                                }
+                            }
+                            connection.Close();
+                        }
+                        catch
+                        {
+                            scope.Span.SetTag(Tags.Error, true);
+                            throw;
                         }
                     }
-                    connection.Close();
 
                     return (T)result;
                 }

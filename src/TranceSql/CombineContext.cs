@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace TranceSql
@@ -23,11 +24,26 @@ namespace TranceSql
         public IReadOnlyDictionary<string, object> ParameterValues => _parameters;
 
         /// <summary>
+        /// Gets or sets the name of the operation to be used for recording
+        /// tracing information.
+        /// </summary>
+        public string OperationName { get; set; }
+
+        /// <summary>
         /// Appends the specified context result to this context.
         /// </summary>
         /// <param name="context">The context to be appended.</param>
         public void Append(IContext context)
         {
+            if (String.IsNullOrEmpty(OperationName))
+            {
+                OperationName = context.OperationName;
+            }
+            else if(!String.IsNullOrEmpty(context.OperationName))
+            {
+                OperationName = $"{OperationName}+{context.OperationName}";
+            }
+
             _commandText.Append(context.CommandText);
             foreach (var parameter in context.ParameterValues)
             {

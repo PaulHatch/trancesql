@@ -28,6 +28,12 @@ namespace TranceSql
         internal IDialect Dialect { get; }
 
         /// <summary>
+        /// Gets or sets the name of the operation to be used for recording
+        /// tracing information.
+        /// </summary>
+        public string OperationName { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="Command"/> class.
         /// </summary>
         /// <param name="connection">The connection to use when rendering and executing the command.</param>
@@ -961,7 +967,11 @@ namespace TranceSql
 
         private RenderContext Render()
         {
-            var context = new RenderContext(Dialect, _deferContext);
+            var context = new RenderContext(Dialect, _deferContext)
+            {
+                OperationName = OperationName
+            };
+
             context.RenderDelimited(_statements, context.LineDelimiter);
 
             return context;

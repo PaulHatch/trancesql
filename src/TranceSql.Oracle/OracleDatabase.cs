@@ -1,4 +1,5 @@
-﻿using Oracle.ManagedDataAccess.Client;
+﻿using OpenTracing;
+using Oracle.ManagedDataAccess.Client;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
@@ -17,7 +18,7 @@ namespace TranceSql.Oracle
         /// </summary>
         /// <param name="connectionString">The connection string.</param>
         public OracleDatabase(string connectionString)
-            : base(new SqlCommandManager(connectionString, GetConnection, new DefaultValueExtractor()), new OracleDialect())
+            : this(connectionString, null, null)
         {
         }
 
@@ -25,10 +26,45 @@ namespace TranceSql.Oracle
         /// Creates command parameters for a Oracle database reference.
         /// </summary>
         /// <param name="connectionString">The connection string.</param>
-        /// <param name="extractor">The extractor.</param>
+        /// <param name="extractor">The parameter value extractor.</param>
         public OracleDatabase(string connectionString, IParameterValueExtractor extractor)
-            : base(new SqlCommandManager(connectionString, GetConnection, extractor), new OracleDialect())
+            : this(connectionString, extractor, null)
         {
+        }
+
+
+        /// <summary>
+        /// Creates command parameters for a Oracle database reference.
+        /// </summary>
+        /// <param name="connectionString">The connection string.</param>
+        /// <param name="tracer">
+        /// The OpenTracing tracer instance to use. If this value is null the global tracer will
+        /// be used instead.
+        /// </param>
+        public OracleDatabase(string connectionString, ITracer tracer)
+            : this(connectionString, null, tracer)
+        {
+        }
+
+
+        /// <summary>
+        /// Creates command parameters for a Oracle database reference.
+        /// </summary>
+        /// <param name="connectionString">The connection string.</param>
+        /// <param name="extractor">The parameter value extractor.</param>
+        /// <param name="tracer">
+        /// The OpenTracing tracer instance to use. If this value is null the global tracer will
+        /// be used instead.
+        /// </param>
+        public OracleDatabase(string connectionString, IParameterValueExtractor extractor, ITracer tracer)
+            : base(new SqlCommandManager(connectionString, GetConnection, extractor ?? new DefaultValueExtractor(), tracer, ExtractDbInfo(connectionString)), new OracleDialect())
+        {
+        }
+
+        private static DbInfo ExtractDbInfo(string connectionString)
+        {
+            var builder = new OracleConnectionStringBuilder(connectionString);
+            return new DbInfo(builder.DataSource, null, null);
         }
 
         private static DbConnection GetConnection() => new OracleConnection();

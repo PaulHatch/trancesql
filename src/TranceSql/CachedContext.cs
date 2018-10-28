@@ -9,14 +9,16 @@ namespace TranceSql
     internal class CachedContext : IContext
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="CachedContext"/> class.
+        /// Initializes a new instance of the <see cref="CachedContext" /> class.
         /// </summary>
         /// <param name="commandText">The command text.</param>
+        /// <param name="operationName">Name of the operation to use for tracing.</param>
         /// <param name="parameterValues">The parameter values.</param>
-        private CachedContext(string commandText, IReadOnlyDictionary<string, object> parameterValues)
+        private CachedContext(string commandText, string operationName, IReadOnlyDictionary<string, object> parameterValues)
         {
             CommandText = commandText;
             ParameterValues = parameterValues;
+            OperationName = operationName;
         }
 
         /// <summary>
@@ -40,6 +42,12 @@ namespace TranceSql
         public IReadOnlyDictionary<string, object> ParameterValues { get; }
 
         /// <summary>
+        /// Gets or sets the name of the operation to be used for recording
+        /// tracing information.
+        /// </summary>
+        public string OperationName { get; set; }
+
+        /// <summary>
         /// Creates a new context based on this one with additional parameters added.
         /// </summary>
         /// <param name="additionalParameters">The additional parameters.</param>
@@ -48,6 +56,7 @@ namespace TranceSql
         {
             return new CachedContext(
                 CommandText,
+                OperationName,
                 ParameterValues
                     .Concat(additionalParameters)
                     .ToDictionary(v => v.Key, v => v.Value)

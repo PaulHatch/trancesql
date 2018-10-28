@@ -17,6 +17,7 @@ namespace TranceSql
         /// <param name="dialect">The language dialect.</param>
         public Database(SqlCommandManager manager, IDialect dialect)
         {
+            
             Manager = manager;
             Dialect = dialect;
         }
