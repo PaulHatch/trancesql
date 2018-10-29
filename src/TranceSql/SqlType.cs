@@ -129,7 +129,7 @@ namespace TranceSql
 
             if(_typeMap.ContainsKey(nullableType ?? type))
             {
-                return new SqlType(_typeMap[nullableType ?? type], parameters, allowNull ?? true);
+                return new SqlType(_typeMap[nullableType ?? type], parameters, allowNull ?? type.IsClass);
             }
 
             throw new ArgumentException($"Error in SqlType.From conversion: Automatic mapping is not supported for the type '{type.FullName}'.", nameof(type));
