@@ -124,6 +124,13 @@ namespace TranceSql.IntegrationTest
             // Create tables with a foreign constraint
             new Command(_database)
             {
+                new CreateTable("second_table")
+                {
+                    Columns =
+                    {
+                        { "id", SqlType.From<int>(), new PrimaryKeyConstraint() }
+                    }
+                },
                 new CreateTable("first_table")
                 {
                     Columns =
@@ -132,13 +139,6 @@ namespace TranceSql.IntegrationTest
                         { "second_table_id", SqlType.From<int>() }
                     },
                     Constraints = { new ForeignKeyConstraint("second_table_id", "second_table", "id") { OnDelete = DeleteBehavior.Cascade } }
-                },
-                new CreateTable("second_table")
-                {
-                    Columns =
-                    {
-                        { "id", SqlType.From<int>(), new PrimaryKeyConstraint() }
-                    }
                 },
                 new Insert { Into = "second_table", Columns = "id", Values = { 55 } },
                 new Insert { Into = "first_table", Columns = { "id", "second_table_id" }, Values = { 5, 55 } }

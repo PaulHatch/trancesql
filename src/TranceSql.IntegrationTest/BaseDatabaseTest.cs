@@ -74,17 +74,24 @@ namespace TranceSql.IntegrationTest
 
             Console.WriteLine($"Running {_dbName} on {dialect} ({_dialect})");
 
-            new Command(_database)
+            // TODO: Remove this, overhaul initialization of these tests generally
+            // using some of XUnit's tools so that the initialization code runs only
+            // once. For now this try block prevents subsequent runs erroring out.
+            try
             {
-                new CreateTable("sample")
+                new Command(_database)
                 {
-                    Columns =
+                    new CreateTable("sample")
                     {
-                        { "id", SqlType.From<int>(), new PrimaryKeyConstraint() },
-                        { "column1", SqlType.From<string>() }
+                        Columns =
+                        {
+                            { "id", SqlType.From<int>(), new PrimaryKeyConstraint() },
+                            { "column1", SqlType.From<string>() }
+                        }
                     }
-                }
-            }.Execute();
+                }.Execute();
+            }
+            catch { }
         }
 
         public void WaitForDatabase()
