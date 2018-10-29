@@ -24,12 +24,12 @@ case "$1" in
 	exit $EXIT_CODE
 	;;
   "--publish-preview")
-	VERSION=$(sh semver.sh ci)
+	VERSION=$(./semver.sh ci)
 	docker pull $IMAGE_TAG
 	docker run --rm $IMAGE_TAG --publish $VERSION --source $MYGET_URL --api-key $MYGET_KEY
 	;;
   "--publish")
-	VERSION=$(sh semver.sh next)
+	VERSION=$(./semver.sh next)
 	docker pull $IMAGE_TAG
 	docker run --rm $IMAGE_TAG --publish $VERSION --source $NUGET_URL --api-key $NUGET_KEY
 	git tag -a -m ${VERSION} ${VERSION}
