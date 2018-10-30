@@ -36,6 +36,7 @@ namespace TranceSql
         /// Creates a new context for running deferred commands using this connection's manager.
         /// </summary>
         /// <returns>A new <see cref="DeferContext"/> instance for this connection.</returns>
-        public DeferContext CreateDeferContext() => Manager.CreateDeferContext();
+        public DeferContext CreateDeferContext() => 
+            new DeferContext(this);
     }
 }

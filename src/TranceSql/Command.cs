@@ -44,16 +44,39 @@ namespace TranceSql
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Command" /> class for executing deferred commands.
-        /// If deferred execution is not being used, the <see cref="Command(Database)"/> constructor
-        /// is a better choice.
+        /// Initializes a new instance of the <see cref="Command" /> class.
         /// </summary>
         /// <param name="connection">The connection to use when rendering and executing the command.</param>
-        /// <param name="deferContext">The defer context for this command.</param>
-        public Command(Database connection, DeferContext deferContext)
+        /// <param name="operationName">Name of the operation to be used for recording tracing information.</param>
+        public Command(Database connection, string operationName)
             : this(connection)
         {
+            OperationName = operationName;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Command" /> class for executing deferred commands.
+        /// If deferred execution is not being used, the <see cref="Command(Database)" /> constructor
+        /// is a better choice.
+        /// </summary>
+        /// <param name="deferContext">The defer context for this command.</param>
+        public Command(DeferContext deferContext)
+            : this(deferContext.Database)
+        {
             _deferContext = deferContext;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Command" /> class for executing deferred commands.
+        /// If deferred execution is not being used, the <see cref="Command(Database)" /> constructor
+        /// is a better choice.
+        /// </summary>
+        /// <param name="deferContext">The defer context for this command.</param>
+        /// <param name="operationName">Name of the operation to be used for recording tracing information.</param>
+        public Command(DeferContext deferContext, string operationName)
+            : this(deferContext)
+        {
+            OperationName = operationName;
         }
 
         /// <summary>

@@ -27,13 +27,7 @@ namespace TranceSql.Processing
 
         /// <summary>Provides parameter value from input object instances.</summary>
         internal IParameterValueExtractor ValueExtractor { get; }
-
-        /// <summary>
-        /// Creates a new defer context for this command.
-        /// </summary>
-        /// <returns>A new defer context instance.</returns>
-        public DeferContext CreateDeferContext() => new DeferContext(this);
-
+        
         private ITracer _tracer;
         private DbInfo _dbInfo;
 

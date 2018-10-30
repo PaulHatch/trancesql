@@ -28,12 +28,12 @@ namespace TranceSql.IntegrationTest
 
             var context = _database.CreateDeferContext();
 
-            var command1 = new Command(_database, context)
+            var command1 = new Command(context)
             {
                 new Select { Columns = "ID", From = "deferred_table" }
             };
 
-            var command2 = new Command(_database, context)
+            var command2 = new Command(context)
             {
                 new Select { Columns = "ID", From = "deferred_table" }
             };
@@ -60,12 +60,12 @@ namespace TranceSql.IntegrationTest
 
             var context = _database.CreateDeferContext();
 
-            var results1 = new Command(_database, context)
+            var results1 = new Command(context)
             {
                 new Select { Columns = "ID", From = "deferred_inline_table" }
             }.FetchListDeferred<Sample>();
 
-            var results2 = new Command(_database, context)
+            var results2 = new Command(context)
             {
                 new Select { Columns = "ID", From = "deferred_inline_table" }
             }.FetchListDeferred<Sample>();
@@ -89,12 +89,12 @@ namespace TranceSql.IntegrationTest
 
             var context = _database.CreateDeferContext();
 
-            var command1 = new Command(_database, context)
+            var command1 = new Command(context)
             {
                 new Select { Columns = "ID", From = "deferred_async_table" }
             };
 
-            var command2 = new Command(_database, context)
+            var command2 = new Command(context)
             {
                 new Select { Columns = "ID", From = "deferred_async_table" }
             };
@@ -121,12 +121,12 @@ namespace TranceSql.IntegrationTest
 
             var context = _database.CreateDeferContext();
 
-            var results1 = new Command(_database, context)
+            var results1 = new Command(context)
             {
                 new Select { Columns = "ID", From = "deferred_inline_async_table" }
             }.FetchListDeferred<Sample>();
 
-            var results2 = new Command(_database, context)
+            var results2 = new Command(context)
             {
                 new Select { Columns = "ID", From = "deferred_inline_async_table" }
             }.FetchListDeferred<Sample>();
@@ -152,12 +152,12 @@ namespace TranceSql.IntegrationTest
 
             var context = _database.CreateDeferContext();
 
-            var results1 = new Command(_database, context)
+            var results1 = new Command(context)
             {
                 new Select { Columns = "ID", From = "deferred_mixed_table" }
             }.FetchListDeferred<Sample>();
 
-            var results2 = new Command(_database, context)
+            var results2 = new Command(context)
             {
                 new Select { Columns = "ID", From = "deferred_mixed_table" }
             }.FetchListDeferred<Sample>();

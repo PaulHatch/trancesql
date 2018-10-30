@@ -17,8 +17,10 @@ namespace TranceSql
         private CombineContext _context = new CombineContext();
         private List<ProcessorContext> _processors = new List<ProcessorContext>();
 
-        /// <summary>Gets the command manager for execution of commands within this context.</summary>
-        internal SqlCommandManager CommandManager { get; }
+        /// <summary>
+        /// Gets the database for execution of commands within this context.
+        /// </summary>
+        internal Database Database { get; }
 
         /// <summary>
         /// Gets a value indicating whether this instance has executed.
@@ -31,12 +33,10 @@ namespace TranceSql
         /// <summary>
         /// Represents the execution context for deferred SQL operations.
         /// </summary>
-        /// <param name="commandManager">
-        /// The command manager to execute commands requested in this context.
-        /// </param>
-        internal DeferContext(SqlCommandManager commandManager)
+        /// <param name="database">The database to execute commands requested in this context.</param>
+        internal DeferContext(Database database)
         {
-            CommandManager = commandManager;
+            Database = database;
             ParameterIndex = 1;
         }
 
@@ -143,7 +143,7 @@ namespace TranceSql
         /// <returns>A task for the operation.</returns>
         internal async Task RunAsync()
         {
-            await CommandManager.RunCommandSetAsync(_context, _processors);
+            await Database.Manager.RunCommandSetAsync(_context, _processors);
             HasExecuted = true;
         }
 
@@ -152,7 +152,7 @@ namespace TranceSql
         /// </summary>
         internal void Run()
         {
-            CommandManager.RunCommandSet(_context, _processors);
+            Database.Manager.RunCommandSet(_context, _processors);
             HasExecuted = true;
         }
     }
