@@ -28,8 +28,8 @@ namespace TranceSql.IntegrationTest
                         { "column", SqlType.From<int>(), new UniqueConstraint() }
                     }
                 },
-                new Insert { Into = "unique_table", Columns = "column1", Values = { 1 } },
-                new Insert { Into = "unique_table", Columns = "column1", Values = { 1 } }
+                new Insert { Into = "unique_table", Columns = "column", Values = { 1 } },
+                new Insert { Into = "unique_table", Columns = "column", Values = { 1 } }
             };
 
             var exception = await Assert.ThrowsAnyAsync<DbException>(() => sut.ExecuteAsync());
@@ -128,6 +128,13 @@ namespace TranceSql.IntegrationTest
             // Create tables with a foreign constraint
             await new Command(_database)
             {
+                new CreateTable("second_table")
+                {
+                    Columns =
+                    {
+                        { "id", SqlType.From<int>(), new PrimaryKeyConstraint() }
+                    }
+                },
                 new CreateTable("first_table")
                 {
                     Columns =
@@ -136,13 +143,6 @@ namespace TranceSql.IntegrationTest
                         { "second_table_id", SqlType.From<int>() }
                     },
                     Constraints = { new ForeignKeyConstraint("second_table_id", "second_table", "id") { OnDelete = DeleteBehavior.Cascade } }
-                },
-                new CreateTable("second_table")
-                {
-                    Columns =
-                    {
-                        { "id", SqlType.From<int>(), new PrimaryKeyConstraint() }
-                    }
                 },
                 new Insert { Into = "second_table", Columns = "id", Values = { 55 } },
                 new Insert { Into = "first_table", Columns = { "id", "second_table_id" }, Values = { 5, 55 } }
@@ -187,7 +187,7 @@ namespace TranceSql.IntegrationTest
                     Columns =
                     {
                         { "column1", SqlType.From<int>() },
-                        { "column2", SqlType.From<string>(), new DefaultConstraint("hello world") }
+                        { "column2", SqlType.From<string>(200), new DefaultConstraint("hello world") }
                     }
                 },
                 new Insert { Into = "default_table", Columns = "column1", Values = { 1 } },

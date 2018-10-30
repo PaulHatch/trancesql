@@ -28,8 +28,8 @@ namespace TranceSql.IntegrationTest
                         { "column", SqlType.From<int>(), new UniqueConstraint() }
                     }
                 },
-                new Insert { Into = "unique_table", Columns = "column1", Values = { 1 } },
-                new Insert { Into = "unique_table", Columns = "column1", Values = { 1 } }
+                new Insert { Into = "unique_table", Columns = "column", Values = { 1 } },
+                new Insert { Into = "unique_table", Columns = "column", Values = { 1 } }
             };
 
             var exception = Assert.ThrowsAny<DbException>(() => sut.Execute());
@@ -187,7 +187,7 @@ namespace TranceSql.IntegrationTest
                     Columns =
                     {
                         { "column1", SqlType.From<int>() },
-                        { "column2", SqlType.From<string>(), new DefaultConstraint("hello world") }
+                        { "column2", SqlType.From<string>(false, 200), new DefaultConstraint("hello world") }
                     }
                 },
                 new Insert { Into = "default_table", Columns = "column1", Values = { 1 } },

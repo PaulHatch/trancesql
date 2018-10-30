@@ -76,7 +76,7 @@ namespace TranceSql.IntegrationTest
                     Columns =
                     {
                         { "id", SqlType.From<int>(), new PrimaryKeyConstraint() },
-                        { "column1", SqlType.From<string>() }
+                        { "column1", SqlType.From<string>(true, 200) }
                     }
                 }
             }.Execute();
