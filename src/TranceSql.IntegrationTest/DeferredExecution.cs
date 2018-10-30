@@ -8,6 +8,10 @@ namespace TranceSql.IntegrationTest
 {
     public class DeferredExecution : BaseDatabaseTest
     {
+        public DeferredExecution(DatabaseFixture db) : base(db)
+        {
+        }
+
         [Fact]
         public void BasicDeferredResults()
         {

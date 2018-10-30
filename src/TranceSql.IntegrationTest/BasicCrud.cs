@@ -11,6 +11,10 @@ namespace TranceSql.IntegrationTest
 {
     public class BasicCrud : BaseDatabaseTest
     {
+        public BasicCrud(DatabaseFixture db) : base(db)
+        {
+        }
+
         [Fact]
         public void UniqueConstraint()
         {
@@ -38,20 +42,20 @@ namespace TranceSql.IntegrationTest
             // Create a table with a check constraint and insert one safe value
             new Command(_database)
             {
-                new CreateTable("check_table")
+                new CreateTable("check_table_inline")
                 {
                     Columns =
                     {
                         { "column", SqlType.From<int>(), new CheckConstraint(new Column("column") < new Constant(15)) }
                     }
                 },
-                new Insert { Into = "check_table", Columns = "column", Values = { 10 } }
+                new Insert { Into = "check_table_inline", Columns = "column", Values = { 10 } }
             }.Execute();
 
             // now add a value which violates the check constraint
             var sut = new Command(_database)
             {
-                new Insert { Into = "check_table", Columns = "column", Values = { 20 } }
+                new Insert { Into = "check_table_inline", Columns = "column", Values = { 20 } }
             };
 
             var exception = Assert.ThrowsAny<DbException>(() => sut.Execute());
@@ -94,7 +98,7 @@ namespace TranceSql.IntegrationTest
             // Create a table with a check constraint and insert one safe value
             new Command(_database)
             {
-                new CreateTable("check_table")
+                new CreateTable("named_check_table")
                 {
                     Columns =
                     {
@@ -105,13 +109,13 @@ namespace TranceSql.IntegrationTest
                         new CheckConstraint(new Column("column") < new Constant(15))
                     }
                 },
-                new Insert { Into = "check_table", Columns = "column", Values = { 10 } }
+                new Insert { Into = "named_check_table", Columns = "column", Values = { 10 } }
             }.Execute();
 
             // now add a value which violates the check constraint
             var sut = new Command(_database)
             {
-                new Insert { Into = "check_table", Columns = "column", Values = { 20 } }
+                new Insert { Into = "named_check_table", Columns = "column", Values = { 20 } }
             };
 
             var exception = Assert.ThrowsAny<DbException>(() => sut.Execute());
