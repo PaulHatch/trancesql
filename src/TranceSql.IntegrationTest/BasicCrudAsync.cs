@@ -187,7 +187,7 @@ namespace TranceSql.IntegrationTest
                     Columns =
                     {
                         { "column1", SqlType.From<int>() },
-                        { "column2", SqlType.From<string>(200), new DefaultConstraint("hello world") }
+                        { "column2", SqlType.From<string>(null, 200), new DefaultConstraint("hello world") }
                     }
                 },
                 new Insert { Into = "default_table", Columns = "column1", Values = { 1 } },
@@ -284,7 +284,7 @@ namespace TranceSql.IntegrationTest
                 new Insert
                 {
                     Into = "sample",
-                    Columns = {"id", "column1" },
+                    Columns = { "id", "column1" },
                     Values =
                     {
                         { 11, "data" },

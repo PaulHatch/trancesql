@@ -1,4 +1,6 @@
-﻿using System;
+﻿using OpenTracing.Mock;
+using OpenTracing.Util;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -17,7 +19,7 @@ namespace TranceSql.IntegrationTest
         private static object _nameLocker = new object();
         private Dialect _dialect;
         private string _dbName;
-        public Database Database { get; private set; }
+        public Database Database { get; }
 
         protected enum Dialect
         {
@@ -26,6 +28,11 @@ namespace TranceSql.IntegrationTest
             Oracle,
             Postgres,
             Sqlite
+        }
+
+        static DatabaseFixture()
+        {
+            GlobalTracer.Register(new MockTracer(new ConsolePropagator()));
         }
 
         public DatabaseFixture()
