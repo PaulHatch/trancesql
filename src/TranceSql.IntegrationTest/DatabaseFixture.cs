@@ -1,4 +1,6 @@
-﻿using OpenTracing.Mock;
+﻿using OpenTracing;
+using OpenTracing.Mock;
+using OpenTracing.Propagation;
 using OpenTracing.Util;
 using System;
 using System.Collections.Generic;
@@ -19,7 +21,7 @@ namespace TranceSql.IntegrationTest
         private static object _nameLocker = new object();
         private Dialect _dialect;
         private string _dbName;
-        public Database Database { get; }
+        public Func<ITracer, Database> GetDatabase { get; }
 
         protected enum Dialect
         {
@@ -28,11 +30,6 @@ namespace TranceSql.IntegrationTest
             Oracle,
             Postgres,
             Sqlite
-        }
-
-        static DatabaseFixture()
-        {
-            GlobalTracer.Register(new MockTracer(new ConsolePropagator()));
         }
 
         public DatabaseFixture()
@@ -50,33 +47,33 @@ namespace TranceSql.IntegrationTest
                 Console.WriteLine($"Warning, could not resolve DIALECT={dialect} to known dialect.");
                 _dialect = Dialect.Sqlite;
             }
-
+            
             switch (_dialect)
             {
                 case Dialect.MySql:
                     WaitForDatabase(new MySqlDatabase(connectionString));
-                    Database = new MySqlDatabase(connectionString + $";Database={_dbName}");
+                    GetDatabase = t => new MySqlDatabase(connectionString + $";Database={_dbName}", t);
                     break;
                 case Dialect.Oracle:
                     WaitForDatabase(new OracleDatabase(connectionString));
-                    Database = new OracleDatabase(connectionString + $";Database={_dbName}");
+                    GetDatabase = t => new OracleDatabase(connectionString + $";Database={_dbName}", t);
                     break;
                 case Dialect.Postgres:
                     WaitForDatabase(new PostgresDatabase(connectionString));
-                    Database = new PostgresDatabase(connectionString + $";Database={_dbName}");
+                    GetDatabase = t => new PostgresDatabase(connectionString + $";Database={_dbName}", t);
                     break;
                 case Dialect.SqlServer:
                     WaitForDatabase(new SqlServerDatabase(connectionString));
-                    Database = new SqlServerDatabase(connectionString + $";Database={_dbName}");
+                    GetDatabase = t => new SqlServerDatabase(connectionString + $";Database={_dbName}", t);
                     break;
                 case Dialect.Sqlite:
                 default:
                     if (File.Exists($"{_dbName}.db")) { File.Delete($"{_dbName}.db"); }
-                    Database = new SqliteDatabase($"Data Source={_dbName }.db");
+                    GetDatabase = t => new SqliteDatabase($"Data Source={_dbName }.db", t);
                     break;
             }
 
-            new Command(Database)
+            new Command(GetDatabase(new MockTracer()))
             {
                 new CreateTable("sample")
                 {
@@ -88,8 +85,7 @@ namespace TranceSql.IntegrationTest
                 }
             }.Execute();
         }
-
-
+        
         public void WaitForDatabase(Database database)
         {
             for (int i = 0; i < 15; i++)

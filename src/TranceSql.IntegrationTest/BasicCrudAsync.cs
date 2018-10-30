@@ -5,13 +5,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using TranceSql.Sqlite;
 using Xunit;
+using Xunit.Abstractions;
 using static TranceSql.UsingStatic;
 
 namespace TranceSql.IntegrationTest
 {
     public class BasicCrudAsync : BaseDatabaseTest
     {
-        public BasicCrudAsync(DatabaseFixture db) : base(db)
+        public BasicCrudAsync(DatabaseFixture db, ITestOutputHelper testOutput) : base(db, testOutput)
         {
         }
 

@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace TranceSql.IntegrationTest
 {
@@ -11,9 +12,9 @@ namespace TranceSql.IntegrationTest
     {
         protected readonly Database _database;
 
-        public BaseDatabaseTest(DatabaseFixture db)
+        public BaseDatabaseTest(DatabaseFixture db, ITestOutputHelper helper)
         {
-            _database = db.Database;
+            _database = db.GetDatabase(new TestTracer(helper));
         }
     }
 }

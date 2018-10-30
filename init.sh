@@ -15,6 +15,7 @@ case "$1" in
 	;;
   "--integration")
 	shift
+	apk update
 	apk add py-pip
 	pip install docker-compose==1.22.0
 	IMAGE_TAG=${1} docker-compose -f docker-compose.${2}.yml run test

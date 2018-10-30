@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace TranceSql.IntegrationTest
 {
     public class DeferredExecution : BaseDatabaseTest
     {
-        public DeferredExecution(DatabaseFixture db) : base(db)
+        public DeferredExecution(DatabaseFixture db, ITestOutputHelper testOutput) : base(db, testOutput)
         {
         }
 
