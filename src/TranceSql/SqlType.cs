@@ -63,11 +63,23 @@ namespace TranceSql
         /// </summary>
         /// <param name="typeClass">The type, this value will be resolved to the appropriate
         /// type by the SQL dialect used to render the command.</param>
-        /// <param name="parameters">
-        /// The type parameters, for example in VARCHAR(50), '50' is the type parameter.
-        /// </param>
         /// <param name="allowNull">Indicates whether the type is allowed to be null.</param>
-        public SqlType(DbType typeClass, IEnumerable<object> parameters, bool allowNull)
+        /// <param name="parameters">The type parameters, for example in VARCHAR(50), '50' is the type parameter.</param>
+        public SqlType(DbType typeClass, bool allowNull, IEnumerable<object> parameters)
+        {
+            Type = typeClass;
+            Parameters = parameters;
+            AllowNull = allowNull;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SqlType" /> class.
+        /// </summary>
+        /// <param name="typeClass">The type, this value will be resolved to the appropriate
+        /// type by the SQL dialect used to render the command.</param>
+        /// <param name="allowNull">Indicates whether the type is allowed to be null.</param>
+        /// <param name="parameters">The type parameters, for example in VARCHAR(50), '50' is the type parameter.</param>
+        public SqlType(DbType typeClass, bool allowNull, params object[] parameters)
         {
             Type = typeClass;
             Parameters = parameters;
@@ -99,7 +111,8 @@ namespace TranceSql
         /// </param>
         /// <param name="allowNull">Indicates whether the type is allowed to be null.</param>
         /// <returns>A new <see cref="SqlType"/> instance.</returns>
-        public static SqlType From<T>(bool? allowNull = null, params object[] parameters) => From(typeof(T), allowNull, parameters);
+        public static SqlType From<T>(bool? allowNull = null, params object[] parameters)
+            => From(typeof(T), allowNull, parameters);
 
         /// <summary>
         /// Creates a new <see cref="SqlType" /> instance from a .NET type.
@@ -129,7 +142,7 @@ namespace TranceSql
 
             if(_typeMap.ContainsKey(nullableType ?? type))
             {
-                return new SqlType(_typeMap[nullableType ?? type], parameters, allowNull ?? type.IsClass);
+                return new SqlType(_typeMap[nullableType ?? type], allowNull ?? type.IsClass, parameters);
             }
 
             throw new ArgumentException($"Error in SqlType.From conversion: Automatic mapping is not supported for the type '{type.FullName}'.", nameof(type));

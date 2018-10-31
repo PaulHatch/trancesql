@@ -34,6 +34,7 @@ namespace TranceSql.IntegrationTest
 
         public DatabaseFixture()
         {
+
             lock (_nameLocker)
             {
                 _nameIndex++;
@@ -47,7 +48,7 @@ namespace TranceSql.IntegrationTest
                 Console.WriteLine($"Warning, could not resolve DIALECT={dialect} to known dialect.");
                 _dialect = Dialect.Sqlite;
             }
-            
+
             switch (_dialect)
             {
                 case Dialect.MySql:
@@ -85,7 +86,7 @@ namespace TranceSql.IntegrationTest
                 }
             }.Execute();
         }
-        
+
         public void WaitForDatabase(Database database)
         {
             for (int i = 0; i < 15; i++)

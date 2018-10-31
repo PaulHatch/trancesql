@@ -72,7 +72,7 @@ namespace TranceSql.Sqlite
             var typeName = GetType(type);
             if (parameters?.Any() == true)
             {
-                return $"{type}({String.Join(", ", parameters)})";
+                return $"{typeName}({String.Join(", ", parameters)})";
             }
             else
             {

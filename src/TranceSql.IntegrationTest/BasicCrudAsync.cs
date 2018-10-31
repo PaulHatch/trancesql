@@ -10,10 +10,13 @@ using static TranceSql.UsingStatic;
 
 namespace TranceSql.IntegrationTest
 {
-    public class BasicCrudAsync : BaseDatabaseTest
+    public class BasicCrudAsync : IClassFixture<DatabaseFixture>
     {
-        public BasicCrudAsync(DatabaseFixture db, ITestOutputHelper testOutput) : base(db, testOutput)
+        protected readonly Database _database;
+
+        public BasicCrudAsync(DatabaseFixture db, ITestOutputHelper helper)
         {
+            _database = db.GetDatabase(new TestTracer(helper));
         }
 
         [Fact]

@@ -7,10 +7,13 @@ using Xunit.Abstractions;
 
 namespace TranceSql.IntegrationTest
 {
-    public class DeferredExecution : BaseDatabaseTest
+    public class DeferredExecution : IClassFixture<DatabaseFixture>
     {
-        public DeferredExecution(DatabaseFixture db, ITestOutputHelper testOutput) : base(db, testOutput)
+        protected readonly Database _database;
+
+        public DeferredExecution(DatabaseFixture db, ITestOutputHelper helper)
         {
+            _database = db.GetDatabase(new TestTracer(helper));
         }
 
         [Fact]
