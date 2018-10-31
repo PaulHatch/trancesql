@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -euxo pipefail
+
 case "$1" in
   "--build")
     VERSION=$(./semver.sh full)

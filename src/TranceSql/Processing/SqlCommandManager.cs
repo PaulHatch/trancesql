@@ -27,7 +27,7 @@ namespace TranceSql.Processing
 
         /// <summary>Provides parameter value from input object instances.</summary>
         internal IParameterValueExtractor ValueExtractor { get; }
-        
+
         private ITracer _tracer;
         private DbInfo _dbInfo;
 
@@ -395,9 +395,15 @@ namespace TranceSql.Processing
                             {
                                 using (var reader = await command.ExecuteReaderAsync())
                                 {
+                                    var results = 0;
                                     foreach (var item in processors)
                                     {
+                                        if (results > 0 && !await reader.NextResultAsync())
+                                        {
+                                            throw new InvalidOperationException($"Expected {processors.Count()} but result only contained {results}");
+                                        }
                                         item.Deferred.SetValue(item.Processer.Process(reader));
+                                        results++;
                                     }
                                 }
                             }
