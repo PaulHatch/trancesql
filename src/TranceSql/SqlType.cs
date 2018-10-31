@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 
 namespace TranceSql
 {
@@ -142,7 +143,23 @@ namespace TranceSql
 
             if(_typeMap.ContainsKey(nullableType ?? type))
             {
-                return new SqlType(_typeMap[nullableType ?? type], allowNull ?? type.IsClass, parameters);
+                IEnumerable<object> typeParameters;
+
+                // A string with a maximum length of 0 is probably not
+                // ever what we want, default to 50.
+                if (type == typeof(string) && parameters?.Any() != true)
+                {
+                    typeParameters = new object[] { 50 };
+                }
+                else
+                {
+                    typeParameters = parameters;
+                }
+
+                return new SqlType(
+                    _typeMap[nullableType ?? type], 
+                    allowNull ?? type.IsClass,
+                    typeParameters);
             }
 
             throw new ArgumentException($"Error in SqlType.From conversion: Automatic mapping is not supported for the type '{type.FullName}'.", nameof(type));
