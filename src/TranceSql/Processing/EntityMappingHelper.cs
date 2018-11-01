@@ -95,7 +95,7 @@ namespace TranceSql.Processing
         {
             if (reader.Read())
             {
-                if (columns == null || !columns.Any())
+                if (columns?.Any() != true)
                 {
                     var map = EntityMapping.MapDbReaderColumns(reader);
                     return map.ToDictionary(k => k.Key, v => reader[v.Value]);

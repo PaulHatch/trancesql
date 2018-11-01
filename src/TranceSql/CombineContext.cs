@@ -35,13 +35,16 @@ namespace TranceSql
         /// <param name="context">The context to be appended.</param>
         public void Append(IContext context)
         {
-            if (String.IsNullOrEmpty(OperationName))
+            if (!String.IsNullOrEmpty(context.OperationName))
             {
-                OperationName = context.OperationName;
-            }
-            else if(!String.IsNullOrEmpty(context.OperationName))
-            {
-                OperationName = $"{OperationName}+{context.OperationName}";
+                if (String.IsNullOrEmpty(OperationName))
+                {
+                    OperationName = context.OperationName;
+                }
+                else if (!String.IsNullOrEmpty(context.OperationName))
+                {
+                    OperationName = $"{OperationName}+{context.OperationName}";
+                }
             }
 
             _commandText.Append(context.CommandText);

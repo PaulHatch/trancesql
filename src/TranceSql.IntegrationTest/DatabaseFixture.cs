@@ -21,6 +21,9 @@ namespace TranceSql.IntegrationTest
         private static object _nameLocker = new object();
         private Dialect _dialect;
         private string _dbName;
+        private bool _createdDatabase;
+        private Database _masterDatabase; // used for fixture operations (create/drop test database)
+
         public Func<ITracer, Database> GetDatabase { get; }
 
         protected enum Dialect
@@ -103,6 +106,8 @@ namespace TranceSql.IntegrationTest
                     }
                     catch { }
 
+                    _createdDatabase = true;
+                    _masterDatabase = database;
                     return;
                 }
                 catch
@@ -117,12 +122,19 @@ namespace TranceSql.IntegrationTest
             switch (_dialect)
             {
                 case Dialect.MySql:
-                    break;
                 case Dialect.SqlServer:
-                    break;
                 case Dialect.Oracle:
-                    break;
                 case Dialect.Postgres:
+                    if (_createdDatabase)
+                    {
+                        try
+                        {
+                            new Command(_masterDatabase) {
+                            new Raw("DROP DATABASE " + _dbName)
+                        }.Execute();
+                        }
+                        catch { }
+                    }
                     break;
                 case Dialect.Sqlite:
                     if (File.Exists($"{_dbName}.db")) { File.Delete($"{_dbName}.db"); }

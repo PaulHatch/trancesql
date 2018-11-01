@@ -339,7 +339,7 @@ namespace TranceSql.Processing
                         try
                         {
                             connection.Open();
-                            if (processors == null || !processors.Any())
+                            if (processors?.Any() != true)
                             {
                                 command.ExecuteNonQuery();
                             }
@@ -347,9 +347,15 @@ namespace TranceSql.Processing
                             {
                                 using (var reader = command.ExecuteReader())
                                 {
+                                    var results = 0;
                                     foreach (var item in processors)
                                     {
+                                        if (results > 0 && !reader.NextResult())
+                                        {
+                                            throw new InvalidOperationException($"Expected {processors.Count()} but result only contained {results}");
+                                        }
                                         item.Deferred.SetValue(item.Processer.Process(reader));
+                                        results++;
                                     }
                                 }
                             }
@@ -387,7 +393,7 @@ namespace TranceSql.Processing
                         try
                         {
                             await connection.OpenAsync();
-                            if (processors == null || !processors.Any())
+                            if (processors?.Any() != true)
                             {
                                 await command.ExecuteNonQueryAsync();
                             }

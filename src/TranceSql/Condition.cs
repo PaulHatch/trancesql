@@ -1661,7 +1661,7 @@ namespace TranceSql
 
         void ISqlElement.Render(RenderContext context)
         {
-            if (Left == null || Right is null)
+            if (Left is null || Right is null)
             {
                 // A value is null, get the non-null value
                 var value = Left ?? Right;
