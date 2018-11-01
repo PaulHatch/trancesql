@@ -20,7 +20,7 @@ namespace TranceSql.Test
 
             var result = sut.ToString();
 
-            Assert.Equal("CREATE TABLE Table\n(\nColumn1 STRING(50) NOT NULL\n);", result);
+            Assert.Equal("CREATE TABLE Table\n(\nColumn1 STRING NOT NULL\n);", result);
         }
     }
 }

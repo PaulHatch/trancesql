@@ -75,6 +75,11 @@ namespace TranceSql.SqlServer
             }
             else
             {
+                if (type == DbType.String)
+                {
+                    return $"{typeName}(MAX)";
+                }
+
                 return typeName;
             }
         }

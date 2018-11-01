@@ -143,23 +143,10 @@ namespace TranceSql
 
             if(_typeMap.ContainsKey(nullableType ?? type))
             {
-                IEnumerable<object> typeParameters;
-
-                // A string with a maximum length of 0 is probably not
-                // ever what we want, default to 50.
-                if (type == typeof(string) && parameters?.Any() != true)
-                {
-                    typeParameters = new object[] { 50 };
-                }
-                else
-                {
-                    typeParameters = parameters;
-                }
-
                 return new SqlType(
                     _typeMap[nullableType ?? type], 
                     allowNull ?? type.IsClass,
-                    typeParameters);
+                    parameters);
             }
 
             throw new ArgumentException($"Error in SqlType.From conversion: Automatic mapping is not supported for the type '{type.FullName}'.", nameof(type));
@@ -167,7 +154,7 @@ namespace TranceSql
 
         void ISqlElement.Render(RenderContext context)
         {
-            if (string.IsNullOrEmpty(ExplicitTypeName))
+            if (String.IsNullOrEmpty(ExplicitTypeName))
             {
                 context.Write(context.Dialect.FormatType(Type, Parameters));
             }
