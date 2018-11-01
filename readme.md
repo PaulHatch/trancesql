@@ -2,12 +2,6 @@
 # TranceSQL
 
 [![NuGet version (TranceSql)](https://img.shields.io/nuget/v/TranceSql.svg?style=flat-square)](https://www.nuget.org/packages/TranceSql/)
-[![NuGet version (TranceSql.SqlServer)](https://img.shields.io/nuget/v/TranceSql.SqlServer.svg?style=flat-square)](https://www.nuget.org/packages/TranceSql.TranceSql/)
-[![NuGet version (TranceSql.Postgres)](https://img.shields.io/nuget/v/TranceSql.Postgres.svg?style=flat-square)](https://www.nuget.org/packages/TranceSql.Postgres/)
-[![NuGet version (TranceSql.Sqlite)](https://img.shields.io/nuget/v/TranceSql.Sqlite.svg?style=flat-square)](https://www.nuget.org/packages/TranceSql.Sqlite/)
-[![NuGet version (TranceSql.MySql)](https://img.shields.io/nuget/v/TranceSql.MySql.svg?style=flat-square)](https://www.nuget.org/packages/TranceSql.MySql/)
-[![NuGet version (TranceSql.Oracle)](https://img.shields.io/nuget/v/TranceSql.Oracle.svg?style=flat-square)](https://www.nuget.org/packages/TranceSql.Oracle/)
-
 
 TranceSQL provides an easy to use, high performance data access interface for SQL databases. It
 allows you to create SQL queries in an API which closely resembles the final SQL query and provides
