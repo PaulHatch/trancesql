@@ -17,6 +17,7 @@ before_script:
   - chmod +x init.sh
   - chmod +x semver.sh
   - apk add --no-cache bash
+  - set -e
 
 stages:
   - build
@@ -27,9 +28,13 @@ stages:
 Build:
     stage: build
     script: bash init.sh --build
+    except:
+      - tags
 
 Unit Tests:
     stage: test
+    except:
+      - tags
     script:
      - docker pull $IMAGE_TAG
      - docker run --name testing $IMAGE_TAG --test
@@ -40,6 +45,8 @@ Unit Tests:
 
 SQL Server Integration Tests:
     stage: test
+    except:
+      - tags
     script: 
       - bash init.sh --integration $IMAGE_TAG sqlserver
       - exit $($?)
@@ -49,6 +56,8 @@ SQL Server Integration Tests:
 
 SQLite Integration Tests:
     stage: test
+    except:
+      - tags
     script:
       - bash init.sh --integration $IMAGE_TAG sqlite
       - exit $($?)
@@ -58,6 +67,8 @@ SQLite Integration Tests:
 
 Postgres Integration Tests:
     stage: test
+    except:
+      - tags
     script: 
       - bash init.sh --integration $IMAGE_TAG postgres
       - exit $($?)
@@ -67,6 +78,8 @@ Postgres Integration Tests:
 
 MySQL Integration Tests:
     stage: test
+    except:
+      - tags
     script: 
       - bash init.sh --integration $IMAGE_TAG mysql
       - exit $($?)
@@ -77,9 +90,13 @@ MySQL Integration Tests:
 
 Publish Preview:
     stage: publish-preview
+    except:
+      - tags
     script: bash init.sh --publish-preview
 
 Publish:
     stage: publish
+    except:
+      - tags
     when: manual
     script: bash init.sh --publish

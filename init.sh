@@ -35,7 +35,7 @@ case "$1" in
 	VERSION=$(./semver.sh next)
 	docker pull $IMAGE_TAG
 	docker run --rm $IMAGE_TAG --publish $VERSION --source $NUGET_URL --api-key $NUGET_KEY
-	git tag -a -m ${VERSION} ${VERSION}
+	git -c user.name='CI Server' -c user.email='<>' tag -a -m ${VERSION} ${VERSION}
 	git push --tags origin master
 	;;
 	
