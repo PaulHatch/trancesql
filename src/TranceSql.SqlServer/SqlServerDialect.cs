@@ -56,7 +56,7 @@ namespace TranceSql.SqlServer
         /// <returns>
         /// A formatted string constant.
         /// </returns>
-        public string FormatString(string value) => $"N'{value.Replace("'","''")}'";
+        public string FormatString(string value) => $"N'{value.Replace("'", "''")}'";
 
         /// <summary>
         /// Creates a string representing the specified type.
@@ -75,12 +75,14 @@ namespace TranceSql.SqlServer
             }
             else
             {
-                if (type == DbType.String)
+                switch (type)
                 {
-                    return $"{typeName}(MAX)";
+                    case DbType.AnsiString:
+                    case DbType.String:
+                        return $"{typeName}(MAX)";
+                    default:
+                        return typeName;
                 }
-
-                return typeName;
             }
         }
 

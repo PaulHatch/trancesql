@@ -1,17 +1,32 @@
 ﻿
 # TranceSQL
 
-TranceSQL provides an easy to use, high performance data access interface for SQL databases.
+[![NuGet version (TranceSql)](https://img.shields.io/nuget/v/TranceSql.svg?style=flat-square)](https://www.nuget.org/packages/TranceSql/)
+[![NuGet version (TranceSql.SqlServer)](https://img.shields.io/nuget/v/TranceSql.SqlServer.svg?style=flat-square)](https://www.nuget.org/packages/TranceSql.TranceSql/)
+[![NuGet version (TranceSql.Postgres)](https://img.shields.io/nuget/v/TranceSql.Postgres.svg?style=flat-square)](https://www.nuget.org/packages/TranceSql.Postgres/)
+[![NuGet version (TranceSql.Sqlite)](https://img.shields.io/nuget/v/TranceSql.Sqlite.svg?style=flat-square)](https://www.nuget.org/packages/TranceSql.Sqlite/)
+[![NuGet version (TranceSql.MySql)](https://img.shields.io/nuget/v/TranceSql.MySql.svg?style=flat-square)](https://www.nuget.org/packages/TranceSql.MySql/)
+[![NuGet version (TranceSql.Oracle)](https://img.shields.io/nuget/v/TranceSql.Oracle.svg?style=flat-square)](https://www.nuget.org/packages/TranceSql.Oracle/)
 
-It is minimally abstract compared to ORMs such as Entity Framework. When using TranceSQL, queries are
-constructing using a structured API that closely resembles the final SQL query. Platform specific dialects
-provide compatible SQL code for several databases:
+
+TranceSQL provides an easy to use, high performance data access interface for SQL databases. It
+allows you to create SQL queries in an API which closely resembles the final SQL query and provides
+execution and result object mapping.
+
+As there are differences between different dialects of SQL, for example SQL Server uses the `TOP`
+keyword to indicate the maximum number of rows to return from a `SELECT`, whereas other vendors
+use `LIMIT` or require specialized `WHERE` clauses. TranceSQL provides platform specific drivers
+to render compatible SQL code for several dialects:
 
  - Postgres
  - Microsoft SQL Server
  - Sqlite
  - MySql
- - Oracle 
+ - Oracle
+
+ TranceSQL supports [OpenTracing].
+
+ [OpenTracing]: https://opentracing.io/
 
 ## Basic Example
 
