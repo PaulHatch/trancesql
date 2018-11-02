@@ -108,6 +108,8 @@ namespace TranceSql.IntegrationTest
 
                     _createdDatabase = true;
                     _masterDatabase = database;
+
+                    Thread.Sleep(2000);
                     return;
                 }
                 catch
