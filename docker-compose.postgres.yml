@@ -14,5 +14,7 @@ services:
           - db
     db:
         image: "postgres"
+        ports:
+          - "5432:5432"
         environment:
-          POSTGRES_PASSWORD: "Integration123"
+          - POSTGRES_PASSWORD=Integration123
