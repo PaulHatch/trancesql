@@ -17,7 +17,7 @@ namespace TranceSql.IntegrationTest
 {
     public class DatabaseFixture
     {
-        private static int _nameIndex = 0;
+        private static char _nameIndex = 'a';
         private static object _nameLocker = new object();
         private Dialect _dialect;
         private string _dbName;
