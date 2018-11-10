@@ -20,7 +20,7 @@ namespace TranceSql.Processing
     public class SqlCommandManager
     {
         /// <summary>Connection string for target database.</summary>
-        internal string ConnectionString { get; }
+        internal string ConnectionString { get; private set; }
 
         /// <summary>Connection factory delegate for target database.</summary>
         internal Func<DbConnection> ConnectionFactory { get; }
@@ -28,8 +28,72 @@ namespace TranceSql.Processing
         /// <summary>Provides parameter value from input object instances.</summary>
         internal IParameterValueExtractor ValueExtractor { get; }
 
-        private ITracer _tracer;
+        private enum ConnectionMode { String, AsyncFactory, Factory }
+
         private DbInfo _dbInfo;
+        private readonly ITracer _tracer;
+        private readonly Func<Task<string>> _asyncConnectionStringFactory;
+        private readonly Func<string> _connectionStringFactory;
+        private readonly TimeSpan _credentialsTtl;
+        private DateTimeOffset _credentialsExpireAt = DateTimeOffset.MinValue;
+        private readonly ConnectionMode _connectionMode = ConnectionMode.String;
+        private readonly Func<string, DbInfo> _dbInfoFactory;
+
+        /// <summary>
+        /// Initialize a new instance of a generic ADO transaction. Use
+        /// a provider-specific subclass for better performance.
+        /// </summary>
+        /// <param name="asyncConnectionStringFactory">A delegate which will be called
+        /// to provide a connection string, this method will be called each time
+        /// a new connection string is needed, allowing for rolling credentials.</param>
+        /// <param name="credentialsTtl">Duration to keep credentials before refreshing.</param>
+        /// <param name="connectionFactory">Delegate to create connections for current database.</param>
+        /// <param name="valueExtractor">Provides parameter value from input object instances.</param>
+        /// <param name="tracer">The OpenTracing tracer instance to use. If this value is null the global tracer will
+        /// be used instead.</param>
+        /// <param name="dbInfoFactory">The information about the connection string being used.</param>
+        public SqlCommandManager(
+            Func<Task<string>> asyncConnectionStringFactory,
+            TimeSpan credentialsTtl,
+            Func<DbConnection> connectionFactory,
+            IParameterValueExtractor valueExtractor,
+            ITracer tracer,
+            Func<string, DbInfo> dbInfoFactory)
+            : this(null, connectionFactory, valueExtractor, tracer, null)
+        {
+            _asyncConnectionStringFactory = asyncConnectionStringFactory;
+            _credentialsTtl = credentialsTtl;
+            _connectionMode = ConnectionMode.AsyncFactory;
+            _dbInfoFactory = dbInfoFactory;
+        }
+
+        /// <summary>
+        /// Initialize a new instance of a generic ADO transaction. Use
+        /// a provider-specific subclass for better performance.
+        /// </summary>
+        /// <param name="connectionStringFactory">A delegate which will be called
+        /// to provide a connection string, this method will be called each time
+        /// a new connection string is needed, allowing for rolling credentials.</param>
+        /// <param name="credentialsTtl">Duration to keep credentials before refreshing.</param>
+        /// <param name="connectionFactory">Delegate to create connections for current database.</param>
+        /// <param name="valueExtractor">Provides parameter value from input object instances.</param>
+        /// <param name="tracer">The OpenTracing tracer instance to use. If this value is null the global tracer will
+        /// be used instead.</param>
+        /// <param name="dbInfoFactory">The information about the connection string being used.</param>
+        public SqlCommandManager(
+            Func<string> connectionStringFactory,
+            TimeSpan credentialsTtl,
+            Func<DbConnection> connectionFactory,
+            IParameterValueExtractor valueExtractor,
+            ITracer tracer,
+            Func<string, DbInfo> dbInfoFactory)
+            : this(null, connectionFactory, valueExtractor, tracer, null)
+        {
+            _connectionStringFactory = connectionStringFactory;
+            _credentialsTtl = credentialsTtl;
+            _connectionMode = ConnectionMode.Factory;
+            _dbInfoFactory = dbInfoFactory;
+        }
 
         /// <summary>
         /// Initialize a new instance of a generic ADO transaction. Use
@@ -75,11 +139,38 @@ namespace TranceSql.Processing
         /// <summary>
         /// Creates a connection for this transaction.
         /// </summary>
-        /// <returns>A DbConnection instance for this transaction's target database.</returns>
-        protected virtual DbConnection CreateConnection()
+        /// <param name="forceRefresh">True if refreshing credentials must be refreshed.</param>
+        /// <returns>
+        /// A DbConnection instance for this transaction's target database.
+        /// </returns>
+        protected virtual async Task<DbConnection> CreateConnectionAsync(bool forceRefresh = false)
         {
             var newConnection = ConnectionFactory();
+
+            switch (_connectionMode)
+            {
+                case ConnectionMode.AsyncFactory:
+                    if (forceRefresh || DateTimeOffset.UtcNow > _credentialsExpireAt)
+                    {
+                        ConnectionString = await _asyncConnectionStringFactory();
+                        _dbInfo = _dbInfoFactory(ConnectionString);
+                        _credentialsExpireAt = DateTimeOffset.UtcNow + _credentialsTtl;
+                    }
+                    break;
+                case ConnectionMode.Factory:
+                    if (forceRefresh || DateTimeOffset.UtcNow > _credentialsExpireAt)
+                    {
+                        ConnectionString = _connectionStringFactory();
+                        _dbInfo = _dbInfoFactory(ConnectionString);
+                        _credentialsExpireAt = DateTimeOffset.UtcNow + _credentialsTtl;
+                    }
+                    break;
+                default:
+                    break;
+            }
+
             newConnection.ConnectionString = ConnectionString;
+
             return newConnection;
         }
 
@@ -325,7 +416,7 @@ namespace TranceSql.Processing
         /// <returns>A task for the operation.</returns>
         internal void RunCommandSet(IContext context, IEnumerable<ProcessorContext> processors)
         {
-            using (var connection = CreateConnection())
+            using (var connection = AsyncHelper.RunSync(() => CreateConnectionAsync()))
             {
                 using (var command = connection.CreateCommand())
                 {
@@ -379,7 +470,7 @@ namespace TranceSql.Processing
         /// <returns>A task for the operation.</returns>
         internal async Task RunCommandSetAsync(IContext context, IEnumerable<ProcessorContext> processors)
         {
-            using (var connection = CreateConnection())
+            using (var connection = await CreateConnectionAsync())
             {
                 using (var command = connection.CreateCommand())
                 {
@@ -439,7 +530,7 @@ namespace TranceSql.Processing
         {
             AssertCorrectReturnType<T>(processor);
 
-            using (var connection = CreateConnection())
+            using (var connection = await CreateConnectionAsync())
             {
                 using (var command = connection.CreateCommand())
                 {
@@ -494,7 +585,7 @@ namespace TranceSql.Processing
         {
             AssertCorrectReturnType<T>(processor);
 
-            using (var connection = CreateConnection())
+            using (var connection = AsyncHelper.RunSync(() => CreateConnectionAsync()))
             {
                 using (var command = connection.CreateCommand())
                 {
@@ -509,7 +600,6 @@ namespace TranceSql.Processing
                     {
                         try
                         {
-
                             connection.Open();
                             if (processor == null)
                             {

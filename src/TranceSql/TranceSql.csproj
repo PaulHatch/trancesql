@@ -5,7 +5,7 @@
     <PackageId>TranceSql</PackageId>
     <Authors>Paul Hatcherian</Authors>
     <PackageTags>Trance TranceSQL SQL Database Client</PackageTags>
-    <Copyright>2018</Copyright>
+    <Copyright>2018 Paul Hatcherian</Copyright>
     <Company />
     <PackageLicenseUrl>https://raw.githubusercontent.com/PaulHatch/simpleelastic/master/license.txt</PackageLicenseUrl>
     <PackageProjectUrl>https://www.trancesql.com</PackageProjectUrl>
