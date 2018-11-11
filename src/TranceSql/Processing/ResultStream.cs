@@ -47,8 +47,7 @@ namespace TranceSql.Processing
             _isSimpleType = EntityMapping.IsSimpleType<T>();
             _readEntity = _isSimpleType ? GetSimple : EntityMapping.GetEntityFunc<T>();
 
-            _connection = manager.ConnectionFactory();
-            _connection.ConnectionString = manager.ConnectionString;
+            _connection = AsyncHelper.RunSync(() => manager.CreateConnectionAsync());
             _command = _connection.CreateCommand();
             _command.Connection = _connection;
             _command.CommandText = context.CommandText;

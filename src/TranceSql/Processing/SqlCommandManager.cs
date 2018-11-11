@@ -19,9 +19,6 @@ namespace TranceSql.Processing
     /// <summary>Handler for ADO interactions.</summary>
     public class SqlCommandManager
     {
-        /// <summary>Connection string for target database.</summary>
-        internal string ConnectionString { get; private set; }
-
         /// <summary>Connection factory delegate for target database.</summary>
         internal Func<DbConnection> ConnectionFactory { get; }
 
@@ -31,6 +28,7 @@ namespace TranceSql.Processing
         private enum ConnectionMode { String, AsyncFactory, Factory }
 
         private DbInfo _dbInfo;
+        private volatile string _connectionString;
         private readonly ITracer _tracer;
         private readonly Func<Task<string>> _asyncConnectionStringFactory;
         private readonly Func<string> _connectionStringFactory;
@@ -114,7 +112,7 @@ namespace TranceSql.Processing
             ITracer tracer,
             DbInfo dbInfo)
         {
-            ConnectionString = connectionString;
+            _connectionString = connectionString;
             ConnectionFactory = connectionFactory;
             ValueExtractor = valueExtractor;
             _tracer = tracer ?? GlobalTracer.Instance;
@@ -145,13 +143,13 @@ namespace TranceSql.Processing
         /// <returns>
         /// A DbConnection instance for this transaction's target database.
         /// </returns>
-        protected virtual async Task<DbConnection> CreateConnectionAsync(bool forceRefresh = false)
+        internal async Task<DbConnection> CreateConnectionAsync(bool forceRefresh = false)
         {
             var newConnection = ConnectionFactory();
 
             if (_connectionMode == ConnectionMode.String)
             {
-                newConnection.ConnectionString = ConnectionString;
+                newConnection.ConnectionString = _connectionString;
             }
             else
             {
@@ -165,9 +163,9 @@ namespace TranceSql.Processing
                             var connectionString = _connectionMode == ConnectionMode.AsyncFactory ?
                             await _asyncConnectionStringFactory() : _connectionStringFactory();
 
-                            ConnectionString = connectionString;
-                            _dbInfo = _dbInfoFactory(connectionString);
                             newConnection.ConnectionString = connectionString;
+                            _connectionString = connectionString;
+                            _dbInfo = _dbInfoFactory(connectionString);
                             _credentialsExpireAt = DateTimeOffset.UtcNow + _credentialsTtl;
                         }
                     }
@@ -175,6 +173,10 @@ namespace TranceSql.Processing
                     {
                         _refreshSemaphore.Release();
                     }
+                }
+                else
+                {
+                    newConnection.ConnectionString = _connectionString;
                 }
             }
 
