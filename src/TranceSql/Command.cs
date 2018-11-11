@@ -656,7 +656,7 @@ namespace TranceSql
         /// </returns>
         public Task<TResult> FetchAsync<TResult>(params Expression<Func<TResult, IEnumerable>>[] collections)
         {
-            return _manager.ExecuteResultAsync<TResult>(Render(), default(TResult), collections.Select(c => c.GetPropertyInfo()));
+            return _manager.ExecuteResultAsync<TResult>(Render(), default, collections.Select(c => c.GetPropertyInfo()));
         }
 
         /// <summary>
@@ -677,7 +677,7 @@ namespace TranceSql
                 throw new ArgumentException("All properties must be collections", "collections");
             }
 
-            return _manager.ExecuteResultAsync<TResult>(Render(), default(TResult), collections);
+            return _manager.ExecuteResultAsync<TResult>(Render(), default, collections);
         }
 
         /// <summary>
@@ -694,7 +694,7 @@ namespace TranceSql
         public Task<TResult> FetchMappedResultAsync<TResult>(params Expression<Func<TResult, object>>[] map)
             where TResult : new()
         {
-            var mappedProperties = MapProperties<TResult>(map);
+            var mappedProperties = MapProperties(map);
             return _manager.ExecuteMapResultAsync<TResult>(Render(), mappedProperties);
         }
 

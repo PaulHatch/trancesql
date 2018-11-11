@@ -38,6 +38,8 @@ namespace TranceSql.Processing
         private DateTimeOffset _credentialsExpireAt = DateTimeOffset.MinValue;
         private readonly ConnectionMode _connectionMode = ConnectionMode.String;
         private readonly Func<string, DbInfo> _dbInfoFactory;
+        private readonly SemaphoreSlim _refreshSemaphore = new SemaphoreSlim(1);
+
 
         /// <summary>
         /// Initialize a new instance of a generic ADO transaction. Use
@@ -147,29 +149,34 @@ namespace TranceSql.Processing
         {
             var newConnection = ConnectionFactory();
 
-            switch (_connectionMode)
+            if (_connectionMode == ConnectionMode.String)
             {
-                case ConnectionMode.AsyncFactory:
-                    if (forceRefresh || DateTimeOffset.UtcNow > _credentialsExpireAt)
-                    {
-                        ConnectionString = await _asyncConnectionStringFactory();
-                        _dbInfo = _dbInfoFactory(ConnectionString);
-                        _credentialsExpireAt = DateTimeOffset.UtcNow + _credentialsTtl;
-                    }
-                    break;
-                case ConnectionMode.Factory:
-                    if (forceRefresh || DateTimeOffset.UtcNow > _credentialsExpireAt)
-                    {
-                        ConnectionString = _connectionStringFactory();
-                        _dbInfo = _dbInfoFactory(ConnectionString);
-                        _credentialsExpireAt = DateTimeOffset.UtcNow + _credentialsTtl;
-                    }
-                    break;
-                default:
-                    break;
+                newConnection.ConnectionString = ConnectionString;
             }
+            else
+            {
+                if (forceRefresh || DateTimeOffset.UtcNow > _credentialsExpireAt)
+                {
+                    await _refreshSemaphore.WaitAsync();
+                    try
+                    {
+                        if (forceRefresh || DateTimeOffset.UtcNow > _credentialsExpireAt)
+                        {
+                            var connectionString = _connectionMode == ConnectionMode.AsyncFactory ?
+                            await _asyncConnectionStringFactory() : _connectionStringFactory();
 
-            newConnection.ConnectionString = ConnectionString;
+                            ConnectionString = connectionString;
+                            _dbInfo = _dbInfoFactory(connectionString);
+                            newConnection.ConnectionString = connectionString;
+                            _credentialsExpireAt = DateTimeOffset.UtcNow + _credentialsTtl;
+                        }
+                    }
+                    finally
+                    {
+                        _refreshSemaphore.Release();
+                    }
+                }
+            }
 
             return newConnection;
         }
