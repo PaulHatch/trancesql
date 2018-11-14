@@ -117,7 +117,7 @@ namespace TranceSql.Processing
         /// </summary>
         public void Reset()
         {
-            Current = default(T);
+            Current = default;
             _reader?.Close();
             _command?.Cancel();
             _reader = _command.ExecuteReader();
