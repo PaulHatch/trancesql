@@ -37,7 +37,7 @@ namespace TranceSql.Test
 
             var result = sut.ToString();
 
-            Assert.Equal("UPDATE Table AS T\nSET Column1 = @P1", result);
+            Assert.Equal("UPDATE Table T\nSET Column1 = @P1", result);
         }
 
         [Fact]
@@ -54,7 +54,7 @@ namespace TranceSql.Test
 
             var result = sut.ToString();
 
-            Assert.Equal("UPDATE Table AS T\nSET Column1 = @P1, Column2 = @P2", result);
+            Assert.Equal("UPDATE Table T\nSET Column1 = @P1, Column2 = @P2", result);
         }
     }
 }

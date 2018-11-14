@@ -251,7 +251,7 @@ namespace TranceSql.Test
 
             var result = sut.ToString();
 
-            Assert.Equal("SELECT *\nFROM Table AS T;", result);
+            Assert.Equal("SELECT *\nFROM Table T;", result);
         }
 
         [Fact]
