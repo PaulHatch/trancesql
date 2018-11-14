@@ -405,16 +405,18 @@ namespace TranceSql.Processing
 
         private IScope CreateScope(IContext context)
         {
-            return _tracer
-                .BuildSpan(context.OperationName)
+            var builder = _tracer
+                .BuildSpan(context.OperationName ?? "sql-command")
                 .WithTag(Tags.SpanKind.Key, Tags.SpanKindClient)
                 .WithTag(Tags.DbType, "sql")
-                .WithTag(Tags.DbUser, _dbInfo.User)
-                .WithTag(Tags.DbInstance, _dbInfo.Database)
-                .WithTag(Tags.DbStatement, context.CommandText)
-                .WithTag("peer.address", _dbInfo.Server)
-                .WithTag(Tags.Component.Key, "trancesql")
-                .StartActive(finishSpanOnDispose: true);
+                .WithTag(Tags.Component.Key, "trancesql");
+
+            if (!String.IsNullOrEmpty(_dbInfo.User)) { builder.WithTag(Tags.DbUser, _dbInfo.User); }
+            if (!String.IsNullOrEmpty(_dbInfo.Database)) { builder.WithTag(Tags.DbInstance, _dbInfo.Database); }
+            if (!String.IsNullOrEmpty(context.CommandText)) { builder.WithTag(Tags.DbStatement, context.CommandText); }
+            if (!String.IsNullOrEmpty(_dbInfo.Server)) { builder.WithTag("peer.address", _dbInfo.Server); }
+
+            return builder.StartActive(finishSpanOnDispose: true);
         }
 
         /// <summary>
