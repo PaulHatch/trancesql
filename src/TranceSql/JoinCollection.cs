@@ -3,7 +3,7 @@
 namespace TranceSql
 {
     /// <summary>
-    /// Represents a collection of join claus elements. This class supports implicit casting from 
+    /// Represents a collection of join clause elements. This class supports implicit casting from 
     /// <see cref="Join"/>, as well as collection initialization from <see cref="JoinType"/>, 
     /// <see cref="string"/>, and <see cref="ICondition"/> combinations. See documentation of 
     /// the <see cref="Select"/> command for usage examples.
@@ -55,6 +55,18 @@ namespace TranceSql
         }
 
         /// <summary>
+        /// Adds the specified join to this collection.
+        /// </summary>
+        /// <param name="join">The join.</param>
+        public void Add(Alias join)
+        {
+            if (join.Element is Join)
+            {
+                Add(join);
+            }
+        }
+
+        /// <summary>
         /// Performs an implicit conversion from <see cref="Join"/> to <see cref="JoinCollection"/>.
         /// </summary>
         /// <param name="join">The join.</param>
@@ -62,6 +74,16 @@ namespace TranceSql
         /// The result of the conversion.
         /// </returns>
         public static implicit operator JoinCollection(Join join)
+            => new JoinCollection { join };
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="Alias" /> to <see cref="JoinCollection" />.
+        /// </summary>
+        /// <param name="join">The join.</param>
+        /// <returns>
+        /// The result of the conversion.
+        /// </returns>
+        public static implicit operator JoinCollection(Alias join)
             => new JoinCollection { join };
     }
 }

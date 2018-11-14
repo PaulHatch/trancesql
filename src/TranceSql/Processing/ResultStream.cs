@@ -66,7 +66,7 @@ namespace TranceSql.Processing
             }
             else if (Convert.IsDBNull(result))
             {
-                return default(T);
+                return default;
             }
             else
             {

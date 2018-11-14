@@ -190,6 +190,13 @@ namespace TranceSql
                     context.Write("FROM ");
                     context.RenderDelimited(From);
                 }
+
+                if (_join?.Any() == true)
+                {
+                    context.WriteLine();
+                    context.RenderDelimited(Join, context.LineDelimiter);
+                }
+
                 if (_where?.Any() == true)
                 {
                     context.WriteLine();

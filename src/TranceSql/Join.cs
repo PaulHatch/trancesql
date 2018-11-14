@@ -17,7 +17,7 @@ namespace TranceSql
         /// <summary>
         /// Gets or sets the table.
         /// </summary>
-        private Table Table { get; set; }
+        private IDataSource Table { get; set; }
 
         private ConditionCollection _on;
         /// <summary>
@@ -44,7 +44,7 @@ namespace TranceSql
         /// <param name="joinType">Type of the join to create.</param>
         /// <param name="table">The table to join.</param>
         /// <param name="on">The join condition.</param>
-        public Join(JoinType joinType, Table table, ICondition on)
+        public Join(JoinType joinType, IDataSource table, ICondition on)
         {
             JoinType = joinType;
             Table = table;
