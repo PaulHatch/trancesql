@@ -36,7 +36,7 @@ case "$1" in
 	docker pull $IMAGE_TAG
 	docker run --rm $IMAGE_TAG --publish $VERSION --source $NUGET_URL --api-key $NUGET_KEY
 	git -c user.name='CI Server' -c user.email='<>' tag -a -m ${VERSION} ${VERSION}
-	git push --tags origin master
+	git push https://${GITHUB_USER}:${GITHUB_TOKEN}@github.com/PaulHatch/trancesql.git master --tags
 	;;
 	
   *)
