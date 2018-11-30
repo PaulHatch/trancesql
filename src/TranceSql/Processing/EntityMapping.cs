@@ -67,6 +67,16 @@ namespace TranceSql.Processing
 
         internal static class ReadHelper
         {
+            private static MethodInfo _ordinalHelperMethod
+                = typeof(ReadHelper).GetMethod(nameof(Get), new[] { typeof(DbDataReader), typeof(int) });
+
+            public static MethodInfo GetOrdinalHelperMethod(Type dataType) => _ordinalHelperMethod.MakeGenericMethod(dataType);
+
+            public static MethodInfo PropertyHelperMethod
+                = typeof(ReadHelper).GetMethod(nameof(Get), new[] { typeof(DbDataReader), typeof(IDictionary<string, int>), typeof(string) });
+
+            public static MethodInfo GetPropertyHelperMethod(Type dataType) => PropertyHelperMethod.MakeGenericMethod(dataType);
+
             /// <summary>
             /// Helper method called from dynamically generated entity map function
             /// to return a value from a DbDataReader or the type default if the value
@@ -96,7 +106,7 @@ namespace TranceSql.Processing
 
                     if (Convert.IsDBNull(result))
                     {
-                        return default(T);
+                        return default;
                     }
 
                     if (typeof(T).IsEnum)
@@ -117,8 +127,46 @@ namespace TranceSql.Processing
                 else
                 {
                     // unmatched columns
-                    return default(T);
+                    return default;
                 }
+            }
+
+            /// <summary>Helper method called from dynamically generated entity map function
+            /// to return a value from a DbDataReader or the type default if the value
+            /// cannot be found.</summary>
+            /// <typeparam name="T">Type to return.</typeparam>
+            /// <param name="reader">Open DbDataReader instance to retrieve value from.</param>
+            /// <param name="ordinal">Ordinal position of column to get.</param>
+            /// <returns>Value of column or the default for the specified type if the column does not exist.</returns>
+            public static T Get<T>(DbDataReader reader, int ordinal)
+            {
+                if (reader.FieldCount <= ordinal)
+                {
+                    throw new IndexOutOfRangeException($"The data result for the query includes {reader.FieldCount} columns, which is not enough to populate the requested tuple fields.");
+                }
+
+                object result = reader[ordinal];
+
+                if (Convert.IsDBNull(result))
+                {
+                    return default;
+                }
+
+                if (typeof(T).IsEnum)
+                {
+                    if (result is string stringResult)
+                    {
+                        return (T)Enum.Parse(typeof(T), stringResult);
+                    }
+                }
+
+                if (result is T r)
+                {
+                    return r;
+                }
+
+                return (T)Convert.ChangeType(result, typeof(T));
+
             }
         }
 
@@ -220,8 +268,80 @@ namespace TranceSql.Processing
         internal static CreateEntity<T> GetEntityFunc<T>()
         {
             // Ensure this type is registered
-            TryRegister<T>(() => CreateEntityFunc<T>());
+            TryRegister(() =>
+            {
+                if (IsValueTuple(typeof(T)))
+                {
+                    return CreateTupleFunc<T>();
+                }
+                else
+                {
+                    return CreateEntityFunc<T>();
+                }
+            });
             return (CreateEntity<T>)_creationDelegates[typeof(T)];
+        }
+
+        private static CreateEntity<T> CreateTupleFunc<T>()
+        {
+            var readerParam = Expression.Parameter(typeof(DbDataReader), "r");
+            var mapParam = Expression.Parameter(typeof(IDictionary<string, int>), "m");
+            var readMethod = typeof(DbDataReader).GetMethod("get_Item", new[] { typeof(int) });
+
+
+            var tupleType = typeof(T);
+            var newTuple = CreateTupleInitExpression(readerParam, readMethod, tupleType);
+
+            return Expression.Lambda<CreateEntity<T>>(newTuple, new ParameterExpression[] { readerParam, mapParam }).Compile();
+        }
+
+        private static Expression CreateTupleInitExpression(
+            ParameterExpression readerParam,
+            MethodInfo readMethod,
+            Type tupleType,
+            int offset = 0)
+        {
+            var types = tupleType.GetGenericArguments();
+            var ctor = tupleType.GetConstructor(types);
+            var getExpressions = types.Select((type, i) =>
+            {
+                if (IsValueTuple(type))
+                {
+                    return CreateTupleInitExpression(readerParam, readMethod, type, i + offset);
+                }
+                else
+                {
+                    // default property mapping, first make a generic version of the helper method call
+                    var ordinalHelper = ReadHelper.GetOrdinalHelperMethod(type);
+                    // create a call to the ReadHelper.Get<Type>(reader, original)
+                    var getValue = Expression.Call(ordinalHelper, readerParam, Expression.Constant(i + offset));
+                    // cast the result of the ReadHelper.Get call to the property type
+                    return Expression.Convert(getValue, type);
+                }
+            });
+
+            var newTuple = Expression.New(ctor, getExpressions);
+            return newTuple;
+        }
+
+        private static Type[] _valueTuples = new[]
+        {
+            typeof(ValueTuple<>),
+            typeof(ValueTuple<,>),
+            typeof(ValueTuple<,,>),
+            typeof(ValueTuple<,,,>),
+            typeof(ValueTuple<,,,,>),
+            typeof(ValueTuple<,,,,,>),
+            typeof(ValueTuple<,,,,,,>),
+            typeof(ValueTuple<,,,,,,,>)
+        };
+
+        private static bool IsValueTuple(Type type)
+        {
+            return
+                type.IsValueType &&
+                type.IsGenericType &&
+                _valueTuples.Contains(type.GetGenericTypeDefinition());
         }
 
         /// <summary>
@@ -283,7 +403,6 @@ namespace TranceSql.Processing
             var readerParam = Expression.Parameter(typeof(DbDataReader), "r");
             var mapParam = Expression.Parameter(typeof(IDictionary<string, int>), "m");
             var readMethod = typeof(DbDataReader).GetMethod("get_Item", new[] { typeof(string) });
-            var genericHelperMethodInfo = typeof(ReadHelper).GetMethod("Get", new[] { typeof(DbDataReader), typeof(IDictionary<string, int>), typeof(string) });
 
             // set up constructor
             NewExpression constructorExpression;
@@ -300,7 +419,7 @@ namespace TranceSql.Processing
                 foreach (var parameter in constructorInfo.GetParameters())
                 {
                     // map constructor arguments to the SQL results
-                    var helperMethodInfo = genericHelperMethodInfo.MakeGenericMethod(parameter.ParameterType);
+                    var helperMethodInfo = ReadHelper.GetPropertyHelperMethod(parameter.ParameterType);
                     Expression getValue = Expression.Call(helperMethodInfo, readerParam, mapParam, Expression.Constant(parameter.Name.ToCamelCase()));
 
                     constructorArguments.Add(Expression.Convert(getValue, parameter.ParameterType));
@@ -325,14 +444,14 @@ namespace TranceSql.Processing
                 if (customMap != null)
                 {
                     // use the custom mapping to obtain an expression
-                    var getValue = customMap.GetExpression(property, genericHelperMethodInfo, readerParam, mapParam);
+                    var getValue = customMap.GetExpression(property, ReadHelper.PropertyHelperMethod, readerParam, mapParam);
                     // add a binding for this property to the expression
                     bindings.Add(Expression.Bind(property, getValue));
                 }
                 else
                 {
                     // default property mapping, first make a generic version of the helper method call
-                    var helperMethodInfo = genericHelperMethodInfo.MakeGenericMethod(property.PropertyType);
+                    var helperMethodInfo = ReadHelper.GetPropertyHelperMethod(property.PropertyType);
                     // create a call to the ReadHelper.Get<PropertyType>(reader, columnMap, column)
                     var getValue = Expression.Call(helperMethodInfo, readerParam, mapParam, Expression.Constant(property.Name));
                     // cast the result of the ReadHelper.Get call to the property type
@@ -342,9 +461,7 @@ namespace TranceSql.Processing
             }
 
             var memberInit = Expression.MemberInit(constructorExpression, bindings);
-            var func = Expression.Lambda<CreateEntity<T>>(memberInit, new ParameterExpression[] { readerParam, mapParam }).Compile();
-
-            return func;
+            return Expression.Lambda<CreateEntity<T>>(memberInit, new ParameterExpression[] { readerParam, mapParam }).Compile();
         }
 
         /// <summary>

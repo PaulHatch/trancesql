@@ -10,7 +10,8 @@ namespace TranceSql.Processing
 {
     /// <summary>
     /// Defines a custom mapper for entity properties. This allows consumers to provide 
-    /// customized entity mapping of common types or based on custom attributes.
+    /// customized entity mapping of common types or based on custom attributes. A custom
+    /// map will not be applied when mapping to ValueTuples.
     /// </summary>
     public interface ICustomEntityMap
     {
