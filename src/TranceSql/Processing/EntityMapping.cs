@@ -60,7 +60,8 @@ namespace TranceSql.Processing
             var result = new Dictionary<string, int>(ColumnPropertyComparer ?? StringComparer.InvariantCultureIgnoreCase);
             for (int i = 0; i < reader.FieldCount; i++)
             {
-                result.Add(reader.GetName(i), i);
+                // multiple columns with the same name get
+                result[reader.GetName(i)] = i;
             }
             return result;
         }
