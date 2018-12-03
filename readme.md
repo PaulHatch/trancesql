@@ -3,11 +3,26 @@
 
 [![NuGet version (TranceSql)](https://img.shields.io/nuget/v/TranceSql.svg?style=flat-square)](https://www.nuget.org/packages/TranceSql/)
 
-TranceSQL provides an easy to use, high performance data access interface for SQL databases. It
-allows you to create SQL queries in an API which closely resembles the final SQL query and provides
-execution and result object mapping.
+TranceSQL provides an easy to use, high performance data access interface for SQL databases.
+TranceSQL is an alternative to using an ORM which provides an API for creating and executing
+commands and mapping query results back to objects. You can think of it as sitting in between
+an ORM like Entity Framework in which queries are generated from object-based DSLs such as LINQ
+and lightweight clients like Dapper that map results but require the query be provided as a string.
 
-As there are differences between different dialects of SQL, for example SQL Server uses the `TOP`
+```
+┌──────────────────┐  ╔═════════════════╗   ┌──────────────┐   ┌───────────────┐
+│ Entity Framework │  ║    TranceSQL    ║   │    Dapper    │   │    ADO.NET    │
+└────────┬─────────┘  ╚════════╦════════╝   └──────┬───────┘   └───────┬───────┘
+         │                     │                   │                   │
+         │                     │                   │                   │
+◀────────●─────────────────────●───────────────────●───────────────────●────────▶
+Abstract                                                               Bare Metal
+```
+
+TranceSQL provides a command API for modeling SQL queries and an extensible translation layer
+for converting results to usable objects. The command definition and command "rendering" are
+separated into two different steps, allowing for differences between different dialects of SQL
+to be accounted for in the resulting SQL command. For example SQL Server uses the `TOP`
 keyword to indicate the maximum number of rows to return from a `SELECT`, whereas other vendors
 use `LIMIT` or require specialized `WHERE` clauses. TranceSQL provides platform specific drivers
 to render compatible SQL code for several dialects:
