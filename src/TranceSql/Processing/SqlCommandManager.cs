@@ -161,7 +161,7 @@ namespace TranceSql.Processing
                         if (forceRefresh || DateTimeOffset.UtcNow > _credentialsExpireAt)
                         {
                             var connectionString = _connectionMode == ConnectionMode.AsyncFactory ?
-                            await _asyncConnectionStringFactory() : _connectionStringFactory();
+                                await _asyncConnectionStringFactory() : _connectionStringFactory();
 
                             newConnection.ConnectionString = connectionString;
                             _connectionString = connectionString;

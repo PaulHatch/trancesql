@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Text;
+using System.Threading.Tasks;
 using TranceSql.Processing;
 
 namespace TranceSql
@@ -38,5 +40,12 @@ namespace TranceSql
         /// <returns>A new <see cref="DeferContext"/> instance for this connection.</returns>
         public DeferContext CreateDeferContext() => 
             new DeferContext(this);
+
+        /// <summary>
+        /// Creates the connection using the internal connection manager.
+        /// </summary>
+        /// <returns>A new connection for this database.</returns>
+        protected Task<DbConnection> CreateConnectionAsync()
+            => Manager.CreateConnectionAsync();
     }
 }
