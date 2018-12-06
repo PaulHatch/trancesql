@@ -260,7 +260,7 @@ namespace TranceSql.Postgres
                 }
                 finally
                 {
-                    _lock.ExitReadLock();
+                    _lock.ExitUpgradeableReadLock();
                 }
             }
 
@@ -288,7 +288,7 @@ namespace TranceSql.Postgres
                 }
                 finally
                 {
-                    _lock.ExitReadLock();
+                    _lock.ExitUpgradeableReadLock();
                 }
             }
 
@@ -361,9 +361,12 @@ namespace TranceSql.Postgres
             /// </summary>
             /// <param name="cancel">A cancellation token.</param>
             /// <returns></returns>
-            public Task AwaitAsync(CancellationToken cancel = default)
+            public async Task AwaitAsync(CancellationToken cancel = default)
             {
-                return _connection.WaitAsync(cancel);
+                while (!cancel.IsCancellationRequested)
+                {
+                    await _connection.WaitAsync(cancel);
+                }
             }
 
             /// <summary>
