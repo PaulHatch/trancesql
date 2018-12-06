@@ -238,7 +238,7 @@ namespace TranceSql.Postgres
 
             internal void OnCompleted()
             {
-                _lock.EnterReadLock();
+                _lock.EnterUpgradeableReadLock();
                 try
                 {
                     if (!_complete)
@@ -254,7 +254,7 @@ namespace TranceSql.Postgres
                         }
                         finally
                         {
-                            _lock.ExitReadLock();
+                            _lock.ExitWriteLock();
                         }
                     }
                 }
@@ -282,7 +282,7 @@ namespace TranceSql.Postgres
                         }
                         finally
                         {
-                            _lock.ExitReadLock();
+                            _lock.ExitWriteLock();
                         }
                     }
                 }
