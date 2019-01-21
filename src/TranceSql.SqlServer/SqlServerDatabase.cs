@@ -17,113 +17,56 @@ namespace TranceSql.SqlServer
         /// <summary>
         /// Creates command parameters for a Microsoft SQL Server database reference.
         /// </summary>
-        /// <param name="asyncConnectionStringFactory">A delegate which will be called
-        /// to provide a connection string, this method will be called each time
-        /// a new connection string is needed, allowing for rolling credentials.</param>
-        /// <param name="ttl">The time to wait before refreshing the connection string.</param>
-        public SqlServerDatabase(Func<Task<string>> asyncConnectionStringFactory, TimeSpan ttl)
-            : this(asyncConnectionStringFactory, ttl, null, null)
+        /// <param name="rollingCredentials">
+        /// A connection string provider which uses rolling credentials such as
+        /// dynamic credentials from a Vault database provider.
+        /// </param>
+        public SqlServerDatabase(SqlServerRollingCredentials rollingCredentials)
+            : this(rollingCredentials, null, null)
         {
         }
 
         /// <summary>
         /// Creates command parameters for a Microsoft SQL Server database reference.
         /// </summary>
-        /// <param name="asyncConnectionStringFactory">A delegate which will be called
-        /// to provide a connection string, this method will be called each time
-        /// a new connection string is needed, allowing for rolling credentials.</param>
-        /// <param name="ttl">The time to wait before refreshing the connection string.</param>
+        /// <param name="rollingCredentials">
+        /// A connection string provider which uses rolling credentials such as
+        /// dynamic credentials from a Vault database provider.
+        /// </param>
         /// <param name="extractor">The parameter value extractor.</param>
-        public SqlServerDatabase(Func<Task<string>> asyncConnectionStringFactory, TimeSpan ttl, IParameterValueExtractor extractor)
-            : this(asyncConnectionStringFactory, ttl, extractor, null)
+        public SqlServerDatabase(SqlServerRollingCredentials rollingCredentials, IParameterValueExtractor extractor)
+            : this(rollingCredentials, extractor, null)
         {
         }
 
         /// <summary>
         /// Creates command parameters for a Microsoft SQL Server database reference.
         /// </summary>
-        /// <param name="asyncConnectionStringFactory">A delegate which will be called
-        /// to provide a connection string, this method will be called each time
-        /// a new connection string is needed, allowing for rolling credentials.</param>
-        /// <param name="ttl">The time to wait before refreshing the connection string.</param>
+        /// <param name="rollingCredentials">
+        /// A connection string provider which uses rolling credentials such as
+        /// dynamic credentials from a Vault database provider.
+        /// </param>
         /// <param name="tracer">
         /// The OpenTracing tracer instance to use. If this value is null the global tracer will
         /// be used instead.
         /// </param>
-        public SqlServerDatabase(Func<Task<string>> asyncConnectionStringFactory, TimeSpan ttl, ITracer tracer)
-            : this(asyncConnectionStringFactory, ttl, null, tracer)
+        public SqlServerDatabase(SqlServerRollingCredentials rollingCredentials, ITracer tracer)
+            : this(rollingCredentials, null, tracer)
         {
         }
 
         /// <summary>
         /// Creates command parameters for a Microsoft SQL Server database reference.
         /// </summary>
-        /// <param name="asyncConnectionStringFactory">A delegate which will be called
-        /// to provide a connection string, this method will be called each time
-        /// a new connection string is needed, allowing for rolling credentials.</param>
-        /// <param name="ttl">The time to wait before refreshing the connection string.</param>
-        /// <param name="extractor">The parameter value extractor.</param>
-        /// <param name="tracer">The OpenTracing tracer instance to use. If this value is null the global tracer will
-        /// be used instead.</param>
-        public SqlServerDatabase(Func<Task<string>> asyncConnectionStringFactory, TimeSpan ttl, IParameterValueExtractor extractor, ITracer tracer)
-            : base(new SqlCommandManager(asyncConnectionStringFactory, ttl, GetConnection, extractor ?? new DefaultValueExtractor(), tracer, ExtractDbInfo), new SqlServerDialect())
-        {
-        }
-
-
-        /// <summary>
-        /// Creates command parameters for a Microsoft SQL Server database reference.
-        /// </summary>
-        /// <param name="connectionStringFactory">A delegate which will be called
-        /// to provide a connection string, this method will be called each time
-        /// a new connection string is needed, allowing for rolling credentials.</param>
-        /// <param name="ttl">The time to wait before refreshing the connection string.</param>
-        public SqlServerDatabase(Func<string> connectionStringFactory, TimeSpan ttl)
-            : this(connectionStringFactory, ttl, null, null)
-        {
-        }
-
-        /// <summary>
-        /// Creates command parameters for a Microsoft SQL Server database reference.
-        /// </summary>
-        /// <param name="connectionStringFactory">A delegate which will be called
-        /// to provide a connection string, this method will be called each time
-        /// a new connection string is needed, allowing for rolling credentials.</param>
-        /// <param name="ttl">The time to wait before refreshing the connection string.</param>
-        /// <param name="extractor">The parameter value extractor.</param>
-        public SqlServerDatabase(Func<string> connectionStringFactory, TimeSpan ttl, IParameterValueExtractor extractor)
-            : this(connectionStringFactory, ttl, extractor, null)
-        {
-        }
-
-        /// <summary>
-        /// Creates command parameters for a Microsoft SQL Server database reference.
-        /// </summary>
-        /// <param name="connectionStringFactory">A delegate which will be called
-        /// to provide a connection string, this method will be called each time
-        /// a new connection string is needed, allowing for rolling credentials.</param>
-        /// <param name="ttl">The time to wait before refreshing the connection string.</param>
-        /// <param name="tracer">
-        /// The OpenTracing tracer instance to use. If this value is null the global tracer will
-        /// be used instead.
+        /// <param name="rollingCredentials">
+        /// A connection string provider which uses rolling credentials such as
+        /// dynamic credentials from a Vault database provider.
         /// </param>
-        public SqlServerDatabase(Func<string> connectionStringFactory, TimeSpan ttl, ITracer tracer)
-            : this(connectionStringFactory, ttl, null, tracer)
-        {
-        }
-
-        /// <summary>
-        /// Creates command parameters for a Microsoft SQL Server database reference.
-        /// </summary>
-        /// <param name="connectionStringFactory">A delegate which will be called
-        /// to provide a connection string, this method will be called each time
-        /// a new connection string is needed, allowing for rolling credentials.</param>
-        /// <param name="ttl">The time to wait before refreshing the connection string.</param>
         /// <param name="extractor">The parameter value extractor.</param>
         /// <param name="tracer">The OpenTracing tracer instance to use. If this value is null the global tracer will
         /// be used instead.</param>
-        public SqlServerDatabase(Func<string> connectionStringFactory, TimeSpan ttl, IParameterValueExtractor extractor, ITracer tracer)
-            : base(new SqlCommandManager(connectionStringFactory, ttl, GetConnection, extractor ?? new DefaultValueExtractor(), tracer, ExtractDbInfo), new SqlServerDialect())
+        public SqlServerDatabase(SqlServerRollingCredentials rollingCredentials, IParameterValueExtractor extractor, ITracer tracer)
+            : base(new SqlCommandManager(rollingCredentials, GetConnection, extractor ?? new DefaultValueExtractor(), tracer, ExtractDbInfo), new SqlServerDialect())
         {
         }
 

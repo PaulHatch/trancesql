@@ -30,68 +30,30 @@ namespace TranceSql.Processing
         private DbInfo _dbInfo;
         private volatile string _connectionString;
         private readonly ITracer _tracer;
-        private readonly Func<Task<string>> _asyncConnectionStringFactory;
-        private readonly Func<string> _connectionStringFactory;
-        private readonly TimeSpan _credentialsTtl;
-        private DateTimeOffset _credentialsExpireAt = DateTimeOffset.MinValue;
+        private readonly RollingCredentials _rollingCredentials;
         private readonly ConnectionMode _connectionMode = ConnectionMode.String;
         private readonly Func<string, DbInfo> _dbInfoFactory;
-        private readonly SemaphoreSlim _refreshSemaphore = new SemaphoreSlim(1);
-
 
         /// <summary>
         /// Initialize a new instance of a generic ADO transaction. Use
         /// a provider-specific subclass for better performance.
         /// </summary>
-        /// <param name="asyncConnectionStringFactory">A delegate which will be called
-        /// to provide a connection string, this method will be called each time
-        /// a new connection string is needed, allowing for rolling credentials.</param>
-        /// <param name="credentialsTtl">Duration to keep credentials before refreshing.</param>
+        /// <param name="rollingCredentials">A connection string provider which uses rolling credentials.</param>
         /// <param name="connectionFactory">Delegate to create connections for current database.</param>
         /// <param name="valueExtractor">Provides parameter value from input object instances.</param>
         /// <param name="tracer">The OpenTracing tracer instance to use. If this value is null the global tracer will
         /// be used instead.</param>
         /// <param name="dbInfoFactory">The information about the connection string being used.</param>
         public SqlCommandManager(
-            Func<Task<string>> asyncConnectionStringFactory,
-            TimeSpan credentialsTtl,
+            RollingCredentials rollingCredentials,
             Func<DbConnection> connectionFactory,
             IParameterValueExtractor valueExtractor,
             ITracer tracer,
             Func<string, DbInfo> dbInfoFactory)
-            : this(null, connectionFactory, valueExtractor, tracer, null)
+            : this((string)null, connectionFactory, valueExtractor, tracer, null)
         {
-            _asyncConnectionStringFactory = asyncConnectionStringFactory;
-            _credentialsTtl = credentialsTtl;
+            _rollingCredentials = rollingCredentials;
             _connectionMode = ConnectionMode.AsyncFactory;
-            _dbInfoFactory = dbInfoFactory;
-        }
-
-        /// <summary>
-        /// Initialize a new instance of a generic ADO transaction. Use
-        /// a provider-specific subclass for better performance.
-        /// </summary>
-        /// <param name="connectionStringFactory">A delegate which will be called
-        /// to provide a connection string, this method will be called each time
-        /// a new connection string is needed, allowing for rolling credentials.</param>
-        /// <param name="credentialsTtl">Duration to keep credentials before refreshing.</param>
-        /// <param name="connectionFactory">Delegate to create connections for current database.</param>
-        /// <param name="valueExtractor">Provides parameter value from input object instances.</param>
-        /// <param name="tracer">The OpenTracing tracer instance to use. If this value is null the global tracer will
-        /// be used instead.</param>
-        /// <param name="dbInfoFactory">The information about the connection string being used.</param>
-        public SqlCommandManager(
-            Func<string> connectionStringFactory,
-            TimeSpan credentialsTtl,
-            Func<DbConnection> connectionFactory,
-            IParameterValueExtractor valueExtractor,
-            ITracer tracer,
-            Func<string, DbInfo> dbInfoFactory)
-            : this(null, connectionFactory, valueExtractor, tracer, null)
-        {
-            _connectionStringFactory = connectionStringFactory;
-            _credentialsTtl = credentialsTtl;
-            _connectionMode = ConnectionMode.Factory;
             _dbInfoFactory = dbInfoFactory;
         }
 
@@ -153,31 +115,7 @@ namespace TranceSql.Processing
             }
             else
             {
-                if (forceRefresh || DateTimeOffset.UtcNow > _credentialsExpireAt)
-                {
-                    await _refreshSemaphore.WaitAsync();
-                    try
-                    {
-                        if (forceRefresh || DateTimeOffset.UtcNow > _credentialsExpireAt)
-                        {
-                            var connectionString = _connectionMode == ConnectionMode.AsyncFactory ?
-                                await _asyncConnectionStringFactory() : _connectionStringFactory();
-
-                            newConnection.ConnectionString = connectionString;
-                            _connectionString = connectionString;
-                            _dbInfo = _dbInfoFactory(connectionString);
-                            _credentialsExpireAt = DateTimeOffset.UtcNow + _credentialsTtl;
-                        }
-                    }
-                    finally
-                    {
-                        _refreshSemaphore.Release();
-                    }
-                }
-                else
-                {
-                    newConnection.ConnectionString = _connectionString;
-                }
+                newConnection.ConnectionString = await _rollingCredentials.GetConnectionStringAsync();
             }
 
             return newConnection;
