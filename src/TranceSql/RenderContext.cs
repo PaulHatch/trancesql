@@ -114,10 +114,10 @@ namespace TranceSql
 
         /// <summary>
         /// Renders the specified element, this is provided for convenience as
-        /// ISqlElements generally implement render explicitly.
+        /// ISqlElements generally implement render explicitly on ISqlElement.
         /// </summary>
         /// <param name="element">The element to render.</param>
-        internal void Render(ISqlElement element)
+        public void Render(ISqlElement element)
         {
             element.Render(this);
         }
