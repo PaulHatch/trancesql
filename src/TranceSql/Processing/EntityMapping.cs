@@ -31,11 +31,12 @@ namespace TranceSql.Processing
 
         /// <summary>
         /// Gets or sets a global IEqualityComparer instance that will be used to determine 
-        /// whether a column is a match for a property name. If none is specified, the
-        /// <see cref="StringComparer.InvariantCultureIgnoreCase"/> comparer will be used be
-        /// default.
+        /// whether a column is a match for a property name. If null is specified, a default
+        /// very permissive comparer will be used which ignores underscores '_' and is case
+        /// insensitive.
         /// </summary>
         public static IEqualityComparer<string> ColumnPropertyComparer { get; set; }
+            = DefaultCaseComparer.Comparer;
 
         /// <summary>
         /// Globally registers an entity map. For more information, see the ICustomEntityMap
@@ -57,7 +58,7 @@ namespace TranceSql.Processing
         /// </returns>
         internal static IDictionary<string, int> MapDbReaderColumns(DbDataReader reader)
         {
-            var result = new Dictionary<string, int>(ColumnPropertyComparer ?? StringComparer.InvariantCultureIgnoreCase);
+            var result = new Dictionary<string, int>(ColumnPropertyComparer ?? DefaultCaseComparer.Comparer);
             for (int i = 0; i < reader.FieldCount; i++)
             {
                 // multiple columns with the same name get
@@ -197,28 +198,6 @@ namespace TranceSql.Processing
             }
         }
 
-        //// <summary>
-        //// Initializes the entity creator for the specified type using a filtered list of properties. This setting is
-        //// applied globally.
-        //// </summary>
-        //// <typeparam name="T">Entity type to register.</typeparam>
-        //// <param name="properties">
-        //// Properties to be included. If a property's name is not included in this list, it will not
-        //// be bound in the entity created registered for this type.
-        //// </param>
-        //internal static void RegisterFilteredEntityCreator<T>(params string[] properties)
-        //{
-        //    if (IsSimpleType<T>())
-        //    {
-        //        throw new ArgumentException("Cannot register entity creator for type '" + typeof(T).Name + "' because it is a simple type which will be cast directly from a result.", "T");
-        //    }
-        //
-        //    if (!TryRegister<T>(() => CreateEntityFunc<T>(properties)))
-        //    {
-        //        throw new InvalidOperationException("The delegate library already contains a definition for the type '" + typeof(T).Name + "'. RegisterFilteredEntityCreator must be called before the type has been bound.");
-        //    }
-        //}
-
         private static bool TryRegister<T>(Func<CreateEntity<T>> createEntity)
         {
             if (!_creationDelegates.ContainsKey(typeof(T)))
@@ -235,8 +214,6 @@ namespace TranceSql.Processing
 
             return false; // type was already register
         }
-
-
 
         /// <summary>
         /// Ensures that the entity creation delegate has been created for the specified
