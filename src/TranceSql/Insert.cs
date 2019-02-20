@@ -42,7 +42,7 @@ namespace TranceSql
             {
                 // Check if columns were explicitly provided, if so we can automatically
                 // determine where new value rows should go and add commas and parentheses.
-                var hasColumns = _columns?.Any() == true; 
+                var hasColumns = _columns?.Any() == true;
 
                 context.Write("INSERT INTO ");
                 context.Render(Into);
@@ -50,11 +50,11 @@ namespace TranceSql
                 if (hasColumns)
                 {
                     context.Write(" (");
-                    foreach (var column in Columns)
+                    foreach (var element in Columns)
                     {
+                        var column = element as Column ?? throw new InvalidCommandException($"Insert column elements must be of type Column, an element of type '{element?.GetType().Name ?? "null"}' was provided.");
                         context.WriteIdentifier(column.Name);
                     }
-                    context.RenderDelimited(Columns);
                     context.Write(')');
                 }
 
@@ -128,14 +128,17 @@ namespace TranceSql
                         first = false;
                     }
 
-                    if(!isClosed)
+                    if (!isClosed)
                     {
                         context.Write(')');
                     }
-                    
                 }
 
-                context.Write(';');
+                if (context.Mode != RenderMode.MultiStatment)
+                {
+                    context.Write(';');
+                }
+                
             }
         }
 

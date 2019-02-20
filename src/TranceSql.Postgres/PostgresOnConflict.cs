@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace TranceSql.Postgres
@@ -38,10 +39,24 @@ namespace TranceSql.Postgres
             }
             else
             {
-                context.WriteLine("ON CONFLICT DO");
-                using (context.EnterChildMode(RenderMode.Nested))
+                if (_target?.Any() == true)
                 {
-                    context.Render(DoUpdate);
+                    context.Write($"ON CONFLICT (");
+                    context.RenderDelimited(_target);
+                    context.WriteLine(") DO UPDATE SET");
+                }
+                else
+                {
+                    context.WriteLine("ON CONFLICT DO UPDATE SET");
+                }
+
+                context.RenderDelimited(DoUpdate.Set);
+
+                if (DoUpdate.Where.Any() == true)
+                {
+                    context.WriteLine();
+                    context.Write("WHERE ");
+                    context.Render(DoUpdate.Where);
                 }
             }
         }

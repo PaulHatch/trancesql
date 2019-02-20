@@ -6,10 +6,10 @@
     /// <see cref="string"/> and collection initialization of columns using 
     /// <see cref="string"/> and <see cref="Direction"/> combinations, as well
     /// as all collection initialization methods inherited from 
-    /// <see cref="SelectableCollection"/>. See documentation of the <see cref="Select"/>
+    /// <see cref="ColumnCollection"/>. See documentation of the <see cref="Select"/>
     /// command for usage examples.
     /// </summary>
-    public class ColumnOrderCollection : SelectableCollection
+    public class ColumnOrderCollection : ColumnCollection
     {
         /// <summary>
         /// Adds a new ordering statement using the specified column.
