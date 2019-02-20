@@ -50,6 +50,10 @@ namespace TranceSql
                 if (hasColumns)
                 {
                     context.Write(" (");
+                    foreach (var column in Columns)
+                    {
+                        context.WriteIdentifier(column.Name);
+                    }
                     context.RenderDelimited(Columns);
                     context.Write(')');
                 }

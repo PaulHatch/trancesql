@@ -26,14 +26,14 @@ namespace TranceSql
         /// </summary>
         public bool Distinct { get; set; }
 
-        private ColumnCollection _columns;
+        private SelectableCollection _columns;
 
         /// <summary>
         /// Gets or sets the collection of columns or other elements to select.
         /// </summary>
-        public ColumnCollection Columns
+        public SelectableCollection Columns
         {
-            get => _columns = _columns ?? new ColumnCollection();
+            get => _columns = _columns ?? new SelectableCollection();
             set => _columns = value;
         }
 
@@ -83,13 +83,13 @@ namespace TranceSql
         }
 
 
-        private ColumnCollection _groupBy;
+        private SelectableCollection _groupBy;
         /// <summary>
         /// Gets or sets the group by clauses for this statement.
         /// </summary>
-        public ColumnCollection GroupBy
+        public SelectableCollection GroupBy
         {
-            get => _groupBy = _groupBy ?? new ColumnCollection();
+            get => _groupBy = _groupBy ?? new SelectableCollection();
             set => _groupBy = value;
         }
 
