@@ -50,9 +50,18 @@ namespace TranceSql
                 if (hasColumns)
                 {
                     context.Write(" (");
+                    var first = true;
                     foreach (var element in Columns)
                     {
                         var column = element as Column ?? throw new InvalidCommandException($"Insert column elements must be of type Column, an element of type '{element?.GetType().Name ?? "null"}' was provided.");
+                        if (first != true)
+                        {
+                            context.Write(", ");
+                        }
+                        else
+                        {
+                            first = false;
+                        }
                         context.WriteIdentifier(column.Name);
                     }
                     context.Write(')');
@@ -138,7 +147,7 @@ namespace TranceSql
                 {
                     context.Write(';');
                 }
-                
+
             }
         }
 
