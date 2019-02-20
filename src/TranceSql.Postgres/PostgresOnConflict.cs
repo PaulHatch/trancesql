@@ -50,7 +50,10 @@ namespace TranceSql.Postgres
                     context.WriteLine("ON CONFLICT DO UPDATE SET");
                 }
 
-                context.RenderDelimited(DoUpdate.Set);
+                using (context.EnterChildMode(RenderMode.Nested))
+                {
+                    context.RenderDelimited(DoUpdate.Set);
+                }
 
                 if (DoUpdate.Where.Any() == true)
                 {
