@@ -22,7 +22,9 @@ namespace TranceSql.IntegrationTest
             _outputHelper.WriteLine($"TRACE {mockSpan.OperationName}:");
             foreach (var tag in mockSpan.Tags)
             {
-                _outputHelper.WriteLine($"  {tag.Key}: {tag.Value}");
+                var output = $"  {tag.Key}: {tag.Value}";
+                Console.WriteLine(output);
+                _outputHelper.WriteLine(output);
             }
         }
     }
