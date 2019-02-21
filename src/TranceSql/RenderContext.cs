@@ -181,7 +181,13 @@ namespace TranceSql
         /// </summary>
         /// <param name="items">The items to render.</param>
         /// <param name="delimiter">The delimiter string to use.</param>
-        public void RenderDelimited(IEnumerable<ISqlElement> items, string delimiter = ", ")
+        /// <param name="columnNamesOnly">
+        /// If true only the name of any column in the specified list will be used.
+        /// </param>
+        public void RenderDelimited(
+            IEnumerable<ISqlElement> items,
+            string delimiter = ", ",
+            bool columnNamesOnly = false)
         {
             if (items == null)
             {
@@ -200,7 +206,14 @@ namespace TranceSql
                     first = false;
                 }
 
-                item.Render(this);
+                if (columnNamesOnly && item is Column column)
+                {
+                    WriteIdentifier(column.Name);
+                }
+                else
+                {
+                    item.Render(this);
+                }
             }
 
         }

@@ -42,7 +42,7 @@ namespace TranceSql.Postgres
                 if (_target?.Any() == true)
                 {
                     context.Write($"ON CONFLICT (");
-                    context.RenderDelimited(_target);
+                    context.RenderDelimited(_target, columnNamesOnly: true);
                     context.WriteLine(") DO UPDATE SET");
                 }
                 else

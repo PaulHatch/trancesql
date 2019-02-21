@@ -42,7 +42,7 @@ namespace TranceSql
             if (_on?.Any() == true)
             {
                 context.Write(" (");
-                context.RenderDelimited(_on);
+                context.RenderDelimited(_on, columnNamesOnly: true);
                 context.Write(')');
             }
         }
@@ -223,11 +223,11 @@ namespace TranceSql
                 context.Write(' ');
             }
             context.Write("FOREIGN KEY (");
-            context.RenderDelimited(_columns);
+            context.RenderDelimited(_columns, columnNamesOnly: true);
             context.Write(") REFERENCES ");
             context.Render(References);
             context.Write(" (");
-            context.RenderDelimited(_referencesColumns);
+            context.RenderDelimited(_referencesColumns, columnNamesOnly: true);
             context.Write(')');
 
             switch (OnDelete)
