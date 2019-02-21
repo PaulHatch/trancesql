@@ -77,17 +77,25 @@ namespace TranceSql.IntegrationTest
                     break;
             }
 
-            new Command(GetDatabase(new MockTracer()))
+            try
             {
-                new CreateTable("sample")
+                new Command(GetDatabase(new MockTracer()))
                 {
-                    Columns =
+                    new CreateTable("sample")
                     {
-                        { "id", SqlType.From<int>(), new PrimaryKeyConstraint() },
-                        { "column1", SqlType.From<string>() }
+                        Columns =
+                        {
+                            { "id", SqlType.From<int>(), new PrimaryKeyConstraint() },
+                            { "column1", SqlType.From<string>() }
+                        }
                     }
-                }
-            }.Execute();
+                }.Execute();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
 
         public void WaitForDatabase(Database database)
@@ -102,7 +110,7 @@ namespace TranceSql.IntegrationTest
                     {
                         new Command(database) { new CreateDatabase(_dbName) }.Execute();
                     }
-                    catch(Exception e)
+                    catch (Exception e)
                     {
                         Console.WriteLine("ERROR CREATING DATABASE:");
                         Console.WriteLine(e);
