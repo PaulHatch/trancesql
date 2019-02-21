@@ -98,13 +98,7 @@ namespace TranceSql.IntegrationTest
                 {
                     new Command(database) { new Select { Columns = new Constant(1) } }.Execute();
 
-                    try
-                    {
-                        new Command(database) {
-                            new CreateDatabase(_dbName)
-                        }.Execute();
-                    }
-                    catch { }
+                    new Command(database) { new CreateDatabase(_dbName) }.Execute();
 
                     _createdDatabase = true;
                     _masterDatabase = database;

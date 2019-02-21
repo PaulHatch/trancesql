@@ -47,7 +47,7 @@ namespace TranceSql.MySql
         /// <returns>
         /// A correctly formatted string.
         /// </returns>
-        public string FormatIdentifier(string identifier) => $"\"{identifier}\"";
+        public string FormatIdentifier(string identifier) => $"`{identifier}`";
 
         /// <summary>
         /// Escapes and formats a string constant.
