@@ -54,10 +54,13 @@ namespace TranceSql.Test
         public void LeftParentheticalRender()
         {
             var sut =
-                Condition.Nested(
-                    Parameter("P1") == Parameter("P2") &
-                    Parameter("P3") == Parameter("P4")) |
-                Parameter("P5") == Parameter("P6");
+                new ConditionPair(
+                    BooleanOperator.Or,
+                    new ConditionPair(
+                        BooleanOperator.And,
+                        Parameter("P1") == Parameter("P2"),
+                        Parameter("P3") == Parameter("P4"), true),
+                    Parameter("P5") == Parameter("P6"));
 
             Assert.Equal("(@P1 = @P2 AND @P3 = @P4) OR @P5 = @P6", sut.ToString());
         }
@@ -66,10 +69,15 @@ namespace TranceSql.Test
         public void RightParentheticalRender()
         {
             var sut =
-                Parameter("P1") == Parameter("P2") &
-                Condition.Nested(
-                    Parameter("P3") == Parameter("P4") |
-                    Parameter("P5") == Parameter("P6"));
+                new ConditionPair(
+                    BooleanOperator.And,
+                    Parameter("P1") == Parameter("P2"),
+                    new ConditionPair(
+                        BooleanOperator.Or,
+                        Parameter("P3") == Parameter("P4"),
+                        Parameter("P5") == Parameter("P6"),
+                        true
+                    ));
 
             Assert.Equal("@P1 = @P2 AND (@P3 = @P4 OR @P5 = @P6)", sut.ToString());
         }
@@ -85,6 +93,30 @@ namespace TranceSql.Test
             var result = sut.ToString();
 
             Assert.Equal("IF (@P1 = @P2)\nBEGIN\nSELECT 1;\nEND\nELSE\nSELECT 2;", result);
+        }
+
+        private static readonly Column A = Column("A");
+        private static readonly Column B = Column("B");
+        private static readonly Column C = Column("C");
+        private static readonly Column D = Column("D");
+        private static readonly Column E = Column("E");
+        private static readonly Column F = Column("F");
+        private static readonly Column G = Column("G");
+        private static readonly Column H = Column("H");
+
+        public static IEnumerable<object[]> Expressions()
+        {
+            yield return new object[] { A > B & C > D | E > F, "A > B AND C > D OR E > F" };
+            yield return new object[] { A > B & (C > D | E > F), "A > B AND (C > D OR E > F)" };
+            yield return new object[] { A > B | (C > D | (E > F | G > H)), "A > B OR (C > D OR (E > F OR G > H))" };
+            yield return new object[] { (A > B | C > D) & (E > F | G > H), "(A > B OR C > D) AND (E > F OR G > H)" };
+        }
+
+        [Theory]
+        [MemberData(nameof(Expressions))]
+        public void RenderConditionsWithCorrectParantheses(ConditionPair condition, string expected)
+        {
+            Assert.Equal(expected, condition.ToString());
         }
     }
 }

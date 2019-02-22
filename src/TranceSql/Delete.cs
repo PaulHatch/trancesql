@@ -46,15 +46,10 @@ namespace TranceSql
             }
         }
 
-        private ConditionCollection _where;
         /// <summary>
         /// Gets or sets the where filter for this statement.
         /// </summary>
-        public ConditionCollection Where
-        {
-            get => _where = _where ?? new ConditionCollection();
-            set => _where = value;
-        }
+        public AnyOf<Condition, ConditionPair, ICondition> Where { get; set; }
 
         void ISqlElement.Render(RenderContext context)
         {
@@ -62,11 +57,11 @@ namespace TranceSql
             {
                 context.Write("DELETE FROM ");
                 context.Render(_from.Value);
-                if (_where?.Any() == true)
+                if (Where != null)
                 {
                     context.WriteLine();
                     context.Write("WHERE ");
-                    context.Render(_where);
+                    context.Render(Where.Value);
                 }
                 context.Write(';');
             }

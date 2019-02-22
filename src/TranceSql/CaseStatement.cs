@@ -13,7 +13,7 @@ namespace TranceSql
         /// Gets a list of cases for this clause.
         /// </summary>
         public List<Case> Cases { get; } = new List<Case>();
-        
+
         /// <summary>
         /// Gets or sets the final default else value for this clause.
         /// </summary>
@@ -26,7 +26,7 @@ namespace TranceSql
             foreach (var item in Cases)
             {
                 Console.WriteLine(" WHEN ");
-                item.When.RenderCollection(context);
+                context.Render(item.When.Value);
                 Console.WriteLine(" THEN ");
                 context.Render(item.Then);
             }
@@ -54,19 +54,14 @@ namespace TranceSql
     /// </summary>
     public class Case
     {
-        private ConditionCollection _when;        
         /// <summary>
         /// Gets or sets the when condition for this clause.
         /// </summary>
-        public ConditionCollection When
-        {
-            get => _when = _when ?? new ConditionCollection();
-            set => _when = value;
-        }
+        public AnyOf<Condition, ConditionPair, ICondition> When { get; set; }
 
         /// <summary>
         /// Gets or sets the value for this case.
         /// </summary>
-        public ISqlElement Then { get; set; }        
+        public ISqlElement Then { get; set; }
     }
 }

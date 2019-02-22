@@ -85,7 +85,7 @@ namespace TranceSql
         /// A new condition expression.
         /// </returns>
         public static Condition operator >(ExpressionElement left, ExpressionElement right)
-            => new Condition(BooleanOperator.And, OperationType.GreaterThan, left, right);
+            => new Condition(OperationType.GreaterThan, left, right);
 
         /// <summary>
         /// Creates a condition from two expression elements.
@@ -96,7 +96,7 @@ namespace TranceSql
         /// A new condition expression.
         /// </returns>
         public static Condition operator <(ExpressionElement left, ExpressionElement right)
-            => new Condition(BooleanOperator.And, OperationType.LessThan, left, right);
+            => new Condition(OperationType.LessThan, left, right);
 
         /// <summary>
         /// Creates a condition from two expression elements.
@@ -107,7 +107,7 @@ namespace TranceSql
         /// A new condition expression.
         /// </returns>
         public static Condition operator >=(ExpressionElement left, ExpressionElement right)
-            => new Condition(BooleanOperator.And, OperationType.GreaterThanOrEqual, left, right);
+            => new Condition(OperationType.GreaterThanOrEqual, left, right);
 
         /// <summary>
         /// Creates a condition from two expression elements.
@@ -118,7 +118,7 @@ namespace TranceSql
         /// A new condition expression.
         /// </returns>
         public static Condition operator <=(ExpressionElement left, ExpressionElement right)
-            => new Condition(BooleanOperator.And, OperationType.LessThanOrEqual, left, right);
+            => new Condition(OperationType.LessThanOrEqual, left, right);
 
         /// <summary>
         /// Creates a condition from two expression elements.
@@ -129,7 +129,7 @@ namespace TranceSql
         /// A new condition expression.
         /// </returns>
         public static Condition operator ==(ExpressionElement left, ExpressionElement right)
-            => new Condition(BooleanOperator.And, OperationType.Equal, left, right);
+            => new Condition(OperationType.Equal, left, right);
 
         /// <summary>
         /// Creates a condition from two expression elements.
@@ -140,7 +140,7 @@ namespace TranceSql
         /// A new condition expression.
         /// </returns>
         public static Condition operator !=(ExpressionElement left, ExpressionElement right)
-            => new Condition(BooleanOperator.And, OperationType.NotEqual, left, right);
+            => new Condition(OperationType.NotEqual, left, right);
 
         /// <summary>
         /// Not implemented.

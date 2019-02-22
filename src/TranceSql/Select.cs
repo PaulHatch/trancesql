@@ -62,15 +62,10 @@ namespace TranceSql
             set => _join = value;
         }
 
-        private ConditionCollection _where;
         /// <summary>
         /// Gets or sets the where condition for this statement.
         /// </summary>
-        public ConditionCollection Where
-        {
-            get => _where = _where ?? new ConditionCollection();
-            set => _where = value;
-        }
+        public AnyOf<Condition, ConditionPair, ICondition> Where { get; set; }
 
         private ColumnOrderCollection _orderBy;
         /// <summary>
@@ -93,15 +88,10 @@ namespace TranceSql
             set => _groupBy = value;
         }
 
-        private ConditionCollection _having;
         /// <summary>
         /// Gets or sets the having condition for this statement.
         /// </summary>
-        public ConditionCollection Having
-        {
-            get => _having = _having ?? new ConditionCollection();
-            set => _having = value;
-        }
+        public AnyOf<Condition, ConditionPair, ICondition> Having { get; set; }
 
         void ISqlElement.Render(RenderContext context)
         {
@@ -197,11 +187,11 @@ namespace TranceSql
                     context.RenderDelimited(Join, context.LineDelimiter);
                 }
 
-                if (_where?.Any() == true)
+                if (Where != null)
                 {
                     context.WriteLine();
                     context.Write("WHERE ");
-                    Where.RenderCollection(context);
+                    context.Render(Where.Value);
                 }
 
                 if (_orderBy?.Any() == true)
@@ -217,11 +207,11 @@ namespace TranceSql
                     context.Write("GROUP BY ");
                     context.RenderDelimited(GroupBy);
                 }
-                if (_having?.Any() == true)
+                if (Having != null)
                 {
                     context.WriteLine();
                     context.Write("HAVING ");
-                    Having.RenderCollection(context);
+                    context.Render(Having.Value);
                 }
 
                 if (Offset.HasValue)

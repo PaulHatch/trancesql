@@ -273,41 +273,36 @@ namespace TranceSql
         /// <summary>
         /// Initializes a new instance of the <see cref="CheckConstraint"/> class.
         /// </summary>
-        /// <param name="conditions">
-        /// The conditions for the check, this must not include any <see cref="Parameter"/>
+        /// <param name="condition">
+        /// The condition for the check, this must not include any <see cref="Parameter"/>
         /// or <see cref="Value"/> instances.
         /// </param>
-        public CheckConstraint(ConditionCollection conditions)
+        public CheckConstraint(Condition condition)
         {
-            Check = conditions;
+            Check = condition;
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CheckConstraint"/> class.
         /// </summary>
-        /// <param name="conditions">
-        /// The conditions for the check, this must not include any <see cref="Parameter"/>
+        /// <param name="condition">
+        /// The condition for the check, this must not include any <see cref="Parameter"/>
         /// or <see cref="Value"/> instances.
         /// </param>
-        public CheckConstraint(Condition conditions)
+        public CheckConstraint(ConditionPair condition)
         {
-            Check = conditions;
+            Check = condition;
         }
 
-        private ConditionCollection _check;
         /// <summary>
         /// Gets or sets the check condition for this constraint, this must not include 
         /// any <see cref="Parameter"/> or <see cref="Value"/> instances.
         /// </summary>
-        public ConditionCollection Check
-        {
-            get => _check = _check ?? new ConditionCollection();
-            set => _check = value;
-        }
+        public AnyOf<Condition, ConditionPair, ICondition> Check { get; set; }
 
         void ISqlElement.Render(RenderContext context)
         {
-            if (_check?.Any() != true)
+            if (Check == null)
             {
                 throw new InvalidCommandException("No condition specified for check constraint.");
             }
@@ -319,7 +314,7 @@ namespace TranceSql
                 context.Write(' ');
             }
             context.Write("CHECK (");
-            context.Render(_check);
+            context.Render(Check.Value);
             context.Write(')');
         }
 

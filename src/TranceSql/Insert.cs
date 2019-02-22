@@ -59,75 +59,74 @@ namespace TranceSql
                 if (_values?.Any() != true)
                 {
                     context.Write("DEFAULT VALUES;");
+                    return;
+                }
+
+                if (!_values.IsSelect)
+                {
+                    context.Write("VALUES ");
+                }
+
+                if (Values.IsSelect)
+                {
+                    context.Render(Values.Single());
                 }
                 else
                 {
-                    if (!_values.IsSelect)
-                    {
-                        context.Write("VALUES ");
-                    }
+                    var cols = hasColumns ? (int?)_columns.Count : null; // # of columns
+                    var valueIndex = 0; // track the offset for each value in the row
+                    var first = true; // track if we're on the first value
+                    var isClosed = true; // track if we left a parentheses open
 
-                    if (Values.IsSelect)
+                    foreach (var value in Values)
                     {
-                        context.Render(Values.Single());
-                    }
-                    else
-                    {
-                        var cols = hasColumns ? (int?)_columns.Count : null; // # of columns
-                        var valueIndex = 0; // track the offset for each value in the row
-                        var first = true; // track if we're on the first value
-                        var isClosed = true; // track if we left a parentheses open
-
-                        foreach (var value in Values)
+                        if (value is Values)
                         {
-                            if (value is Values)
+                            if (!first)
                             {
-                                if (!first)
+                                // Comma + newline between value groups
+                                context.WriteLine(",");
+                            }
+                            context.Render(value);
+                            valueIndex = 0;
+                        }
+                        else
+                        {
+                            if (valueIndex == 0) // start of values group
+                            {
+                                if (!first) // first value in entire collection
                                 {
                                     // Comma + newline between value groups
                                     context.WriteLine(",");
                                 }
-                                context.Render(value);
-                                valueIndex = 0;
+                                // Open new value group
+                                context.Write('(');
+                                isClosed = false;
                             }
                             else
                             {
-                                if (valueIndex == 0) // start of values group
-                                {
-                                    if (!first) // first value in entire collection
-                                    {
-                                        // Comma + newline between value groups
-                                        context.WriteLine(",");
-                                    }
-                                    // Open new value group
-                                    context.Write('(');
-                                    isClosed = false;
-                                }
-                                else
-                                {
-                                    // comma between values
-                                    context.Write(", ");
-                                }
-
-                                context.Render(value);
-                                valueIndex++;
-
-                                // add a closing ')' if we're matching the number of columns
-                                if (valueIndex == cols)
-                                {
-                                    context.Write(")");
-                                    isClosed = true;
-                                    valueIndex = 0;
-                                }
+                                // comma between values
+                                context.Write(", ");
                             }
 
-                            first = false;
+                            context.Render(value);
+                            valueIndex++;
+
+                            // add a closing ')' if we're matching the number of columns
+                            if (valueIndex == cols)
+                            {
+                                context.Write(")");
+                                isClosed = true;
+                                valueIndex = 0;
+                            }
                         }
 
-                        if (!isClosed)
-                        {
-                            context.Write(')');
-                        }
+                        first = false;
+                    }
+
+                    if (!isClosed)
+                    {
+                        context.Write(')');
                     }
                 }
             }

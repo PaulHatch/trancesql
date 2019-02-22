@@ -64,15 +64,10 @@ namespace TranceSql
             set => _set = value;
         }
 
-        private ConditionCollection _where;
         /// <summary>
         /// Gets or sets the condition filter this statement applies to.
         /// </summary>
-        public ConditionCollection Where
-        {
-            get => _where = _where ?? new ConditionCollection();
-            set => _where = value;
-        }
+        public AnyOf<Condition, ConditionPair, ICondition> Where { get; set; }
 
         void ISqlElement.Render(RenderContext context)
         {
@@ -84,11 +79,11 @@ namespace TranceSql
                 context.Write("SET ");
                 context.RenderDelimited(_set);
 
-                if (_where?.Any() == true)
+                if (Where != null)
                 {
                     context.WriteLine();
                     context.Write("WHERE ");
-                    Where.RenderCollection(context);
+                    context.Render(Where.Value);
                 }
             }
         }

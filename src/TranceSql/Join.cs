@@ -19,15 +19,10 @@ namespace TranceSql
         /// </summary>
         private IDataSource Table { get; set; }
 
-        private ConditionCollection _on;
         /// <summary>
         /// Gets or sets the join condition.
         /// </summary>
-        public ConditionCollection On
-        {
-            get => _on = _on ?? new ConditionCollection();
-            set => _on = value;
-        }
+        public AnyOf<Condition, ConditionPair, ICondition> On { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Join"/> class.
@@ -50,10 +45,10 @@ namespace TranceSql
             Table = table;
             if (on != null)
             {
-                On.Add(on);
+                On = AnyOf<Condition, ConditionPair, ICondition>.Of(on);
             }
         }
-
+        
         void ISqlElement.Render(RenderContext context)
         {
             switch (JoinType)
@@ -82,10 +77,10 @@ namespace TranceSql
 
             context.Render(Table);
 
-            if (_on?.Any() == true)
+            if (On != null)
             {
                 context.Write(" ON ");
-                On.RenderCollection(context);
+                context.Render(On.Value);
             }
         }
 

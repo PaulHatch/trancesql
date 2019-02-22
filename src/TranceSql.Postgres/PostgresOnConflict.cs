@@ -55,11 +55,11 @@ namespace TranceSql.Postgres
                     context.RenderDelimited(DoUpdate.Set);
                 }
 
-                if (DoUpdate.Where.Any() == true)
+                if (DoUpdate.Where != null)
                 {
                     context.WriteLine();
                     context.Write("WHERE ");
-                    context.Render(DoUpdate.Where);
+                    context.Render(DoUpdate.Where.Value);
                 }
             }
         }

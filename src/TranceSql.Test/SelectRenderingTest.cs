@@ -116,10 +116,9 @@ namespace TranceSql.Test
             {
                 Columns = "*",
                 From = "Table",
-                Where = {
+                Where = ConditionPair.And(
                     Condition.Equal("Column1", 123),
-                    Column("Column2") == Value(123)
-                }
+                    Column("Column2") == Value(123))
             };
 
             var result = sut.ToString();
@@ -134,10 +133,10 @@ namespace TranceSql.Test
             {
                 Columns = { "*" },
                 From = { "Table" },
-                Where = {
+                Where = ConditionPair.Or(
                     Condition.Equal("Column1", 123),
-                    Or.Equal("Column2", 123)
-                }
+                    Condition.Equal("Column2", 123)
+                )
             };
 
             var result = sut.ToString();

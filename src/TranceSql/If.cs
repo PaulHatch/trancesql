@@ -21,9 +21,9 @@ namespace TranceSql
         /// Initializes a new instance of the <see cref="If"/> class.
         /// </summary>
         /// <param name="condition">The statement conditions.</param>
-        public If(ConditionCollection condition)
+        public If(ConditionPair condition)
         {
-            Conditions = condition;
+            Condition = condition;
         }
 
         /// <summary>
@@ -32,18 +32,13 @@ namespace TranceSql
         /// <param name="condition">The statement condition.</param>
         public If(Condition condition)
         {
-            Conditions = condition;
+            Condition = condition;
         }
 
-        private ConditionCollection _conditions;
         /// <summary>
         /// Gets or sets the statement conditions.
         /// </summary>
-        public ConditionCollection Conditions
-        {
-            get => _conditions = _conditions ?? new ConditionCollection();
-            set => _conditions = value;
-        }
+        public AnyOf<Condition, ConditionPair, ICondition> Condition { get; set; }
 
         /// <summary>
         /// Gets or sets the statement to execute, to specify multiple statements,
@@ -60,9 +55,9 @@ namespace TranceSql
         void ISqlElement.Render(RenderContext context)
         {
             context.Write("IF (");
-            context.Render(Conditions);
+            context.Render(Condition?.Value ?? throw new InvalidCommandException("IF condition must not be null."));
             context.WriteLine(")");
-            context.Render(Then);
+            context.Render(Then ?? throw new InvalidCommandException("Then statement of IF condition must not be null."));
             if (Else != null)
             {
                 context.WriteLine();
