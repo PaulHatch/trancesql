@@ -437,47 +437,187 @@ namespace TranceSql
 
         // in and not in query or values list
 
+        #region In / Not In
+
+        // With ISqlElement as column
+
         /// <summary>
         /// Creates a new condition.
         /// </summary>
+        /// <param name="column">The column for the condition.</param>
         /// <param name="query">The query for the condition.</param>
         /// <returns>
         /// A new condition.
         /// </returns>
-        public static Condition In(Select query)
-            => new Condition(OperationType.In, query, null);
+        public static Condition In(ISqlElement column, Select query)
+            => new Condition(OperationType.In, column, query);
 
         /// <summary>
         /// Creates a new condition.
         /// </summary>
+        /// <param name="column">The column for the condition.</param>
         /// <param name="query">The query for the condition.</param>
         /// <returns>
         /// A new condition.
         /// </returns>
-        public static Condition NotIn(Select query)
-            => new Condition(OperationType.NotIn, query, null);
+        public static Condition NotIn(ISqlElement column, Select query)
+            => new Condition(OperationType.NotIn, column, query);
 
         /// <summary>
         /// Creates a new condition.
         /// </summary>
+        /// <param name="column">The column for the condition.</param>
         /// <param name="values">The values for the condition.</param>
         /// <returns>
         /// A new condition.
         /// </returns>
-        public static Condition In(Values values)
-            => new Condition(OperationType.In, values, null);
+        public static Condition In(ISqlElement column, Values values)
+            => new Condition(OperationType.In, column, values);
 
         /// <summary>
         /// Creates a new condition.
         /// </summary>
+        /// <param name="column">The column for the condition.</param>
         /// <param name="values">The values for the condition.</param>
         /// <returns>
         /// A new condition.
         /// </returns>
-        public static Condition NotIn(Values values)
-            => new Condition(OperationType.NotIn, values, null);
+        public static Condition In(ISqlElement column, params object[] values)
+            => new Condition(OperationType.In, column, new Values(values));
 
-        // Automatic null
+        /// <summary>
+        /// Creates a new condition.
+        /// </summary>
+        /// <param name="column">The column for the condition.</param>
+        /// <param name="values">The values for the condition.</param>
+        /// <returns>
+        /// A new condition.
+        /// </returns>
+        public static Condition NotIn(ISqlElement column, params object[] values)
+            => new Condition(OperationType.NotIn, column, new Value(values));
+
+        // With string column name
+
+        /// <summary>
+        /// Creates a new condition.
+        /// </summary>
+        /// <param name="column">The column name.</param>
+        /// <param name="query">The query for the condition.</param>
+        /// <returns>
+        /// A new condition.
+        /// </returns>
+        public static Condition In(string column, Select query)
+            => new Condition(OperationType.In, new Column(column), query);
+
+        /// <summary>
+        /// Creates a new condition.
+        /// </summary>
+        /// <param name="column">The column name.</param>
+        /// <param name="query">The query for the condition.</param>
+        /// <returns>
+        /// A new condition.
+        /// </returns>
+        public static Condition NotIn(string column, Select query)
+            => new Condition(OperationType.NotIn, new Column(column), query);
+
+        /// <summary>
+        /// Creates a new condition.
+        /// </summary>
+        /// <param name="column">The column name.</param>
+        /// <param name="values">The values for the condition.</param>
+        /// <returns>
+        /// A new condition.
+        /// </returns>
+        public static Condition In(string column, Values values)
+            => new Condition(OperationType.In, new Column(column), values);
+
+        /// <summary>
+        /// Creates a new condition.
+        /// </summary>
+        /// <param name="column">The column name.</param>
+        /// <param name="values">The values for the condition.</param>
+        /// <returns>
+        /// A new condition.
+        /// </returns>
+        public static Condition In(string column, params object[] values)
+            => new Condition(OperationType.In, new Column(column), new Values(values));
+
+        /// <summary>
+        /// Creates a new condition.
+        /// </summary>
+        /// <param name="column">The column name.</param>
+        /// <param name="values">The values for the condition.</param>
+        /// <returns>
+        /// A new condition.
+        /// </returns>
+        public static Condition NotIn(string column, params object[] values)
+            => new Condition(OperationType.NotIn, new Column(column), new Value(values));
+
+        // With string column and table name
+
+        /// <summary>
+        /// Creates a new condition.
+        /// </summary>
+        /// <param name="table">The column's table name.</param>
+        /// <param name="column">The column name.</param>
+        /// <param name="query">The query for the condition.</param>
+        /// <returns>
+        /// A new condition.
+        /// </returns>
+        public static Condition In(string table, string column, Select query)
+            => new Condition(OperationType.In, new Column(table, column), query);
+
+        /// <summary>
+        /// Creates a new condition.
+        /// </summary>
+        /// <param name="table">The column's table name.</param>
+        /// <param name="column">The column name.</param>
+        /// <param name="query">The query for the condition.</param>
+        /// <returns>
+        /// A new condition.
+        /// </returns>
+        public static Condition NotIn(string table, string column, Select query)
+            => new Condition(OperationType.NotIn, new Column(table, column), query);
+
+        /// <summary>
+        /// Creates a new condition.
+        /// </summary>
+        /// <param name="table">The column's table name.</param>
+        /// <param name="column">The column name.</param>
+        /// <param name="values">The values for the condition.</param>
+        /// <returns>
+        /// A new condition.
+        /// </returns>
+        public static Condition In(string table, string column, Values values)
+            => new Condition(OperationType.In, new Column(table, column), values);
+
+        /// <summary>
+        /// Creates a new condition.
+        /// </summary>
+        /// <param name="table">The column's table name.</param>
+        /// <param name="column">The column name.</param>
+        /// <param name="values">The values for the condition.</param>
+        /// <returns>
+        /// A new condition.
+        /// </returns>
+        public static Condition In(string table, string column, params object[] values)
+            => new Condition(OperationType.In, new Column(table, column), new Values(values));
+
+        /// <summary>
+        /// Creates a new condition.
+        /// </summary>
+        /// <param name="table">The column's table name.</param>
+        /// <param name="column">The column name.</param>
+        /// <param name="values">The values for the condition.</param>
+        /// <returns>
+        /// A new condition.
+        /// </returns>
+        public static Condition NotIn(string table, string column, params object[] values)
+            => new Condition(OperationType.NotIn, new Column(table, column), new Value(values));
+
+        #endregion
+
+        #region Is Null / Is Not Null
 
         /// <summary>
         /// Creates a new condition.
@@ -521,6 +661,8 @@ namespace TranceSql
         public static Condition IsNotNull(string table, string column)
             => new Condition(OperationType.IsNotNull, new Column(table, column), null);
 
+        #endregion
+
         /// <summary>
         /// Combines two conditions using AND.
         /// </summary>
@@ -552,15 +694,24 @@ namespace TranceSql
 
                 if (value is null)
                 {
-                    throw new InvalidCommandException("Both sides of a where clause cannot be null.");
+                    throw new InvalidCommandException("Both sides of a condition operation cannot be null.");
                 }
+
+                // Note that we are supporting binary operators Equal and NotEqual below to allow
+                // automatic conversion of null to IS NULL or IS NOT NULL clauses.
 
                 switch (OperationType)
                 {
                     case OperationType.Equal:
-                    case OperationType.NotEqual:
+                    case OperationType.IsNull:
                         context.Render(value);
                         context.Write(" IS NULL");
+                        return;
+
+                    case OperationType.NotEqual:
+                    case OperationType.IsNotNull:
+                        context.Render(value);
+                        context.Write(" IS NOT NULL");
                         return;
 
                     case OperationType.Exists:
@@ -572,17 +723,6 @@ namespace TranceSql
                         context.Write("NOT EXISTS ");
                         context.Render(value);
                         return;
-
-                    case OperationType.IsNull:
-                        context.Render(value);
-                        context.Write(" IS NULL");
-                        return;
-
-                    case OperationType.IsNotNull:
-                        context.Render(value);
-                        context.Write(" IS NOT NULL");
-                        return;
-
 
                     default:
                         throw new InvalidCommandException($"The binary operator '{OperationType}' requires two arguments.");
@@ -613,9 +753,15 @@ namespace TranceSql
                         context.Write(" <= ");
                         break;
                     case OperationType.In:
+                        context.Write(" IN ");
+                        break;
+                    case OperationType.NotIn:
+                        context.Write(" NOT IN ");
+                        break;
                     case OperationType.Exists:
                     case OperationType.NotExists:
-                    case OperationType.NotIn:
+                    case OperationType.IsNull:
+                    case OperationType.IsNotNull:
                         throw new InvalidCommandException($"The unary operator '{OperationType}' does not support multiple arguments.");
                     default:
                         throw new InvalidCommandException($"Unrecognized operation '{OperationType}'.");
