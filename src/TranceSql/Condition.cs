@@ -687,86 +687,89 @@ namespace TranceSql
 
         void ISqlElement.Render(RenderContext context)
         {
-            if (Left is null || Right is null)
+            using (context.EnterChildMode(RenderMode.Nested))
             {
-                // A value is null, get the non-null value
-                var value = Left ?? Right;
-
-                if (value is null)
+                if (Left is null || Right is null)
                 {
-                    throw new InvalidCommandException("Both sides of a condition operation cannot be null.");
+                    // A value is null, get the non-null value
+                    var value = Left ?? Right;
+
+                    if (value is null)
+                    {
+                        throw new InvalidCommandException("Both sides of a condition operation cannot be null.");
+                    }
+
+                    // Note that we are supporting binary operators Equal and NotEqual below to allow
+                    // automatic conversion of null to IS NULL or IS NOT NULL clauses.
+
+                    switch (OperationType)
+                    {
+                        case OperationType.Equal:
+                        case OperationType.IsNull:
+                            context.Render(value);
+                            context.Write(" IS NULL");
+                            return;
+
+                        case OperationType.NotEqual:
+                        case OperationType.IsNotNull:
+                            context.Render(value);
+                            context.Write(" IS NOT NULL");
+                            return;
+
+                        case OperationType.Exists:
+                            context.Write("EXISTS ");
+                            context.Render(value);
+                            return;
+
+                        case OperationType.NotExists:
+                            context.Write("NOT EXISTS ");
+                            context.Render(value);
+                            return;
+
+                        default:
+                            throw new InvalidCommandException($"The binary operator '{OperationType}' requires two arguments.");
+                    }
+
                 }
-
-                // Note that we are supporting binary operators Equal and NotEqual below to allow
-                // automatic conversion of null to IS NULL or IS NOT NULL clauses.
-
-                switch (OperationType)
+                else
                 {
-                    case OperationType.Equal:
-                    case OperationType.IsNull:
-                        context.Render(value);
-                        context.Write(" IS NULL");
-                        return;
-
-                    case OperationType.NotEqual:
-                    case OperationType.IsNotNull:
-                        context.Render(value);
-                        context.Write(" IS NOT NULL");
-                        return;
-
-                    case OperationType.Exists:
-                        context.Write("EXISTS ");
-                        context.Render(value);
-                        return;
-
-                    case OperationType.NotExists:
-                        context.Write("NOT EXISTS ");
-                        context.Render(value);
-                        return;
-
-                    default:
-                        throw new InvalidCommandException($"The binary operator '{OperationType}' requires two arguments.");
+                    context.Render(Left);
+                    switch (OperationType)
+                    {
+                        case OperationType.Equal:
+                            context.Write(" = ");
+                            break;
+                        case OperationType.NotEqual:
+                            context.Write(" <> ");
+                            break;
+                        case OperationType.GreaterThan:
+                            context.Write(" > ");
+                            break;
+                        case OperationType.GreaterThanOrEqual:
+                            context.Write(" >= ");
+                            break;
+                        case OperationType.LessThan:
+                            context.Write(" < ");
+                            break;
+                        case OperationType.LessThanOrEqual:
+                            context.Write(" <= ");
+                            break;
+                        case OperationType.In:
+                            context.Write(" IN ");
+                            break;
+                        case OperationType.NotIn:
+                            context.Write(" NOT IN ");
+                            break;
+                        case OperationType.Exists:
+                        case OperationType.NotExists:
+                        case OperationType.IsNull:
+                        case OperationType.IsNotNull:
+                            throw new InvalidCommandException($"The unary operator '{OperationType}' does not support multiple arguments.");
+                        default:
+                            throw new InvalidCommandException($"Unrecognized operation '{OperationType}'.");
+                    }
+                    context.Render(Right);
                 }
-
-            }
-            else
-            {
-                context.Render(Left);
-                switch (OperationType)
-                {
-                    case OperationType.Equal:
-                        context.Write(" = ");
-                        break;
-                    case OperationType.NotEqual:
-                        context.Write(" <> ");
-                        break;
-                    case OperationType.GreaterThan:
-                        context.Write(" > ");
-                        break;
-                    case OperationType.GreaterThanOrEqual:
-                        context.Write(" >= ");
-                        break;
-                    case OperationType.LessThan:
-                        context.Write(" < ");
-                        break;
-                    case OperationType.LessThanOrEqual:
-                        context.Write(" <= ");
-                        break;
-                    case OperationType.In:
-                        context.Write(" IN ");
-                        break;
-                    case OperationType.NotIn:
-                        context.Write(" NOT IN ");
-                        break;
-                    case OperationType.Exists:
-                    case OperationType.NotExists:
-                    case OperationType.IsNull:
-                    case OperationType.IsNotNull:
-                        throw new InvalidCommandException($"The unary operator '{OperationType}' does not support multiple arguments.");
-                    default:
-                        throw new InvalidCommandException($"Unrecognized operation '{OperationType}'.");
-                }
-                context.Render(Right);
             }
         }
 
