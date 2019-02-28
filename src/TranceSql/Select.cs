@@ -248,7 +248,6 @@ namespace TranceSql
                             break;
                     }
                 }
-
             }
 
             switch (context.Mode)

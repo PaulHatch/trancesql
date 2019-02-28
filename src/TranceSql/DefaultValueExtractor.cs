@@ -18,7 +18,7 @@ namespace TranceSql
         /// <param name="parameter">The parameter to be set.</param>
         /// <param name="value">The input value.</param>
         /// <returns>A value suitable to be used for a parameter</returns>
-        public void SetValue(DbParameter parameter, object value)
+        public virtual void SetValue(DbParameter parameter, object value)
         {
             if (value == null)
             {
@@ -26,8 +26,6 @@ namespace TranceSql
             }
             else
             {
-                var valueType = value.GetType();
-                
                 parameter.Value = value;
             }
         }
