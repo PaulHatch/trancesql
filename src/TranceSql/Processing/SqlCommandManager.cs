@@ -23,7 +23,7 @@ namespace TranceSql.Processing
         internal Func<DbConnection> ConnectionFactory { get; }
 
         /// <summary>Provides parameter value from input object instances.</summary>
-        internal IParameterValueExtractor ValueExtractor { get; }
+        internal IParameterMapper ParameterMapper { get; }
 
         private enum ConnectionMode { String, AsyncFactory, Factory }
 
@@ -40,17 +40,17 @@ namespace TranceSql.Processing
         /// </summary>
         /// <param name="rollingCredentials">A connection string provider which uses rolling credentials.</param>
         /// <param name="connectionFactory">Delegate to create connections for current database.</param>
-        /// <param name="valueExtractor">Provides parameter value from input object instances.</param>
+        /// <param name="parameterMapper">Provides parameter value from input object instances.</param>
         /// <param name="tracer">The OpenTracing tracer instance to use. If this value is null the global tracer will
         /// be used instead.</param>
         /// <param name="dbInfoFactory">The information about the connection string being used.</param>
         public SqlCommandManager(
             RollingCredentials rollingCredentials,
             Func<DbConnection> connectionFactory,
-            IParameterValueExtractor valueExtractor,
+            IParameterMapper parameterMapper,
             ITracer tracer,
             Func<string, DbInfo> dbInfoFactory)
-            : this((string)null, connectionFactory, valueExtractor, tracer, null)
+            : this((string)null, connectionFactory, parameterMapper, tracer, null)
         {
             _rollingCredentials = rollingCredentials;
             _connectionMode = ConnectionMode.AsyncFactory;
@@ -63,20 +63,20 @@ namespace TranceSql.Processing
         /// </summary>
         /// <param name="connectionString">Connection string to target database.</param>
         /// <param name="connectionFactory">Delegate to create connections for current database.</param>
-        /// <param name="valueExtractor">Provides parameter value from input object instances.</param>
+        /// <param name="parameterMapper">Provides parameter value from input object instances.</param>
         /// <param name="tracer">The OpenTracing tracer instance to use. If this value is null the global tracer will
         /// be used instead.</param>
         /// <param name="dbInfo">The information about the connection string being used.</param>
         public SqlCommandManager(
             string connectionString,
             Func<DbConnection> connectionFactory,
-            IParameterValueExtractor valueExtractor,
+            IParameterMapper parameterMapper,
             ITracer tracer,
             DbInfo dbInfo)
         {
             _connectionString = connectionString;
             ConnectionFactory = connectionFactory;
-            ValueExtractor = valueExtractor;
+            ParameterMapper = parameterMapper;
             _tracer = tracer ?? GlobalTracer.Instance;
             _dbInfo = dbInfo;
         }
@@ -93,7 +93,7 @@ namespace TranceSql.Processing
             {
                 var sqlParam = command.CreateParameter();
                 sqlParam.ParameterName = parameter.Key;
-                ValueExtractor.SetValue(sqlParam, parameter.Value);
+                ParameterMapper.SetValue(sqlParam, parameter.Value);
                 command.Parameters.Add(sqlParam);
             }
         }

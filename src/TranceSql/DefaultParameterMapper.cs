@@ -7,10 +7,10 @@ using System.Text;
 namespace TranceSql
 {
     /// <summary>
-    /// Default value extractor implementation provides resolution of 
+    /// Default parameter mapper implementation provides resolution of
     /// raw values into valid values for parameters.
     /// </summary>
-    public class DefaultValueExtractor : IParameterValueExtractor
+    public class DefaultParameterMapper : IParameterMapper
     {
         /// <summary>
         /// Sets the parameter value to be used for the given object.

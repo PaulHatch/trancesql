@@ -37,9 +37,9 @@ namespace TranceSql.Postgres
         /// A connection string provider which uses rolling credentials such as
         /// dynamic credentials from a Vault database provider.
         /// </param>
-        /// <param name="extractor">The parameter value extractor.</param>
-        public PostgresDatabase(PostgresRollingCredentials rollingCredentials, IParameterValueExtractor extractor)
-            : this(rollingCredentials, extractor, null)
+        /// <param name="parameterMapper">The parameter mapper.</param>
+        public PostgresDatabase(PostgresRollingCredentials rollingCredentials, IParameterMapper parameterMapper)
+            : this(rollingCredentials, parameterMapper, null)
         {
         }
 
@@ -64,11 +64,11 @@ namespace TranceSql.Postgres
         /// A connection string provider which uses rolling credentials such as
         /// dynamic credentials from a Vault database provider.
         /// </param>
-        /// <param name="extractor">The parameter value extractor.</param>
+        /// <param name="parameterMapper">The parameter mapper.</param>
         /// <param name="tracer">The OpenTracing tracer instance to use. If this value is null the global tracer will
         /// be used instead.</param>
-        public PostgresDatabase(PostgresRollingCredentials rollingCredentials, IParameterValueExtractor extractor, ITracer tracer)
-            : base(new SqlCommandManager(rollingCredentials, GetConnection, extractor ?? new DefaultValueExtractor(), tracer, ExtractDbInfo), new PostgresDialect())
+        public PostgresDatabase(PostgresRollingCredentials rollingCredentials, IParameterMapper parameterMapper, ITracer tracer)
+            : base(new SqlCommandManager(rollingCredentials, GetConnection, parameterMapper ?? new DefaultParameterMapper(), tracer, ExtractDbInfo), new PostgresDialect())
         {
         }
 
@@ -85,9 +85,9 @@ namespace TranceSql.Postgres
         /// Creates command parameters for a Postgres database reference.
         /// </summary>
         /// <param name="connectionString">The connection string.</param>
-        /// <param name="extractor">The parameter value extractor.</param>
-        public PostgresDatabase(string connectionString, IParameterValueExtractor extractor)
-            : this(connectionString, extractor, null)
+        /// <param name="parameterMapper">The parameter mapper.</param>
+        public PostgresDatabase(string connectionString, IParameterMapper parameterMapper)
+            : this(connectionString, parameterMapper, null)
         {
         }
 
@@ -108,13 +108,13 @@ namespace TranceSql.Postgres
         /// Creates command parameters for a Postgres database reference.
         /// </summary>
         /// <param name="connectionString">The connection string.</param>
-        /// <param name="extractor">The parameter value extractor.</param>
+        /// <param name="parameterMapper">The parameter mapper.</param>
         /// <param name="tracer">
         /// The OpenTracing tracer instance to use. If this value is null the global tracer will
         /// be used instead.
         /// </param>
-        public PostgresDatabase(string connectionString, IParameterValueExtractor extractor, ITracer tracer)
-            : base(new SqlCommandManager(connectionString, GetConnection, extractor ?? new DefaultValueExtractor(), tracer, ExtractDbInfo(connectionString)), new PostgresDialect())
+        public PostgresDatabase(string connectionString, IParameterMapper parameterMapper, ITracer tracer)
+            : base(new SqlCommandManager(connectionString, GetConnection, parameterMapper ?? new DefaultParameterMapper(), tracer, ExtractDbInfo(connectionString)), new PostgresDialect())
         {
         }
 

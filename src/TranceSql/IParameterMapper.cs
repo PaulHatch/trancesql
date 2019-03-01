@@ -10,7 +10,7 @@ namespace TranceSql
     /// <summary>
     /// Provides parameter value from object instances.
     /// </summary>
-    public interface IParameterValueExtractor
+    public interface IParameterMapper
     {
         /// <summary>
         /// Sets the parameter value to be used for the given object.

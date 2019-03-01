@@ -15,7 +15,6 @@ namespace TranceSql
         /// <param name="type">The operator used to combine this collection with previous conditions.</param>
         /// <param name="left">The left condition.</param>
         /// <param name="right">The right condition.</param>
-        /// <param name="nested">True if this collection is nested (wrapped in parentheses.</param>
         public ConditionPair(BooleanOperator type, ICondition left, ICondition right)
             : this(type, left, right, false)
         {
