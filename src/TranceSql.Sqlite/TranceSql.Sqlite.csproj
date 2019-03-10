@@ -21,7 +21,7 @@ TranceSQL provides an easy to use, high performance data access interface for SQ
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="2.1.0" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="2.*" />
   </ItemGroup>
 
   <ItemGroup>
