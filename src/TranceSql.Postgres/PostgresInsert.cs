@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace TranceSql.Postgres
@@ -20,6 +21,7 @@ namespace TranceSql.Postgres
         /// </summary>
         public PostgresOnConflict OnConflict { get; set; }
 
+        
         internal PostgresInsert(Insert insert)
         {
             Insert = insert;

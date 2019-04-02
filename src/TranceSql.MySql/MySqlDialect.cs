@@ -22,6 +22,11 @@ namespace TranceSql.MySql
         public OffsetBehavior OffsetBehavior => OffsetBehavior.None;
 
         /// <summary>
+        /// Gets the type of the output supported by this dialect.
+        /// </summary>
+        public OutputType OutputType => OutputType.None;
+
+        /// <summary>
         /// Formats a date constant.
         /// </summary>
         /// <param name="date">The date to format.</param>

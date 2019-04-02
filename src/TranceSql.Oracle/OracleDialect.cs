@@ -22,6 +22,12 @@ namespace TranceSql.Oracle
         public OffsetBehavior OffsetBehavior => OffsetBehavior.None;
 
         /// <summary>
+        /// Gets the type of the output supported by this dialect.
+        /// </summary>
+        public OutputType OutputType => OutputType.Returning;
+
+
+        /// <summary>
         /// Formats a date constant.
         /// </summary>
         /// <param name="date">The date to format.</param>

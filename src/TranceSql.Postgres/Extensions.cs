@@ -15,7 +15,7 @@ namespace TranceSql.Postgres
         /// containing the specified clause using the target <see cref="Insert"/>
         /// statement.
         /// </summary>
-        /// <param name="insert">The insert action to add.</param>
+        /// <param name="insert">The insert action to add to.</param>
         /// <param name="target">The target for the ON CONFLICT clause.</param>
         /// <param name="action">The action for the ON CONFLICT clause.</param>
         /// <returns>A Postgres-type INSERT statement with the specified clause.</returns>
@@ -40,6 +40,7 @@ namespace TranceSql.Postgres
         /// containing the specified clause using the target <see cref="Insert"/>
         /// statement.
         /// </summary>
+        /// <param name="insert">The insert action to add to.</param>
         /// <returns>A Postgres-type INSERT statement with the specified clause.</returns>
         public static PostgresInsert OnConflictDoNothing(this Insert insert)
         {
@@ -47,6 +48,40 @@ namespace TranceSql.Postgres
             {
                 OnConflict = new PostgresOnConflict()
             };
+        }
+
+        // Extensions on the PostgresInsert type (i.e. not the plain Insert type)
+
+        /// <summary>
+        /// Adds a Postgres ON CONFLICT clause to an INSERT statement.
+        /// statement.
+        /// </summary>
+        /// <param name="insert">The insert action to add to.</param>
+        /// <param name="target">The target for the ON CONFLICT clause.</param>
+        /// <param name="action">The action for the ON CONFLICT clause.</param>
+        /// <returns>A Postgres-type INSERT statement with the specified clause.</returns>
+        public static PostgresInsert OnConflict(
+            this PostgresInsert insert,
+            IEnumerable<ISqlElement> target,
+            Update action)
+        {
+            insert.OnConflict = new PostgresOnConflict
+            {
+                Target = new ColumnCollection { target },
+                DoUpdate = action
+            };
+            return insert;
+        }
+
+        /// <summary>
+        /// Adds a Postgres ON CONFLICT DO NOTHING clause to an INSERT statement.
+        /// </summary>
+        /// <param name="insert">The insert action to add to.</param>
+        /// <returns>A Postgres-type INSERT statement with the specified clause.</returns>
+        public static PostgresInsert OnConflictDoNothing(this PostgresInsert insert)
+        {
+            insert.OnConflict = new PostgresOnConflict();
+            return insert;
         }
 
         /// <summary>
