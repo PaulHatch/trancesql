@@ -38,21 +38,13 @@ Unit Tests:
     script:
      - docker pull $IMAGE_TAG
      - docker run --name testing $IMAGE_TAG --test
-     - docker cp testing:/sln/results.xml .
-    artifacts:
-      reports:
-        junit: results.xml
-
+ 
 SQL Server Integration Tests:
     stage: test
     except:
       - tags
     script: 
       - bash init.sh --integration $IMAGE_TAG sqlserver
-      - exit $($?)
-    artifacts:
-      reports:
-        junit: results.xml
 
 SQLite Integration Tests:
     stage: test
@@ -60,10 +52,6 @@ SQLite Integration Tests:
       - tags
     script:
       - bash init.sh --integration $IMAGE_TAG sqlite
-      - exit $($?)
-    artifacts:
-      reports:
-        junit: results.xml
 
 Postgres Integration Tests:
     stage: test
@@ -71,10 +59,7 @@ Postgres Integration Tests:
       - tags
     script: 
       - bash init.sh --integration $IMAGE_TAG postgres
-      - exit $($?)
-    artifacts:
-      reports:
-        junit: results.xml
+
 
 MySQL Integration Tests:
     stage: test
@@ -82,10 +67,7 @@ MySQL Integration Tests:
       - tags
     script: 
       - bash init.sh --integration $IMAGE_TAG mysql
-      - exit $($?)
-    artifacts:
-      reports:
-        junit: results.xml
+
 
 
 Publish Preview:

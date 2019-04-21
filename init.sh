@@ -13,7 +13,6 @@ case "$1" in
   "--test")
 	docker pull $IMAGE_TAG
 	docker run --name testing $IMAGE_TAG --test
-	docker cp testing:/sln/results.xml .
 	;;
   "--integration")
 	shift
@@ -23,7 +22,6 @@ case "$1" in
 	IMAGE_TAG=${1} docker-compose -f docker-compose.${2}.yml run test
 	CONTAINER_HASH=$(docker ps -f label=test -alq)
 	EXIT_CODE=$(docker inspect ${CONTAINER_HASH} --format='{{.State.ExitCode}}')
-	docker cp $CONTAINER_HASH:/sln/results.xml .
 	exit $EXIT_CODE
 	;;
   "--publish-preview")
