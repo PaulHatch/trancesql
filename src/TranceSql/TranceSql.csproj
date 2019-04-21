@@ -2,12 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <PackageId>TranceSql</PackageId>
     <Authors>Paul Hatcherian</Authors>
     <PackageTags>Trance TranceSQL SQL Database Client</PackageTags>
-    <Copyright>2018 Paul Hatcherian</Copyright>
-    <Company />
-    <PackageLicenseUrl>https://raw.githubusercontent.com/PaulHatch/simpleelastic/master/license.txt</PackageLicenseUrl>
+    <Copyright>2019 Paul Hatcherian</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://www.trancesql.com</PackageProjectUrl>
     <PackageIconUrl>https://www.trancesql.com/logo.png</PackageIconUrl>
     <RepositoryUrl>https://github.com/PaulHatch/trancesql.git</RepositoryUrl>
@@ -22,10 +20,6 @@
   <ItemGroup>
     <PackageReference Include="OpenTracing" Version="0.12.0" />
     <PackageReference Include="System.Data.Common" Version="4.3.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Properties\" />
   </ItemGroup>
 
 </Project>

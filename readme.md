@@ -9,16 +9,6 @@ commands and mapping query results back to objects. You can think of it as sitti
 an ORM like Entity Framework in which queries are generated from object-based DSLs such as LINQ
 and lightweight clients like Dapper that map results but require the query be provided as a string.
 
-```
-┌──────────────────┐  ╔═════════════════╗   ┌──────────────┐   ┌───────────────┐
-│ Entity Framework │  ║    TranceSQL    ║   │    Dapper    │   │    ADO.NET    │
-└────────┬─────────┘  ╚════════╦════════╝   └──────┬───────┘   └───────┬───────┘
-         │                     │                   │                   │
-         │                     │                   │                   │
-◀────────●─────────────────────●───────────────────●───────────────────●────────▶
-Abstract                                                               Bare Metal
-```
-
 TranceSQL provides a command API for modeling SQL queries and an extensible translation layer
 for converting results to usable objects. The command definition and command "rendering" are
 separated into two different steps, allowing for differences between different dialects of SQL

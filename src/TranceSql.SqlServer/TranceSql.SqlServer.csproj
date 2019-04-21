@@ -2,12 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <PackageId>TranceSql.SqlServer</PackageId>
     <Authors>Paul Hatcherian</Authors>
     <PackageTags>Trance TranceSQL SQL Database Client Microsoft SQL Server MSSQL</PackageTags>
-    <Copyright>2018</Copyright>
-    <Company />
-    <PackageLicenseUrl>https://raw.githubusercontent.com/PaulHatch/simpleelastic/master/license.txt</PackageLicenseUrl>
+    <Copyright>2019 Paul Hatcherian</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://www.trancesql.com</PackageProjectUrl>
     <PackageIconUrl>https://www.trancesql.com/logo.png</PackageIconUrl>
     <RepositoryUrl>https://github.com/PaulHatch/trancesql.git</RepositoryUrl>
