@@ -154,7 +154,7 @@ namespace TranceSql
                         default:
                             throw new InvalidCommandException("This dialect does not support return clauses in insert statements.");
                     }
-                    
+
                     context.RenderDelimited(_returning);
                 }
             }

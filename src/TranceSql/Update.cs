@@ -69,6 +69,16 @@ namespace TranceSql
         /// </summary>
         public AnyOf<Condition, ConditionPair, ICondition> Where { get; set; }
 
+        private ColumnCollection _returning;
+        /// <summary>
+        /// Gets or sets the columns to return/output.
+        /// </summary>
+        public ColumnCollection Returning
+        {
+            get => _returning = _returning ?? new ColumnCollection();
+            set => _returning = value;
+        }
+
         void ISqlElement.Render(RenderContext context)
         {
             using (context.EnterChildMode(RenderMode.Nested))
@@ -84,6 +94,24 @@ namespace TranceSql
                     context.WriteLine();
                     context.Write("WHERE ");
                     context.Render(Where.Value);
+                }
+
+                if (_returning?.Any() == true)
+                {
+                    context.WriteLine();
+                    switch (context.Dialect.OutputType)
+                    {
+                        case OutputType.Returning:
+                            context.Write("RETURNING ");
+                            break;
+                        case OutputType.Output:
+                            context.Write("RETURNING ");
+                            break;
+                        default:
+                            throw new InvalidCommandException("This dialect does not support return clauses in update statements.");
+                    }
+
+                    context.RenderDelimited(_returning);
                 }
             }
         }
