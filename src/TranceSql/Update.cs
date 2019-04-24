@@ -105,7 +105,7 @@ namespace TranceSql
                             context.Write("RETURNING ");
                             break;
                         case OutputType.Output:
-                            context.Write("RETURNING ");
+                            context.Write("OUTPUT ");
                             break;
                         default:
                             throw new InvalidCommandException("This dialect does not support return clauses in update statements.");

@@ -319,5 +319,52 @@ namespace TranceSql.IntegrationTest
             Assert.Equal(count, count1);
             Assert.Equal(count, count2);
         }
+
+        [Fact]
+        public void OutputUpdate()
+        {
+            if (_database.Dialect.OutputType == OutputType.None)
+            {
+                // don't test dialects which do not support this type
+                return;
+            }
+
+            var sut = new Command(_database)
+            {
+                new CreateTable("update_output_table")
+                {
+                    Columns = { { "column1", SqlType.From<int>() } }
+                },
+                new Insert { Into = "update_output_table", Columns = "column1", Values = { 1 } },
+                new Update { Table = "update_output_table", Set = { { "column1", 2 } }, Where = new Column("column1") == new Value(1), Returning = "column1" }
+            };
+
+            var result = sut.Fetch<int>();
+
+            Assert.Equal(2, result);
+        }
+
+        [Fact]
+        public void OutputInsert()
+        {
+            if(_database.Dialect.OutputType == OutputType.None)
+            {
+                // don't test dialects which do not support this type
+                return;
+            }
+
+            var sut = new Command(_database)
+            {
+                new CreateTable("insert_output_table")
+                {
+                    Columns = { { "column1", SqlType.From<int>() } }
+                },
+                new Insert { Into = "insert_output_table", Columns = "column1", Values = { 2 }, Returning = "column1" },
+            };
+
+            var result = sut.Fetch<int>();
+
+            Assert.Equal(2, result);
+        }
     }
 }
