@@ -26,13 +26,13 @@ WORKDIR /sln
 COPY . .
 RUN \
 	for project in $(ls sln/*/*.csproj); \
-		dotnet build /p:Version=$VERSION -c Release --no-restore $project
-	done
+		dotnet build /p:Version=$VERSION -c Release --no-restore $project ; \
+	done && \
 	for file in $(ls preview/*/*.csproj); \
-		dotnet build /p:Version=$VERSION-preview -c Release --no-restore $project
-	done
+		dotnet build /p:Version=$VERSION-preview -c Release --no-restore $project ; \
+	done && \
 	for file in $(ls test/*/*.csproj); \
-		dotnet build /p:Version=$VERSION -c Release --no-restore $project
+		dotnet build /p:Version=$VERSION -c Release --no-restore $project ; \
 	done
 
 FROM build as run
