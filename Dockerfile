@@ -16,6 +16,13 @@ ONBUILD RUN \
 		mv $file src/${file%.*}/; \
 	done
 
+ONBUILD COPY preview/*/*.csproj ./
+ONBUILD RUN \
+	for file in $(ls *.csproj); \
+		do mkdir -p preview/${file%.*}/ && \
+		mv $file preview/${file%.*}/; \
+	done
+
 # Restore packages in the base layer so they can be cached
 ONBUILD RUN dotnet restore
 
