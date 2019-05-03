@@ -10,7 +10,11 @@ ONBUILD COPY ./*.sln  ./
 
 # Copy the main source project files
 ONBUILD COPY src/*/*.csproj ./
-ONBUILD RUN for file in $(ls *.csproj); do mkdir -p src/${file%.*}/ && mv $file src/${file%.*}/; done
+ONBUILD RUN \
+	for file in $(ls *.csproj); \
+		do mkdir -p src/${file%.*}/ && \
+		mv $file src/${file%.*}/; \
+	done
 
 # Restore packages in the base layer so they can be cached
 ONBUILD RUN dotnet restore
@@ -20,7 +24,16 @@ ARG VERSION
 WORKDIR /sln 
 
 COPY . .
-RUN dotnet build /p:Version=$VERSION -c Release --no-restore 
+RUN \
+	for project in $(ls sln/*/*.csproj); \
+		dotnet build /p:Version=$VERSION -c Release --no-restore $project
+	done
+	for file in $(ls preview/*/*.csproj); \
+		dotnet build /p:Version=$VERSION-preview -c Release --no-restore $project
+	done
+	for file in $(ls test/*/*.csproj); \
+		dotnet build /p:Version=$VERSION -c Release --no-restore $project
+	done
 
 FROM build as run
 WORKDIR /sln

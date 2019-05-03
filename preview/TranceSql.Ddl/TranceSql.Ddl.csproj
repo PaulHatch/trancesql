@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Paul Hatcherian</Authors>
+    <PackageTags>Trance TranceSQL SQL Database Client</PackageTags>
+    <Copyright>2019 Paul Hatcherian</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://www.trancesql.com</PackageProjectUrl>
+    <PackageIconUrl>https://www.trancesql.com/logo.png</PackageIconUrl>
+    <RepositoryUrl>https://github.com/PaulHatch/trancesql.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <Description>
+      This is the Data Definition Language extension for TranceSQL. This is a pre-release version; it supports only a small subset of available DDL commands.
+
+TranceSQL provides an easy to use, high performance data access interface for SQL databases. It is minimally abstract compared to ORMs such as Entity Framework. When using TranceSQL, queries are constructing using a structured API that closely resembles the final SQL query.
+    </Description>
+    <VersionSuffix>-preview</VersionSuffix>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\TranceSql\TranceSql.csproj" />
+  </ItemGroup>
+
+</Project>

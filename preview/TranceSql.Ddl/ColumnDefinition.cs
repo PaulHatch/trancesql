@@ -52,6 +52,6 @@ namespace TranceSql
         /// <returns>
         /// A <see cref="System.String" /> that represents this instance.
         /// </returns>
-        public override string ToString() => this.RenderDebug();
+        public override string ToString() => Extensions.CreateDebugString(this);
     }
 }

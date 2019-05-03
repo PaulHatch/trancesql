@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\preview\TranceSql.Ddl\TranceSql.Ddl.csproj" />
     <ProjectReference Include="..\TranceSql.MySql\TranceSql.MySql.csproj" />
     <ProjectReference Include="..\TranceSql.Oracle\TranceSql.Oracle.csproj" />
     <ProjectReference Include="..\TranceSql.Postgres\TranceSql.Postgres.csproj" />

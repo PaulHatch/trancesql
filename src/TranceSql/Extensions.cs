@@ -45,5 +45,14 @@ namespace TranceSql
             element.Render(debugContext);
             return debugContext.CommandText;
         }
+
+        /// <summary>
+        /// Renders an element to a string using default debug settings. This
+        /// method can be accessed by external libraries which need include
+        /// ISqlElement implementations.
+        /// </summary>
+        /// <param name="element">The element to render.</param>
+        /// <returns>String representing the specified element.</returns>
+        public static string CreateDebugString(ISqlElement element) => element.RenderDebug();
     }
 }
