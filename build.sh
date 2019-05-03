@@ -5,10 +5,10 @@ case $1 in
 	shift
 	echo "Creating NuGet Packages for version ${1}"
 	echo $2
-	for project in $(ls sln/*/*.csproj); \
+	for project in $(ls sln/*/*.csproj); do \
 		dotnet pack /p:Version=${1} -c Release --no-build --no-restore -o /sln/artifacts $project ; \
 	done
-	for file in $(ls preview/*/*.csproj); \
+	for file in $(ls preview/*/*.csproj); do \
 		dotnet pack /p:Version=${1} -c Release --no-build --no-restore -o /sln/artifacts $project ; \
 	done
 	

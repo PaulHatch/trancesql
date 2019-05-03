@@ -18,8 +18,8 @@ ONBUILD RUN \
 
 ONBUILD COPY preview/*/*.csproj ./
 ONBUILD RUN \
-	for file in $(ls *.csproj); \
-		do mkdir -p preview/${file%.*}/ && \
+	for file in $(ls *.csproj); do \
+		mkdir -p preview/${file%.*}/ && \
 		mv $file preview/${file%.*}/; \
 	done
 
@@ -32,13 +32,13 @@ WORKDIR /sln
 
 COPY . .
 RUN \
-	for project in $(ls sln/*/*.csproj); \
+	for project in $(ls sln/*/*.csproj); do \
 		dotnet build /p:Version=$VERSION -c Release --no-restore $project ; \
 	done && \
-	for file in $(ls preview/*/*.csproj); \
+	for file in $(ls preview/*/*.csproj); do \
 		dotnet build /p:Version=$VERSION-preview -c Release --no-restore $project ; \
 	done && \
-	for file in $(ls test/*/*.csproj); \
+	for file in $(ls test/*/*.csproj); do \
 		dotnet build /p:Version=$VERSION -c Release --no-restore $project ; \
 	done
 
