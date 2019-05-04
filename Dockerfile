@@ -32,7 +32,7 @@ WORKDIR /sln
 
 COPY . .
 RUN \
-	for project in $(ls sln/*/*.csproj); do \
+	for project in $(ls src/*/*.csproj); do \
 		dotnet build /p:Version=$VERSION -c Release --no-restore $project ; \
 	done && \
 	for file in $(ls preview/*/*.csproj); do \
