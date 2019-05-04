@@ -9,7 +9,7 @@ case $1 in
 		dotnet pack /p:Version=${1} -c Release --no-build --no-restore -o /sln/artifacts $project ; \
 	done
 	for file in $(ls preview/*/*.csproj); do \
-		dotnet pack /p:Version=${1} -c Release --no-build --no-restore -o /sln/artifacts $project ; \
+		dotnet pack /p:Version=${1}-preview -c Release --no-build --no-restore -o /sln/artifacts $project ; \
 	done
 	
 	shift
