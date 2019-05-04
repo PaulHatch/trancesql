@@ -42,7 +42,7 @@ RUN \
 FROM build as run
 WORKDIR /sln
 
-ENTRYPOINT ["sh", "/sln/build.sh"]
+ENTRYPOINT ["sh", "/sln/docker-init.sh"]
 
 
  

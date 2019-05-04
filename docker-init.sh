@@ -8,7 +8,7 @@ case $1 in
 	for project in $(ls src/*/*.csproj | grep -vi "test"); do \
 		dotnet pack /p:Version=${1} -c Release --no-build --no-restore -o /sln/artifacts $project ; \
 	done
-	for file in $(ls preview/*/*.csproj | grep -vi "test"); do \
+	for project in $(ls preview/*/*.csproj | grep -vi "test"); do \
 		dotnet pack /p:Version=${1}-preview -c Release --no-build --no-restore -o /sln/artifacts $project ; \
 	done
 	
