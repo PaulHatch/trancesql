@@ -49,7 +49,7 @@ namespace TranceSql
         /// <summary>
         /// Gets or sets the where filter for this statement.
         /// </summary>
-        public AnyOf<Condition, ConditionPair, ICondition> Where { get; set; }
+        public FilterClause Where { get; set; }
 
         void ISqlElement.Render(RenderContext context)
         {

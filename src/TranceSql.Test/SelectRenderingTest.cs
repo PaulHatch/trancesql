@@ -327,6 +327,39 @@ namespace TranceSql.Test
             Assert.Equal("SELECT Column1\nFROM Table\nUNION ALL\nSELECT Column1\nFROM Table;", result);
         }
 
+        [Fact]
+        public void AppendWhereRender()
+        {
+            var sut = new Select
+            {
+                Columns = { Column("Column1") },
+                From = Table("Table"),
+                Where = new Column("Column1") == new Column("Column2")
+            };
+
+            sut.Where &= new Column("Column1") == new Column("Column2");
+
+            var result = sut.ToString();
+
+            Assert.Equal("SELECT Column1\nFROM Table\nWHERE Column1 = Column2 AND Column1 = Column2;", result);
+        }
+
+        [Fact]
+        public void AppendEmptyWhereRender()
+        {
+            var sut = new Select
+            {
+                Columns = { Column("Column1") },
+                From = Table("Table")
+            };
+
+            sut.Where &= new Column("Column1") == new Column("Column2");
+
+            var result = sut.ToString();
+
+            Assert.Equal("SELECT Column1\nFROM Table\nWHERE Column1 = Column2;", result);
+        }
+
         [Theory]
         [InlineData(LimitBehavior.Top, OffsetBehavior.None, "SELECT TOP 5 Column\nFROM Table;")]
         [InlineData(LimitBehavior.Limit, OffsetBehavior.None, "SELECT Column\nFROM Table\nLIMIT 5;")]

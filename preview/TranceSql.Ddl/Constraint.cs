@@ -53,7 +53,7 @@ namespace TranceSql
         /// <returns>
         /// A <see cref="System.String" /> that represents this instance.
         /// </returns>
-        public override string ToString() => this.RenderDebug();
+        public override string ToString() => Extensions.CreateDebugString(this);
     }
 
     /// <summary>
@@ -101,7 +101,7 @@ namespace TranceSql
         /// <returns>
         /// A <see cref="System.String" /> that represents this instance.
         /// </returns>
-        public override string ToString() => this.RenderDebug();
+        public override string ToString() => Extensions.CreateDebugString(this);
     }
 
     /// <summary>
@@ -252,7 +252,7 @@ namespace TranceSql
         /// <returns>
         /// A <see cref="System.String" /> that represents this instance.
         /// </returns>
-        public override string ToString() => this.RenderDebug();
+        public override string ToString() => Extensions.CreateDebugString(this);
     }
 
     /// <summary>
@@ -298,7 +298,7 @@ namespace TranceSql
         /// Gets or sets the check condition for this constraint, this must not include 
         /// any <see cref="Parameter"/> or <see cref="Value"/> instances.
         /// </summary>
-        public AnyOf<Condition, ConditionPair, ICondition> Check { get; set; }
+        public FilterClause Check { get; set; }
 
         void ISqlElement.Render(RenderContext context)
         {
@@ -324,7 +324,7 @@ namespace TranceSql
         /// <returns>
         /// A <see cref="System.String" /> that represents this instance.
         /// </returns>
-        public override string ToString() => this.RenderDebug();
+        public override string ToString() => Extensions.CreateDebugString(this);
     }
 
     /// <summary>
@@ -384,6 +384,6 @@ namespace TranceSql
         /// <returns>
         /// A <see cref="System.String" /> that represents this instance.
         /// </returns>
-        public override string ToString() => this.RenderDebug();
+        public override string ToString() => Extensions.CreateDebugString(this);
     }
 }

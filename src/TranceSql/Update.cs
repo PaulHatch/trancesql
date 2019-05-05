@@ -67,7 +67,7 @@ namespace TranceSql
         /// <summary>
         /// Gets or sets the condition filter this statement applies to.
         /// </summary>
-        public AnyOf<Condition, ConditionPair, ICondition> Where { get; set; }
+        public FilterClause Where { get; set; }
 
         private ColumnCollection _returning;
         /// <summary>

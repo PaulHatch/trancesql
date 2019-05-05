@@ -22,7 +22,7 @@ namespace TranceSql
         /// <summary>
         /// Gets or sets the join condition.
         /// </summary>
-        public AnyOf<Condition, ConditionPair, ICondition> On { get; set; }
+        public FilterClause On { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Join"/> class.
@@ -45,7 +45,7 @@ namespace TranceSql
             Table = table;
             if (on != null)
             {
-                On = AnyOf<Condition, ConditionPair, ICondition>.Of(on);
+                On = new FilterClause(on);
             }
         }
         

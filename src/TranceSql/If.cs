@@ -38,7 +38,7 @@ namespace TranceSql
         /// <summary>
         /// Gets or sets the statement conditions.
         /// </summary>
-        public AnyOf<Condition, ConditionPair, ICondition> Condition { get; set; }
+        public FilterClause Condition { get; set; }
 
         /// <summary>
         /// Gets or sets the statement to execute, to specify multiple statements,

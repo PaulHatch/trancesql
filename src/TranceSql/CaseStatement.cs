@@ -57,7 +57,7 @@ namespace TranceSql
         /// <summary>
         /// Gets or sets the when condition for this clause.
         /// </summary>
-        public AnyOf<Condition, ConditionPair, ICondition> When { get; set; }
+        public FilterClause When { get; set; }
 
         /// <summary>
         /// Gets or sets the value for this case.

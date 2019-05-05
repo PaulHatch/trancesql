@@ -65,7 +65,7 @@ namespace TranceSql
         /// <summary>
         /// Gets or sets the where condition for this statement.
         /// </summary>
-        public AnyOf<Condition, ConditionPair, ICondition> Where { get; set; }
+        public FilterClause Where { get; set; }
 
         private ColumnOrderCollection _orderBy;
         /// <summary>
@@ -91,7 +91,7 @@ namespace TranceSql
         /// <summary>
         /// Gets or sets the having condition for this statement.
         /// </summary>
-        public AnyOf<Condition, ConditionPair, ICondition> Having { get; set; }
+        public FilterClause Having { get; set; }
 
         void ISqlElement.Render(RenderContext context)
         {
