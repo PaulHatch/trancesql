@@ -81,6 +81,16 @@ namespace TranceSql
 
         void ISqlElement.Render(RenderContext context)
         {
+            var output = OutputType.None;
+            if (_returning?.Any() == true)
+            {
+                output = context.Dialect.OutputType;
+                if (output == OutputType.None)
+                {
+                    throw new InvalidCommandException("This dialect does not support return clauses in update statements.");
+                }
+            }
+
             using (context.EnterChildMode(RenderMode.Nested))
             {
                 context.Write("UPDATE ");
@@ -89,6 +99,14 @@ namespace TranceSql
                 context.Write("SET ");
                 context.RenderDelimited(_set);
 
+                // OUTPUT statements are rendered before where clauses
+                if (output == OutputType.Output)
+                {
+                    context.WriteLine();
+                    context.Write("OUTPUT ");
+                    context.RenderDelimited(_returning);
+                }
+
                 if (Where != null)
                 {
                     context.WriteLine();
@@ -96,21 +114,11 @@ namespace TranceSql
                     context.Render(Where.Value);
                 }
 
-                if (_returning?.Any() == true)
+                // RETURNING statements are rendered after where clauses
+                if (output == OutputType.Returning)
                 {
                     context.WriteLine();
-                    switch (context.Dialect.OutputType)
-                    {
-                        case OutputType.Returning:
-                            context.Write("RETURNING ");
-                            break;
-                        case OutputType.Output:
-                            context.Write("OUTPUT ");
-                            break;
-                        default:
-                            throw new InvalidCommandException("This dialect does not support return clauses in update statements.");
-                    }
-
+                    context.Write("RETURNING ");
                     context.RenderDelimited(_returning);
                 }
             }
