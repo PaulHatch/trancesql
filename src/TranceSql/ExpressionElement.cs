@@ -74,6 +74,28 @@ namespace TranceSql
         public static BinaryExpression operator %(ExpressionElement left, ExpressionElement right)
             => new BinaryExpression(left, ArithmeticOperator.Modulo, right);
 
+        /// <summary>
+        /// Creates a bit shift expression from an expression element.
+        /// </summary>
+        /// <param name="element">The element to be shifted.</param>
+        /// <param name="places">The number of places to shift.</param>
+        /// <returns>
+        /// A new binary expression.
+        /// </returns>
+        public static BinaryExpression operator <<(ExpressionElement element, int places)
+            => new BinaryExpression(element, ArithmeticOperator.BitShiftLeft, new Constant(places));
+
+        /// <summary>
+        /// Creates a bit shift expression from an expression element.
+        /// </summary>
+        /// <param name="element">The element to be shifted.</param>
+        /// <param name="places">The number of places to shift.</param>
+        /// <returns>
+        /// A new binary expression.
+        /// </returns>
+        public static BinaryExpression operator >>(ExpressionElement element, int places)
+            => new BinaryExpression(element, ArithmeticOperator.BitShiftRight, new Constant(places));
+
         // Comparison
 
         /// <summary>

@@ -57,6 +57,12 @@ namespace TranceSql
                     case ArithmeticOperator.Modulo:
                         context.Write(" % ");
                         break;
+                    case ArithmeticOperator.BitShiftLeft:
+                        context.Write(" << ");
+                        break;
+                    case ArithmeticOperator.BitShiftRight:
+                        context.Write(" >> ");
+                        break;
                     default:
                         break;
                 }

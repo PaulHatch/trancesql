@@ -24,6 +24,14 @@
         /// <summary>
         /// Indicates a modulo (%) operator.
         /// </summary>
-        Modulo
+        Modulo,
+        /// <summary>
+        /// Indicates a bit-shift left (&lt;&lt;) operator.
+        /// </summary>
+        BitShiftLeft,
+        /// <summary>
+        /// Indicates a bit-shift right (&gt;&gt;) operator.
+        /// </summary>
+        BitShiftRight
     }
 }
