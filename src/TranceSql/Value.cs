@@ -16,10 +16,20 @@ namespace TranceSql
         public object Argument { get; }
 
         /// <summary>
+        /// Invalid operation, SQL elements are not valid as values for dynamic
+        /// parameters. This constructor will thrown an exception if called.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        [Obsolete("SQL elements are not valid as values for dynamic parameters.", true)]
+        public Value(ISqlElement value)
+        {
+            throw new InvalidCommandException("Attempted to pass an instance of an ISqlElement as a value in query, SQL elements should not be passed as values.");
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="Value"/> class.
         /// </summary>
         /// <param name="value">The value.</param>
-        /// <exception cref="InvalidCommandException">Attempted to pass an instance of an ISqlElement as a value in query, SQL elements should not be passed as values.</exception>
         public Value(object value)
         {
             if (value is ISqlElement)
