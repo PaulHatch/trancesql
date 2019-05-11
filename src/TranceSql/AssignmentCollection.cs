@@ -49,10 +49,18 @@ namespace TranceSql
         /// <summary>
         /// Adds a new assignment of the specified column to the specified value.
         /// </summary>
-        /// <param name="column">The column name.</param>
+        /// <param name="column">The column.</param>
         /// <param name="value">The value to assign.</param>
         public void Add(ISqlElement column, ISqlElement value)
             => Add(new Assignment(column, value));
+
+        /// <summary>
+        /// Adds a new assignment of the specified column to the specified value.
+        /// </summary>
+        /// <param name="column">The column.</param>
+        /// <param name="value">The value to assign.</param>
+        public void Add(ISqlElement column, object value)
+            => Add(new Assignment(column, new Value(value)));
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="Assignment"/> to <see cref="AssignmentCollection"/>.
