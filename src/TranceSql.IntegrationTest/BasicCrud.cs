@@ -1,4 +1,5 @@
 using System;
+using System.Data;
 using System.Data.Common;
 using System.IO;
 using System.Linq;
@@ -366,5 +367,19 @@ namespace TranceSql.IntegrationTest
 
             Assert.Equal(2, result);
         }
+
+        [Fact]
+        public void Cast()
+        {
+            var sut = new Command(_database)
+            {
+                 new Select { Columns = new Cast(new Constant(1), DbType.Boolean) },
+            };
+
+            var result = sut.Fetch<bool>();
+
+            Assert.True(result);
+        }
+
     }
 }
