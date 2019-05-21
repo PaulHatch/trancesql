@@ -33,6 +33,7 @@ namespace TranceSql.Postgres
 
         void ISqlElement.Render(RenderContext context)
         {
+            context.WriteLine();
             if (DoUpdate == null)
             {
                 context.WriteLine("ON CONFLICT DO NOTHING");
