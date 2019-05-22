@@ -21,7 +21,7 @@ namespace TranceSql.Postgres
         /// </summary>
         public PostgresOnConflict OnConflict { get; set; }
 
-        
+
         internal PostgresInsert(Insert insert)
         {
             Insert = insert;
@@ -39,6 +39,11 @@ namespace TranceSql.Postgres
             }
 
             context.Render(OnConflict);
+
+            if (context.Mode != RenderMode.MultiStatment)
+            {
+                context.Write(';');
+            }
         }
 
         /// <summary>
