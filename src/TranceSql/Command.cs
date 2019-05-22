@@ -21,6 +21,8 @@ namespace TranceSql
         private List<ISqlStatement> _statements = new List<ISqlStatement>();
         private SqlCommandManager _manager;
         private DeferContext _deferContext;
+        private readonly Dictionary<string, object> _namedParameters
+            = new Dictionary<string, object>();
 
         /// <summary>
         /// Gets the dialect this command is configured for.
@@ -84,6 +86,26 @@ namespace TranceSql
         /// </summary>
         /// <param name="statement">The statement to add.</param>
         public void Add(ISqlStatement statement) => _statements.Add(statement);
+
+        /// <summary>
+        /// Includes a new named parameter in the command. These can be used in
+        /// <see cref="Raw"/> elements. For normal use cases, using a dynamic
+        /// <see cref="Value"/> parameter is likely a better choice.
+        /// </summary>
+        /// <param name="name">The parameter name.</param>
+        /// <param name="value">The parameter value.</param>
+        /// <returns>A parameter instance for the parameter specified.</returns>
+        public Parameter IncludeParameter(string name, object value)
+        {
+            if (value is ISqlElement)
+            {
+                throw new InvalidCommandException("Attempted to pass an instance of an ISqlElement as a value in query, SQL elements should not be passed as values.");
+            }
+
+            var result = new Parameter(name);
+            _namedParameters.Add(result.Name, value);
+            return result;
+        }
 
         #region Execution
 
@@ -994,6 +1016,8 @@ namespace TranceSql
             {
                 OperationName = OperationName
             };
+
+            context.NamedParameters = _namedParameters;
 
             context.RenderDelimited(_statements, context.LineDelimiter);
 

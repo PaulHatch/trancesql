@@ -11,6 +11,7 @@ namespace TranceSql
     public class RenderContext : IContext
     {
         private int _index = 1;
+
         private Dictionary<Value, string> _dynamicParameters = new Dictionary<Value, string>();
         private Stack<RenderMode> _modes = new Stack<RenderMode>(new[] { RenderMode.Statment });
         private StringBuilder _result = new StringBuilder();
@@ -44,6 +45,11 @@ namespace TranceSql
         public IDisposable EnterChildMode(RenderMode mode) => new ModeHandler(_modes, mode);
 
         /// <summary>
+        /// Gets the named parameters for this context.
+        /// </summary>
+        internal Dictionary<string, object> NamedParameters { get; set; }
+
+        /// <summary>
         /// Gets the current rendering mode.
         /// </summary>
         public RenderMode Mode => _modes.Peek();
@@ -57,7 +63,22 @@ namespace TranceSql
         /// Gets the parameters for this context.
         /// </summary>
         public IReadOnlyDictionary<string, object> ParameterValues
-            => _dynamicParameters.ToDictionary(v => v.Value, v => v.Key.Argument);
+        {
+            get
+            {
+                var results = _dynamicParameters
+                    .Select(v => (name: v.Value, value: v.Key.Argument));
+
+                if (NamedParameters != null)
+                {
+                    results = results
+                        .Concat(NamedParameters
+                            .Select(v => (name: v.Key, value: v.Value)));
+                }
+
+                return results.ToDictionary(v => v.name, v => v.value);
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderContext"/> class.
