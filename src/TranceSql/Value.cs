@@ -6,7 +6,6 @@ namespace TranceSql
 {
     /// <summary>
     /// Represents a value which will be passed to the final command as a dynamic parameter.
-    /// A value may be reused, only the initial value will be
     /// </summary>
     public class Value : ExpressionElement, ISqlElement
     {

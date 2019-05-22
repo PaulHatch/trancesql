@@ -34,7 +34,14 @@ namespace TranceSql
         public string Name
         {
             get => _name;
-            set => _name = value.StartsWith("@") ? value : $"@{value}";
+            set
+            {
+                if (_name == value)
+                {
+                    throw new ArgumentNullException(nameof(value), "Parameter name cannot be null");
+                }
+                _name = value.StartsWith("@") ? value : $"@{value}";
+            }
         }
 
         void ISqlElement.Render(RenderContext context)
