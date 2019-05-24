@@ -139,7 +139,10 @@ namespace TranceSql
                         context.Write(')');
                     }
                 }
+            }
 
+            if (context.Mode != RenderMode.MultiStatment)
+            {
                 if (_returning?.Any() == true)
                 {
                     context.WriteLine();
@@ -157,10 +160,7 @@ namespace TranceSql
 
                     context.RenderDelimited(_returning);
                 }
-            }
 
-            if (context.Mode != RenderMode.MultiStatment)
-            {
                 context.Write(';');
             }
         }

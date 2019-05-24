@@ -40,6 +40,15 @@ namespace TranceSql.Postgres
 
             context.Render(OnConflict);
 
+            var returning = Insert.Returning ?? OnConflict?.DoUpdate.Returning;
+
+            if (returning?.Any() == true)
+            {
+                context.WriteLine();
+                context.Write("RETURNING ");
+                context.RenderDelimited(returning);
+            }
+
             if (context.Mode != RenderMode.MultiStatment)
             {
                 context.Write(';');
