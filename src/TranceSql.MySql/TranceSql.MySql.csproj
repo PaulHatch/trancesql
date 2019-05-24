@@ -19,7 +19,7 @@ TranceSQL provides an easy to use, high performance data access interface for SQ
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MySql.Data" Version="8.*" />
+    <PackageReference Include="MySqlConnector" Version="0.*" />
   </ItemGroup>
 
   <ItemGroup>
