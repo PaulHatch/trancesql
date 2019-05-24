@@ -76,7 +76,7 @@ namespace TranceSql
             context.Write(" AS ");
             if (As.HasValue)
             {
-                context.Dialect.FormatType(As.Value, AsParams);
+                context.Write(context.Dialect.FormatType(As.Value, AsParams));
             }
             else
             {
