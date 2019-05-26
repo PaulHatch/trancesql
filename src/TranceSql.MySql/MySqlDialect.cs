@@ -80,7 +80,15 @@ namespace TranceSql.MySql
             }
             else
             {
-                return typeName;
+                switch (type)
+                {
+                    case DbType.AnsiString:
+                        return $"VARCHAR(1000)";
+                    case DbType.String:
+                        return $"VARCHAR(1000) CHARACTER SET utf8";
+                    default:
+                        return typeName;
+                }
             }
         }
 
@@ -93,6 +101,7 @@ namespace TranceSql.MySql
 
             switch (parameter.MySqlDbType)
             {
+                case MySqlDbType.Bool: return "BIT";
                 case MySqlDbType.Decimal: return "DECIMAL";
                 case MySqlDbType.Byte: return "TINYINT";
                 case MySqlDbType.Int16: return "SMALLINT";
