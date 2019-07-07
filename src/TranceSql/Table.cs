@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace TranceSql
 {
@@ -43,6 +44,13 @@ namespace TranceSql
             context.WriteIdentifierPrefix(Schema);
             context.Write(Name);
         }
+
+        /// <summary>
+        /// Creates a new column for this table using the specified column name.
+        /// </summary>
+        /// <param name="name">The column name to use.</param>
+        /// <returns>A new column for this table.</returns>
+        protected Column Column([CallerMemberName]string name = null) => new Column(Schema, Name, name);
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="System.String"/> to <see cref="Table"/>.
