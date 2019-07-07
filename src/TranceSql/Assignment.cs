@@ -36,7 +36,15 @@ namespace TranceSql
         {
             if (context.Mode == RenderMode.Nested)
             {
-                context.Render(Target);
+                switch (Target)
+                {
+                    case Column column:
+                        context.WriteIdentifier(column.Name);
+                        break;
+                    default:
+                        context.Render(Target);
+                        break;
+                }
                 context.Write(" = ");
                 context.Render(Value);
             }
@@ -45,16 +53,8 @@ namespace TranceSql
                 using (context.EnterChildMode(RenderMode.Nested))
                 {
                     context.Write("SET ");
-                    switch (Target)
-                    {
-                        case Column column:
-                            context.WriteIdentifier(column.Name);
-                            break;
-                        default:
-                            context.Render(Target);
-                            break;
-                    }
-                    
+                    context.Render(Target);
+
                     context.Write(" = ");
                     context.Render(Value);
                     context.Write(';');
