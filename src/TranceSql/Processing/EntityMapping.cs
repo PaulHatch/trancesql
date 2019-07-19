@@ -104,27 +104,8 @@ namespace TranceSql.Processing
                 if (columnMap.ContainsKey(column))
                 {
                     // a match exists
-                    object result = reader[columnMap[column]];
-
-                    if (Convert.IsDBNull(result))
-                    {
-                        return default;
-                    }
-
-                    if (typeof(T).IsEnum)
-                    {
-                        if (result is string stringResult)
-                        {
-                            return (T)Enum.Parse(typeof(T), stringResult);
-                        }
-                    }
-
-                    if (result is T r)
-                    {
-                        return r;
-                    }
-
-                    return (T)Convert.ChangeType(result, typeof(T));
+                    var ordinal = columnMap[column];
+                    return Get<T>(reader, ordinal);
                 }
                 else
                 {
@@ -147,28 +128,24 @@ namespace TranceSql.Processing
                     throw new IndexOutOfRangeException($"The data result for the query includes {reader.FieldCount} columns, which is not enough to populate the requested tuple fields.");
                 }
 
-                object result = reader[ordinal];
-
-                if (Convert.IsDBNull(result))
+                if (reader.IsDBNull(ordinal))
                 {
                     return default;
                 }
 
-                if (typeof(T).IsEnum)
+                var fieldType = reader.GetFieldType(ordinal);
+
+                if (typeof(T).IsEnum && fieldType == typeof(string))
                 {
-                    if (result is string stringResult)
-                    {
-                        return (T)Enum.Parse(typeof(T), stringResult);
-                    }
+                    return (T)Enum.Parse(typeof(T), reader.GetString(ordinal));
                 }
 
-                if (result is T r)
+                if (fieldType == typeof(T))
                 {
-                    return r;
+                    return reader.GetFieldValue<T>(ordinal);
                 }
 
-                return (T)Convert.ChangeType(result, typeof(T));
-
+                return reader.GetFieldValue<T>(ordinal);
             }
         }
 
