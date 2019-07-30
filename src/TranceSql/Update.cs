@@ -64,6 +64,16 @@ namespace TranceSql
             set => _set = value;
         }
 
+        private DataSourceCollection _from;
+        /// <summary>
+        /// Gets or sets table or tables for the from clause of this statement.
+        /// </summary>
+        public DataSourceCollection From
+        {
+            get => _from = _from ?? new DataSourceCollection();
+            set => _from = value;
+        }
+
         /// <summary>
         /// Gets or sets the condition filter this statement applies to.
         /// </summary>
@@ -105,6 +115,13 @@ namespace TranceSql
                     context.WriteLine();
                     context.Write("OUTPUT ");
                     context.RenderDelimited(_returning);
+                }
+
+                if (_from?.Any() == true)
+                {
+                    context.WriteLine();
+                    context.Write("FROM ");
+                    context.RenderDelimited(From);
                 }
 
                 if (Where != null)
