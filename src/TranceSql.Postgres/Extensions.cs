@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace TranceSql.Postgres
@@ -83,6 +84,58 @@ namespace TranceSql.Postgres
             insert.OnConflict = new PostgresOnConflict();
             return insert;
         }
+
+        /// <summary>
+        /// Shortcut method for creating a simple 'upsert' command by adding an
+        /// ON CONFLICT DO UPDATE clause to the insert statement. Any columns
+        /// included in the conflict statement will be exclude from the UPDATE's
+        /// SET clause. This method only supports columns as the ON CONFLICT target.
+        /// For more control over how the update will be preformed, use the 
+        /// <see cref="OnConflict(Insert, IEnumerable{ISqlElement}, Update)"/>
+        /// method instead and supply your own update command.
+        /// </summary>
+        /// <param name="insert">The insert action to add to.</param>
+        /// <param name="onConflict">The ON CONFLICT columns for this statement</param>
+        /// <returns>A Postgres-type INSERT statement with the specified clause.</returns>
+        /// <remarks>
+        /// If no addition columns besides the ON CONFLICT columns are included
+        /// in the source update's column list, an ON CONFLICT DO NOTHING command
+        /// will be created instead.
+        /// </remarks>
+        public static PostgresInsert OnConflictUpdate(this Insert insert, params Column[] onConflict)
+        {
+            var assignments = insert.Columns
+                .Zip(insert.Values, (c, v) => new Assignment(c, v))
+                .Where(set =>
+                {
+                    if (set.Target is Column column &&
+                        onConflict.Any(c => c.Name == column.Name))
+                    {
+                        return false;
+                    }
+                    return true;
+                });
+
+            var assignmentCollection = new AssignmentCollection(assignments);
+
+            if (!assignmentCollection.Any())
+            {
+                return insert.OnConflictDoNothing();
+            }
+
+            return new PostgresInsert(insert)
+            {
+                OnConflict = new PostgresOnConflict
+                {
+                    Target = new ColumnCollection { onConflict },
+                    DoUpdate = new Update
+                    {
+                        Set = assignmentCollection
+                    }
+                }
+            };
+        }
+
 
         /// <summary>
         /// Renders an element to a string using default debug settings.
