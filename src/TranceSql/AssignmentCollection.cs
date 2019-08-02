@@ -11,6 +11,24 @@ namespace TranceSql
     public class AssignmentCollection : List<Assignment>
     {
         /// <summary>
+        /// Creates a new assignment collection instance.
+        /// </summary>
+        public AssignmentCollection()
+        {
+        }
+
+        /// <summary>
+        /// Creates a new assignment collection instance initialized with the
+        /// provided assignment elements.
+        /// </summary>
+        /// <param name="assignments">Initial assignment elements.</param>
+        public AssignmentCollection(IEnumerable<Assignment> assignments)
+            : base(assignments)
+        {
+
+        }
+
+        /// <summary>
         /// Adds a new assignment of the specified column to the specified value. This
         /// value will automatically be parameterized and passed in to the final command.
         /// </summary>
@@ -43,7 +61,7 @@ namespace TranceSql
         /// <param name="table">The column's table's name.</param>
         /// <param name="column">The column name.</param>
         /// <param name="value">The value to assign.</param>
-        public void Add(string table, string column, ISqlElement value) 
+        public void Add(string table, string column, ISqlElement value)
             => Add(new Assignment(new Column(table, column), value));
 
         /// <summary>
@@ -70,6 +88,6 @@ namespace TranceSql
         /// The result of the conversion.
         /// </returns>
         public static implicit operator AssignmentCollection(Assignment assignment)
-            => new AssignmentCollection {  assignment };
+            => new AssignmentCollection { assignment };
     }
 }
