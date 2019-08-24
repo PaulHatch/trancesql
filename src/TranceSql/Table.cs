@@ -46,13 +46,6 @@ namespace TranceSql
         }
 
         /// <summary>
-        /// Creates a new column for this table using the specified column name.
-        /// </summary>
-        /// <param name="name">The column name to use.</param>
-        /// <returns>A new column for this table.</returns>
-        protected Column Column([CallerMemberName]string name = null) => new Column(Schema, Name, name);
-
-        /// <summary>
         /// Performs an implicit conversion from <see cref="System.String"/> to <see cref="Table"/>.
         /// </summary>
         /// <param name="table">The table.</param>
