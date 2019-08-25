@@ -22,9 +22,9 @@ namespace TranceSql.Processing
         private static readonly object _creationDelegatesLocker = new object();
 
         /// <summary>
-        /// The custom type maps registered for the application.
+        /// The custom binders registered for the application.
         /// </summary>
-        private static List<ICustomEntityMap> _customMaps = new List<ICustomEntityMap>();
+        private static List<ICustomBinder> _customBinders = new List<ICustomBinder>();
 
 
         // TODO: perhaps make this configurable per SQL manager instance at some point
@@ -39,13 +39,13 @@ namespace TranceSql.Processing
             = DefaultCaseComparer.Comparer;
 
         /// <summary>
-        /// Globally registers an entity map. For more information, see the ICustomEntityMap
-        /// interface documentation.
+        /// Globally registers a custom binder. For more information, see the 
+        /// <see cref="ICustomBinder"/> interface documentation.
         /// </summary>
-        /// <param name="map">The map to register.</param>
-        public static void RegisterEntityMap(ICustomEntityMap map)
+        /// <param name="binder">The binder to register.</param>
+        public static void RegisterBinder(ICustomBinder binder)
         {
-            _customMaps.Add(map);
+            _customBinders.Add(binder);
         }
 
         /// <summary>
@@ -121,7 +121,17 @@ namespace TranceSql.Processing
             /// <param name="reader">Open DbDataReader instance to retrieve value from.</param>
             /// <param name="ordinal">Ordinal position of column to get.</param>
             /// <returns>Value of column or the default for the specified type if the column does not exist.</returns>
-            public static T Get<T>(DbDataReader reader, int ordinal)
+            public static T Get<T>(DbDataReader reader, int ordinal) => Get<T>(reader, ordinal, default);
+
+            /// <summary>Helper method called from dynamically generated entity map function
+            /// to return a value from a DbDataReader or the type default if the value
+            /// cannot be found.</summary>
+            /// <typeparam name="T">Type to return.</typeparam>
+            /// <param name="reader">Open DbDataReader instance to retrieve value from.</param>
+            /// <param name="ordinal">Ordinal position of column to get.</param>
+            /// <param name="defaultValue">Default value to use if the reader value is null.</param>
+            /// <returns>Value of column or the default for the specified type if the column does not exist.</returns>
+            public static T Get<T>(DbDataReader reader, int ordinal, T defaultValue)
             {
                 if (reader.FieldCount <= ordinal)
                 {
@@ -130,7 +140,7 @@ namespace TranceSql.Processing
 
                 if (reader.IsDBNull(ordinal))
                 {
-                    return default;
+                    return defaultValue;
                 }
 
                 var fieldType = reader.GetFieldType(ordinal);
@@ -384,7 +394,7 @@ namespace TranceSql.Processing
             }
 
             // add public properties as bindings for class initialization
-            List<MemberBinding> bindings = new List<MemberBinding>();
+            var bindings = new List<MemberBinding>();
             var properties = typeof(T).GetAllProperties().Where(p => p.CanWrite && PropertyFilter(p));
 
             // filter properties if filter was provided
@@ -395,13 +405,18 @@ namespace TranceSql.Processing
 
             foreach (var property in properties)
             {
-                var customMap = _customMaps.FirstOrDefault(m => m.DoesApply(property));
-                if (customMap != null)
+                var customBinder = _customBinders.FirstOrDefault(m => m.DoesApply(property));
+                if (customBinder != null)
                 {
-                    // use the custom mapping to obtain an expression
-                    var getValue = customMap.GetExpression(property, ReadHelper.PropertyHelperMethod, readerParam, mapParam);
+                    // This creates an expression like:
+                    //   Property =  customBinder.MapValue(property, reader[property.Name])
+
+                    var readerColumn = Expression.Property(readerParam, "Item", Expression.Constant(property.Name));
+                    var mapMethod = typeof(ICustomBinder).GetMethod(nameof(ICustomBinder.MapValue));
+                    var callCustomBinder = Expression.Call(Expression.Constant(customBinder), mapMethod, Expression.Constant(property), readerColumn);
+
                     // add a binding for this property to the expression
-                    bindings.Add(Expression.Bind(property, getValue));
+                    bindings.Add(Expression.Bind(property, Expression.Convert(callCustomBinder, property.PropertyType)));
                 }
                 else
                 {

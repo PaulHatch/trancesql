@@ -34,7 +34,7 @@ namespace TranceSql.Processing
             {
                 while (reader.Read())
                 {
-                    result.Add(Convert.IsDBNull(reader[0]) ? default(T) : (T)reader[0]);
+                    result.Add(EntityMapping.ReadHelper.Get<T>(reader, 0));
                 }
             }
             else
@@ -77,7 +77,7 @@ namespace TranceSql.Processing
 
             while (reader.Read())
             {
-                result.Add((TKey)reader[0], Convert.IsDBNull(reader[1]) ? default(TValue) : (TValue)reader[1]);
+                result.Add(EntityMapping.ReadHelper.Get<TKey>(reader, 0), EntityMapping.ReadHelper.Get<TValue>(reader, 1));
             }
 
             return result;
@@ -134,7 +134,7 @@ namespace TranceSql.Processing
             {
                 if (EntityMapping.IsSimpleType<T>())
                 {
-                    return Convert.IsDBNull(reader[0]) ? defaultResult : (T)reader[0]; //TODO .ConvertTo<T>();
+                    return EntityMapping.ReadHelper.Get(reader, 0, defaultResult);
                 }
                 else
                 {
