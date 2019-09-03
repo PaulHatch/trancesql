@@ -23,7 +23,7 @@ namespace TranceSql
         /// <see cref="Alias"/> of a table, or a <see cref="string"/> which will be converted
         /// to a <see cref="Table"/>.
         /// </summary>
-        public Any<Table, Alias, string> Table
+        public Any<Table, TableSchema, Alias, string> Table
         {
             get
             {
@@ -38,6 +38,9 @@ namespace TranceSql
             {
                 switch (value?.Value)
                 {
+                    case TableSchema tableSchema:
+                        _table = (Table)tableSchema;
+                        break;
                     case string name:
                         _table = new Table(name);
                         break;

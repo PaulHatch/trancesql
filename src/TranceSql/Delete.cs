@@ -15,7 +15,7 @@ namespace TranceSql
         /// <summary>
         /// Gets or sets table to delete from.
         /// </summary>
-        public Any<Table, Alias, string> From
+        public Any<Table, TableSchema, Alias, string> From
         {
             get
             {
@@ -30,6 +30,9 @@ namespace TranceSql
             {
                 switch (value?.Value)
                 {
+                    case TableSchema tableSchema:
+                        _from = (Table)tableSchema;
+                        break;
                     case string name:
                         _from = new Table(name);
                         break;
