@@ -33,6 +33,15 @@ namespace TranceSql
         }
 
         /// <summary>
+        /// Adds a table using the specified name.
+        /// </summary>
+        /// <param name="tableSchema">The table schema.</param>
+        public void Add(TableSchema tableSchema)
+        {
+            Add((Table)tableSchema);
+        }
+
+        /// <summary>
         /// Performs an implicit conversion from <see cref="System.String"/> to <see cref="DataSourceCollection"/>.
         /// </summary>
         /// <param name="table">The table.</param>
@@ -51,6 +60,16 @@ namespace TranceSql
         /// </returns>
         public static implicit operator DataSourceCollection(Table table)
             => new DataSourceCollection { table };
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="TableSchema"/> to <see cref="DataSourceCollection"/>.
+        /// </summary>
+        /// <param name="tableSchema">The table schema.</param>
+        /// <returns>
+        /// The result of the conversion.
+        /// </returns>
+        public static implicit operator DataSourceCollection(TableSchema tableSchema)
+            => new DataSourceCollection { (Table)tableSchema };
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="Select"/> to <see cref="DataSourceCollection"/>.
