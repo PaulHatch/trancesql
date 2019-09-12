@@ -19,7 +19,7 @@ namespace TranceSql.Postgres
         /// <summary>
         /// Gets the offset behavior and support used by this dialect.
         /// </summary>
-        public OffsetBehavior OffsetBehavior => OffsetBehavior.None;
+        public OffsetBehavior OffsetBehavior => OffsetBehavior.Offset;
 
         /// <summary>
         /// Gets the type of the output supported by this dialect.
