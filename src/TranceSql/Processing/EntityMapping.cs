@@ -150,11 +150,6 @@ namespace TranceSql.Processing
                     return (T)Enum.Parse(typeof(T), reader.GetString(ordinal));
                 }
 
-                if (fieldType == typeof(T))
-                {
-                    return reader.GetFieldValue<T>(ordinal);
-                }
-
                 return reader.GetFieldValue<T>(ordinal);
             }
         }

@@ -117,7 +117,7 @@ namespace TranceSql.Processing
         /// <returns>A new instance of type 'T' initialized to the value of the current row.</returns>
         public static T CreateInstance<T>(this DbDataReader reader)
         {
-            return reader.CreateInstance<T>(default(T));
+            return reader.CreateInstance<T>(default);
         }
 
         /// <summary>

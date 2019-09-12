@@ -49,16 +49,7 @@ namespace TranceSql.Processing
 
                 if (reader.Read())
                 {
-                    result = reader[0];
-
-                    if (Convert.IsDBNull(result))
-                    {
-                        result = _defaultResult;
-                    }
-                    else
-                    {
-                        result = Convert.ChangeType(result, typeof(TResult));
-                    }
+                    return EntityMapping.ReadHelper.Get<TResult>(reader, 0, default);
                 }
             }
             else
