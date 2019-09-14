@@ -38,25 +38,24 @@ namespace TranceSql.Processing
         /// <returns>The result for this query.</returns>
         public object Process(DbDataReader reader)
         {
-            // An 'object' type must be used here rather than 'T' in case the type is a
-            // simple type and ExecuteScalar returns a DbNull type rather than the
-            // type expected.
-            object result = null;
-
             if (EntityMapping.IsSimpleType<TResult>())
             {
                 // requested type can be mapped directly to a CLR type
 
                 if (reader.Read())
                 {
-                    return EntityMapping.ReadHelper.Get<TResult>(reader, 0, default);
+                    return EntityMapping.ReadHelper.Get<TResult>(reader, 0, _defaultResult);
+                }
+                else
+                {
+                    return _defaultResult;
                 }
             }
             else
             {
                 // else if requested type must be mapped from the result row
 
-                result = reader.CreateInstance<TResult>(_defaultResult);
+                var result = reader.CreateInstance<TResult>(_defaultResult);
 
                 // Populate collections
                 if (_properties != null)
@@ -78,9 +77,8 @@ namespace TranceSql.Processing
                     }
                 }
 
+                return result;
             }
-
-            return result;
         }
     }
 }
