@@ -490,7 +490,7 @@ namespace TranceSql.Processing
 
                     object result;
 
-                    using (IScope scope = CreateScope(context))
+                    using (var scope = CreateScope(context))
                     {
                         try
                         {
