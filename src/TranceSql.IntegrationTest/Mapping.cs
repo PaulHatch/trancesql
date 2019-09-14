@@ -56,5 +56,29 @@ namespace TranceSql.IntegrationTest
             Assert.Equal("Test", result.PropertyOne);
             Assert.Equal("Value=Test", result.PropertyTwo);
         }
+
+
+        enum TestLongEnum : long { One = 1, Two = 2 }
+        enum TestIntEnum : int { One = 1, Two = 2 }
+        enum TestShortEnum : short { One = 1, Two = 2 }
+        enum TestByteEnum : byte { One = 1, Two = 2 }
+
+        [Theory]
+        [InlineData((long)2)]
+        [InlineData((int)2)]
+        [InlineData((short)2)]
+        [InlineData((byte)2)]
+        public async Task EnumByValue(object value)
+        {
+            var command = new Command(_database)
+            {
+                new Select { Columns = new Value(value) }
+            };
+
+            Assert.Equal(TestLongEnum.Two, await command.FetchAsync<TestLongEnum>());
+            Assert.Equal(TestIntEnum.Two, await command.FetchAsync<TestIntEnum>());
+            Assert.Equal(TestShortEnum.Two, await command.FetchAsync<TestShortEnum>());
+            Assert.Equal(TestByteEnum.Two, await command.FetchAsync<TestByteEnum>());
+        }
     }
 }
