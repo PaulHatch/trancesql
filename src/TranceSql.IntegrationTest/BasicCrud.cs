@@ -11,6 +11,7 @@ using static TranceSql.UsingStatic;
 
 namespace TranceSql.IntegrationTest
 {
+    [Trait("dialect", "ANY")]
     public class BasicCrud : IClassFixture<DatabaseFixture>
     {
         protected readonly Database _database;

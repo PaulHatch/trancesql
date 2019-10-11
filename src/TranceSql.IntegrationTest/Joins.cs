@@ -7,6 +7,7 @@ using Xunit.Abstractions;
 
 namespace TranceSql.IntegrationTest
 {
+    [Trait("dialect", "ANY")]
     public class Joins : IClassFixture<DatabaseFixture>
     {
         protected readonly Database _database;
