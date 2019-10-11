@@ -1044,5 +1044,14 @@ namespace TranceSql
         IEnumerator IEnumerable.GetEnumerator() => _statements.GetEnumerator();
 
         #endregion
+
+        /// <summary>Converts to string.</summary>
+        /// <returns>A string that represents this instance.</returns>
+        public override string ToString()
+        {
+            var context = new RenderContext(Dialect);
+            context.RenderDelimited(_statements, context.LineDelimiter);
+            return context.CommandText;
+        }
     }
 }
