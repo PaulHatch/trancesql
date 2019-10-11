@@ -10,6 +10,11 @@ namespace TranceSql
     public class Column : ExpressionElement, ISqlElement
     {
         /// <summary>
+        /// Gets an "ALL" column instance, e.g. "*".
+        /// </summary>
+        public static Column All => new Column("*");
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="Column"/> class.
         /// </summary>
         /// <param name="schema">The column's table's schema.</param>
