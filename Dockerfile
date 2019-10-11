@@ -2,9 +2,6 @@ FROM microsoft/dotnet:2.1-sdk AS base
 
 WORKDIR /sln
 
-# Install the test result TRX -> JUnit transform tool
-RUN dotnet tool install -g trx2junit --version 1.2.0
-
 # Copy the solution
 ONBUILD COPY ./*.sln  ./
 

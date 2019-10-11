@@ -20,14 +20,12 @@ case $1 in
   "--test")
     echo Running Unit Tests
 	export PATH="$PATH:$HOME/.dotnet/tools"
-	dotnet test -c Release --no-build --no-restore --logger:"trx;LogFileName=results.trx" -r /sln --filter type=unit /sln/src/TranceSql.Test/TranceSql.Test.csproj
-	trx2junit /sln/*.trx
+	dotnet test -c Release --no-build --no-restore -r /sln --filter type=unit /sln/src/TranceSql.Test/TranceSql.Test.csproj
 	;;
   "--integration")
 	echo Running Integration Tests
 	export PATH="$PATH:$HOME/.dotnet/tools"
-	dotnet test -c Release --no-build --no-restore --logger:"trx;LogFileName=results.trx" -r /sln --filter type=integration /sln/src/TranceSql.IntegrationTest/TranceSql.IntegrationTest.csproj
-	trx2junit /sln/*.trx
+	dotnet test -c Release --no-build --no-restore -r /sln --filter "type=integration&dialect=${DIALECT}|ANY" /sln/src/TranceSql.IntegrationTest/TranceSql.IntegrationTest.csproj
 	;;
   *)
     echo Invalid command, use '--test', '--integration' or '--publish'
