@@ -280,7 +280,7 @@ namespace TranceSql.Postgres
             {
                 if (e.CurrentState == ConnectionState.Broken)
                 {
-                    _observable.OnError(new PostgresException { MessageText = "The connection to the database was broken." });
+                    _observable.OnError(new ListenerException("The connection to the database was broken."));
                 }
             }
 
