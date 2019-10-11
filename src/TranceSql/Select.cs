@@ -194,13 +194,6 @@ namespace TranceSql
                     context.Render(Where.Value);
                 }
 
-                if (_orderBy?.Any() == true)
-                {
-                    context.WriteLine();
-                    context.Write("ORDER BY ");
-                    context.RenderDelimited(OrderBy);
-                }
-
                 if (_groupBy?.Any() == true)
                 {
                     context.WriteLine();
@@ -212,6 +205,13 @@ namespace TranceSql
                     context.WriteLine();
                     context.Write("HAVING ");
                     context.Render(Having.Value);
+                }
+
+                if (_orderBy?.Any() == true)
+                {
+                    context.WriteLine();
+                    context.Write("ORDER BY ");
+                    context.RenderDelimited(OrderBy);
                 }
 
                 if (Offset.HasValue)
