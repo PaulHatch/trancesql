@@ -8,7 +8,8 @@ using Xunit.Abstractions;
 
 namespace TranceSql.IntegrationTest
 {
-    public class Postgres
+    [Trait("dialect", "Postgres")]
+    public class Postgres : IClassFixture<DatabaseFixture>
     {
         protected readonly Database _database;
 
@@ -17,6 +18,7 @@ namespace TranceSql.IntegrationTest
             _database = db.GetDatabase(new TestTracer(helper));
         }
 
+        [Fact]
         public async Task OnConflictCanExecute()
         {
             var sut = new Command(_database)
