@@ -32,9 +32,13 @@ namespace TranceSql.IntegrationTest
                 },
                 new Insert { Into = "unique_table", Columns = "column", Values = { 1 } },
                 new Insert { Into = "unique_table", Columns = "column", Values = { 1 } }
-                .OnConflict(null, new Update {
-                    Set = { { "column", 2 } }
-                }),
+                .OnConflict(
+                    new [] {
+                        new Column("column")
+                    },
+                    new Update {
+                        Set = { { "column", 2 } }
+                    }),
                 new Select { Limit = 1, Columns = "column", From = "unique_table" }
             };
 
