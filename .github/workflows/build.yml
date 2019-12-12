@@ -11,7 +11,7 @@ jobs:
       
       - name: Version
         id: version
-        uses: paulhatch/semantic-version@v1
+        uses: paulhatch/semantic-version@v1.0.1
         with:
           format: "${major}.${minor}.${patch}.${increment}"
           tag_prefix: ""
