@@ -6,6 +6,7 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{297E8D6F-CF15-4856-8B95-07CF6E353E9B}"
 	ProjectSection(SolutionItems) = preProject
 		.gitlab-ci.yml = .gitlab-ci.yml
+		.github\workflows\build.yml = .github\workflows\build.yml
 		docker-compose.mysql.yml = docker-compose.mysql.yml
 		docker-compose.oracle.yml = docker-compose.oracle.yml
 		docker-compose.postgres.yml = docker-compose.postgres.yml
