@@ -25,7 +25,7 @@ case $1 in
   "--integration")
 	echo Running Integration Tests
 	export PATH="$PATH:$HOME/.dotnet/tools"
-	dotnet test -c Release --no-build --no-restore -r /sln --filter "type=integration&dialect=${DIALECT}|ANY" /sln/src/TranceSql.IntegrationTest/TranceSql.IntegrationTest.csproj
+	dotnet test -c Release --no-build --no-restore -r /sln --filter "type=integration&(dialect=${DIALECT}|dialect=ANY)" /sln/src/TranceSql.IntegrationTest/TranceSql.IntegrationTest.csproj
 	;;
   *)
     echo Invalid command, use '--test', '--integration' or '--publish'
