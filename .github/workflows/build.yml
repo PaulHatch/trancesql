@@ -49,7 +49,7 @@ jobs:
           path: /tmp/trancesql-image.tar
 
       - name: Load image
-        run: docker load -i /tmp/trancesql-image.tar trancesql/build
+        run: docker load -i /tmp/trancesql-image.tar
 
       - name: Integration Test for ${{ matrix.database }}
         run: "docker-compose -f 'docker-compose.${DATABASE}.yml' run test"
