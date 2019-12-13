@@ -5,17 +5,7 @@ VisualStudioVersion = 16.0.28803.352
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{297E8D6F-CF15-4856-8B95-07CF6E353E9B}"
 	ProjectSection(SolutionItems) = preProject
-		.gitlab-ci.yml = .gitlab-ci.yml
-		docker-compose.mysql.yml = docker-compose.mysql.yml
-		docker-compose.oracle.yml = docker-compose.oracle.yml
-		docker-compose.postgres.yml = docker-compose.postgres.yml
-		docker-compose.sqlite.yml = docker-compose.sqlite.yml
-		docker-compose.sqlserver.yml = docker-compose.sqlserver.yml
-		docker-init.sh = docker-init.sh
-		Dockerfile = Dockerfile
-		init.sh = init.sh
 		readme.md = readme.md
-		semver.sh = semver.sh
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TranceSql.Postgres", "src\TranceSql.Postgres\TranceSql.Postgres.csproj", "{62837D59-F3E7-4A95-B134-0BFBE56B6B2A}"
@@ -38,9 +28,20 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TranceSql.IntegrationTest",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TranceSql.Ddl", "preview\TranceSql.Ddl\TranceSql.Ddl.csproj", "{69D16E44-F2BD-466B-9B83-2131B285201E}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GitHub Workflows", "GitHub Workflows", "{CED3E1A5-1377-47EB-8869-E4B6F4DB2852}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GitHub", "GitHub", "{CED3E1A5-1377-47EB-8869-E4B6F4DB2852}"
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\build.yml = .github\workflows\build.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docker", "Docker", "{776DC2AF-F7F8-4B8A-84B0-B0EEF79ACFEC}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.mysql.yml = docker-compose.mysql.yml
+		docker-compose.oracle.yml = docker-compose.oracle.yml
+		docker-compose.postgres.yml = docker-compose.postgres.yml
+		docker-compose.sqlite.yml = docker-compose.sqlite.yml
+		docker-compose.sqlserver.yml = docker-compose.sqlserver.yml
+		docker-init.sh = docker-init.sh
+		Dockerfile = Dockerfile
 	EndProjectSection
 EndProject
 Global
@@ -95,6 +96,8 @@ Global
 		{7C523F21-16EF-4FB0-A44A-435B9EA0FDCD} = {77F3D7B2-82C3-47BF-BF59-D0DA6E333746}
 		{EC0DF5D4-B5AE-4F1D-8519-303C2BE42DB9} = {77F3D7B2-82C3-47BF-BF59-D0DA6E333746}
 		{0C2EBE03-708C-4ED9-B1C7-EC7A50567CF8} = {77F3D7B2-82C3-47BF-BF59-D0DA6E333746}
+		{CED3E1A5-1377-47EB-8869-E4B6F4DB2852} = {297E8D6F-CF15-4856-8B95-07CF6E353E9B}
+		{776DC2AF-F7F8-4B8A-84B0-B0EEF79ACFEC} = {297E8D6F-CF15-4856-8B95-07CF6E353E9B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D865D688-6EC2-4A36-8A10-96C1D40ABFF3}
