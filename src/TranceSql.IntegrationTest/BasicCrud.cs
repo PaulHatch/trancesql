@@ -164,7 +164,7 @@ namespace TranceSql.IntegrationTest
         [Fact]
         public void OutputInsert()
         {
-            if(_database.Dialect.OutputType == OutputType.None)
+            if (_database.Dialect.OutputType == OutputType.None)
             {
                 // don't test dialects which do not support this type
                 return;
@@ -187,10 +187,17 @@ namespace TranceSql.IntegrationTest
         [Fact]
         public void Cast()
         {
-            var sut = new Command(_database)
+            var sut = new Command(_database);
+
+            if (_database.Dialect is MySql.MySqlDialect)
             {
-                 new Select { Columns = new Cast(Constant.Unsafe("123"), DbType.Int32) },
-            };
+                // MySql doesn't support INT, SIGNED or UNSIGNED must be used
+                sut.Add(new Select { Columns = new Cast(Constant.Unsafe("123"), "SIGNED") });
+            }
+            else
+            {
+                sut.Add(new Select { Columns = new Cast(Constant.Unsafe("123"), DbType.Int32) });
+            }
 
             var result = sut.Fetch<int>();
 
