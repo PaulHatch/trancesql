@@ -14,8 +14,9 @@ case $1 in
 	
 	shift
 	echo Publishing NuGet packages
+	nuget source add -Name "Preview" -Source ${SOURCE} -UserName PaulHatch -Password ${GITHUB_TOKEN}
 	# Workaround for https://github.com/NuGet/Home/issues/4393
-	find /sln/artifacts -name '*.nupkg' | xargs -i dotnet nuget push {} "$@"
+	find /sln/artifacts -name '*.nupkg' | xargs -i dotnet nuget push -Source "Preview" "$@"
     ;;
   "--test")
     echo Running Unit Tests
