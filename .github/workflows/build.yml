@@ -44,17 +44,28 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v1
-      
       - name: Download Image Artifact
         uses: actions/download-artifact@v1
         with:
           name: trancesql-image.tar
           path: /tmp/
-
-      - name: Load image
+      - name: Load Image
         run: docker load -i /tmp/trancesql-image.tar
-
       - name: Integration Test for ${{ matrix.database }}
         run: "docker-compose -f 'docker-compose.${{ matrix.database }}.yml' run test"
         env:
           IMAGE_TAG: trancesql/build
+  publish-preview:
+    name: Publish Prerelease Packages
+    runs-on: ubuntu-latest
+    needs: integration
+    steps:
+      - name: Download Image Artifact
+        uses: actions/download-artifact@v1
+        with:
+          name: trancesql-image.tar
+          path: /tmp/
+      - name: Load Image
+        run: docker load -i /tmp/trancesql-image.tar
+      - name: Publish preview
+        run: docker run --rm trancesql/build --publish --source https://nuget.pkg.github.com/PaulHatch/index.json --api-key ${{secrets.GITHUB_TOKEN}}
