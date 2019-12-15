@@ -48,6 +48,12 @@ namespace TranceSql
 
         void ISqlElement.Render(RenderContext context)
         {
+            var hasReturnValues = _returning?.Any() == true;
+            if (hasReturnValues && context.Dialect.OutputType == OutputType.None)
+            {
+                throw new InvalidCommandException("This dialect does not support return clauses in insert statements.");
+            }
+
             using (context.EnterChildMode(RenderMode.Nested))
             {
                 // Check if columns were explicitly provided, if so we can automatically
@@ -65,6 +71,12 @@ namespace TranceSql
                 }
 
                 context.WriteLine();
+                if (hasReturnValues && context.Dialect.OutputType == OutputType.Output)
+                {
+                    context.Write("OUTPUT ");
+                    context.RenderDelimited(_returning);
+                    context.WriteLine();
+                }
 
                 if (_values?.Any() != true)
                 {
@@ -143,21 +155,10 @@ namespace TranceSql
 
             if (context.Mode != RenderMode.MultiStatment)
             {
-                if (_returning?.Any() == true)
+                if (hasReturnValues && context.Dialect.OutputType == OutputType.Returning)
                 {
                     context.WriteLine();
-                    switch (context.Dialect.OutputType)
-                    {
-                        case OutputType.Returning:
-                            context.Write("RETURNING ");
-                            break;
-                        case OutputType.Output:
-                            context.Write("OUTPUT ");
-                            break;
-                        default:
-                            throw new InvalidCommandException("This dialect does not support return clauses in insert statements.");
-                    }
-
+                    context.Write("RETURNING ");
                     context.RenderDelimited(_returning);
                 }
 

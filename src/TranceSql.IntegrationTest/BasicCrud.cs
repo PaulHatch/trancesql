@@ -152,9 +152,17 @@ namespace TranceSql.IntegrationTest
                 {
                     Columns = { { "column1", SqlType.From<int>() } }
                 },
-                new Insert { Into = "update_output_table", Columns = "column1", Values = { 1 } },
-                new Update { Table = "update_output_table", Set = { { "column1", 2 } }, Where = new Column("column1") == new Value(1), Returning = "column1" }
+                new Insert { Into = "update_output_table", Columns = "column1", Values = { 1 } }
             };
+
+            if (_database.Dialect is SqlServer.SqlServerDialect)
+            {
+                sut.Add(new Update { Table = "update_output_table", Set = { { "column1", 2 } }, Where = new Column("column1") == new Value(1), Returning = new Column("inserted", "column1") });
+            }
+            else
+            {
+                sut.Add(new Update { Table = "update_output_table", Set = { { "column1", 2 } }, Where = new Column("column1") == new Value(1), Returning = "column1" });
+            }
 
             var result = sut.Fetch<int>();
 
@@ -175,9 +183,17 @@ namespace TranceSql.IntegrationTest
                 new CreateTable("insert_output_table")
                 {
                     Columns = { { "column1", SqlType.From<int>() } }
-                },
-                new Insert { Into = "insert_output_table", Columns = "column1", Values = { 2 }, Returning = "column1" },
+                }
             };
+
+            if (_database.Dialect is SqlServer.SqlServerDialect)
+            {
+                sut.Add(new Insert { Into = "insert_output_table", Columns = "column1", Values = { 2 }, Returning = new Column("inserted", "column1") });
+            }
+            else
+            {
+                sut.Add(new Insert { Into = "insert_output_table", Columns = "column1", Values = { 2 }, Returning = "column1" });
+            }
 
             var result = sut.Fetch<int>();
 
