@@ -68,4 +68,4 @@ jobs:
       - name: Load Image
         run: docker load -i /tmp/trancesql-image.tar
       - name: Publish preview
-        run: docker run --rm trancesql/build --publish --source https://nuget.pkg.github.com/PaulHatch/index.json --api-key ${{secrets.GITHUB_TOKEN}}
+        run: docker run --rm trancesql/build --publish ${{ steps.version.outputs.version }} --source https://nuget.pkg.github.com/PaulHatch/index.json --api-key ${{secrets.GITHUB_TOKEN}}
