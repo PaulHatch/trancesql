@@ -3,13 +3,13 @@
 case $1 in
   "--publish")
 	shift
-	echo "Creating NuGet Packages for version ${1}"
+	echo "Creating NuGet Packages for version ${VERSION}"
 	echo $2
 	for project in $(ls src/*/*.csproj | grep -vi "test"); do \
-		dotnet pack /p:Version=${1} -c Release --no-build --no-restore -o /sln/artifacts $project ; \
+		dotnet pack /p:Version=${VERSION} -c Release --no-build --no-restore -o /sln/artifacts $project ; \
 	done
 	for project in $(ls preview/*/*.csproj | grep -vi "test"); do \
-		dotnet pack /p:Version=${1}-preview -c Release --no-build --no-restore -o /sln/artifacts $project ; \
+		dotnet pack /p:Version=${VERSION}-preview -c Release --no-build --no-restore -o /sln/artifacts $project ; \
 	done
 	
 	shift
