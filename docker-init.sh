@@ -1,22 +1,19 @@
 #!/bin/bash
 
 case $1 in
-  "--publish")
-	shift
-	echo "Creating NuGet Packages for version ${VERSION}"
-	echo $2
+  "--publish-preview")
+	echo "Creating NuGet Packages for version ${VERSION} / ${PREVIEW_SUFFIX}"
 	for project in $(ls src/*/*.csproj | grep -vi "test"); do \
-		dotnet pack /p:Version=${VERSION} -c Release --no-build --no-restore -o /sln/artifacts $project ; \
+		dotnet pack -p:PackageVersion=${PACKAGE_VERSION} --version-suffix ${PREVIEW_SUFFIX} -c Release --no-build --no-restore -o /sln/artifacts $project ; \
 	done
-	for project in $(ls preview/*/*.csproj | grep -vi "test"); do \
-		dotnet pack /p:Version=${VERSION}-preview -c Release --no-build --no-restore -o /sln/artifacts $project ; \
-	done
+#	for project in $(ls preview/*/*.csproj | grep -vi "test"); do \
+#		dotnet pack -p:PackageVersion=${PACKAGE_VERSION} -version-suffix ${PREVIEW_SUFFIX} -c Release --no-build --no-restore -o /sln/artifacts $project ; \
+#	done
 	
-	shift
 	echo Publishing NuGet packages
-	nuget source add -Name "Preview" -Source ${SOURCE} -UserName PaulHatch -Password ${GITHUB_TOKEN}
 	# Workaround for https://github.com/NuGet/Home/issues/4393
-	find /sln/artifacts -name '*.nupkg' | xargs -i dotnet nuget push -Source "Preview" "$@"
+	echo ${#TOKEN}
+	find /sln/artifacts -name '*.nupkg' | xargs -i dotnet nuget push '{}' --source ${SOURCE} --api-key ${TOKEN}
     ;;
   "--test")
     echo Running Unit Tests

@@ -6,8 +6,6 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    env:
-        DOTNET_CLI_TELEMETRY_OPTOUT: 1
     steps:
       - name: Checkout
         uses: actions/checkout@v1
@@ -15,61 +13,57 @@ jobs:
         id: version
         uses: paulhatch/semantic-version@v1.0.1
         with:
-          format: "${major}.${minor}.${patch}.${increment}"
+          format: "${major}.${minor}.${patch}"
           tag_prefix: ""
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 3.1.100
-      - name: Build
-        run: "docker build --build-arg VERSION=${VERSION} -t trancesql/build ."
+          dotnet-version: 2.2.103
+      - name: Build Packages
+        run: bash build.sh
         env:
-          VERSION: ${{ steps.version.outputs.version }}
-      - name: Unit Tests
-        run: docker run --rm trancesql/build --test
-      - name: Save Image
-        run: docker save -o /tmp/trancesql-image.tar trancesql/build
+          DOTNET_CLI_TELEMETRY_OPTOUT: 1
+          VERSION: ${{ steps.version.outputs.version }}.${{ steps.version.outputs.increment }}
+          PACKAGE_VERSION: ${{ steps.version.outputs.version }}
       - name: Store Image Artifact
         uses: actions/upload-artifact@v1
         with:
-          name: trancesql-image.tar
-          path: /tmp/trancesql-image.tar
-  integration:
-    name: Integration Tests
-    runs-on: ubuntu-latest
-    needs: build
-    strategy:
-      matrix:
-        database: [sqlserver, postgres, sqlite, mysql]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v1
-      - name: Download Image Artifact
-        uses: actions/download-artifact@v1
-        with:
-          name: trancesql-image.tar
-          path: /tmp/
-      - name: Load Image
-        run: docker load -i /tmp/trancesql-image.tar
-      - name: Integration Test for ${{ matrix.database }}
-        run: "docker-compose -f 'docker-compose.${{ matrix.database }}.yml' run test"
-        env:
-          IMAGE_TAG: trancesql/build
+          name: packages.tar.gz
+          path: /tmp/artifacts/packages.tar.gz
+#  integration:
+#    name: Integration Tests
+#    runs-on: ubuntu-latest
+#    needs: build
+#    strategy:
+#      matrix:
+#        database: [sqlserver, postgres, sqlite, mysql]
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v1
+#      - name: Download Image Artifact
+#        uses: actions/download-artifact@v1
+#        with:
+#          name: trancesql-image.tar
+#          path: /tmp/
+#      - name: Load Image
+#        run: docker load -i /tmp/trancesql-image.tar
+#      - name: Integration Test for ${{ matrix.database }}
+#        run: "docker-compose -f 'docker-compose.${{ matrix.database }}.yml' run test"
+#        env:
+#          IMAGE_TAG: trancesql/build
   publish-preview:
     name: Publish Prerelease Packages
     runs-on: ubuntu-latest
-    needs: integration
+    needs: build
     steps:
-      - name: Download Image Artifact
+      - name: Download Packages Artifact
         uses: actions/download-artifact@v1
         with:
-          name: trancesql-image.tar
-          path: /tmp/
-      - name: Load Image
-        run: docker load -i /tmp/trancesql-image.tar
-      - name: Publish preview
-        run: docker run -e VERSION=${VERSION} -e GITHUB_TOKEN=${GITHUB_TOKEN} -e SOURCE=${SOURCE} --rm trancesql/build --publish
+          name: packages.tar.gz
+      - name: Extract Packages
+        run: tar -xvfz packages.tar.gz
+      - name: Publish Preview Packages
+        run: "find ./ -name '*.nupkg' | xargs -i dotnet nuget push '{}' --source ${SOURCE} --api-key ${TOKEN}"
         env:
-          VERSION: ${{ steps.version.outputs.version }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SOURCE: https://nuget.pkg.github.com/PaulHatch/index.json

@@ -24,20 +24,24 @@ ONBUILD RUN \
 ONBUILD RUN dotnet restore
 
 FROM base as build
+
 ARG VERSION
+ENV VERSION=$VERSION
+ARG PACKAGE_VERSION
+ENV PACKAGE_VERSION=$PACKAGE_VERSION
+ARG PREVIEW_SUFFIX
+ENV PREVIEW_SUFFIX=$PREVIEW_SUFFIX
+
 WORKDIR /sln 
 
 COPY . .
 RUN \
 	for project in $(ls src/*/*.csproj); do \
-		dotnet build /p:Version=$VERSION -c Release --no-restore $project ; \
+		dotnet build /p:Version=${VERSION} -c Release --no-restore $project ; \
 	done && \
 	for file in $(ls preview/*/*.csproj); do \
-		dotnet build /p:Version=$VERSION-preview -c Release --no-restore $project ; \
+		dotnet build /p:Version=${VERSION} -c Release --no-restore $project ; \
 	done
-
-FROM build as run
-WORKDIR /sln
 
 ENTRYPOINT ["sh", "/sln/docker-init.sh"]
 
