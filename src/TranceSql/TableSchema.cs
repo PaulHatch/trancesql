@@ -36,6 +36,13 @@ namespace TranceSql
             => new Column(_table.Schema, _table.Name, name);
 
         /// <summary>
+        /// Creates an alias for this table.
+        /// </summary>
+        /// <param name="alias">The alias name.</param>
+        /// <returns>A new <see cref="Alias"/> instance</returns>
+        public Alias As(string alias) => _table.As(alias);
+
+        /// <summary>
         /// Performs an implicit conversion from <see cref="TableSchema"/> to <see cref="Table"/>.
         /// </summary>
         /// <param name="schema">The schema.</param>

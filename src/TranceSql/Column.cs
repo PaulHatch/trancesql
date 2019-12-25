@@ -61,6 +61,13 @@ namespace TranceSql
         /// </summary>
         public string Name { get; set; }
 
+        /// <summary>
+        /// Produces a column using the specified table alias.
+        /// </summary>
+        /// <param name="tableAlias">The table alias name.</param>
+        /// <returns>A column for the specified table alias.</returns>
+        public Column Of(string tableAlias) => new Column(tableAlias, Name);
+
         void ISqlElement.Render(RenderContext context)
         {
             context.WriteIdentifierPrefix(Schema);
