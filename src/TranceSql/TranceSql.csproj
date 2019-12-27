@@ -8,6 +8,7 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://www.trancesql.com</PackageProjectUrl>
     <PackageIconUrl>https://www.trancesql.com/logo.png</PackageIconUrl>
+    <PackageIcon>icon.png</PackageIcon>
     <RepositoryUrl>https://github.com/PaulHatch/trancesql.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <Description>
@@ -20,6 +21,7 @@
   <ItemGroup>
     <PackageReference Include="OpenTracing" Version="0.12.0" />
     <PackageReference Include="System.Data.Common" Version="4.3.0" />
+    <None Include="..\..\icon.png" Pack="true" PackagePath="\"/>
   </ItemGroup>
 
 </Project>

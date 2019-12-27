@@ -8,6 +8,7 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://www.trancesql.com</PackageProjectUrl>
     <PackageIconUrl>https://www.trancesql.com/logo.png</PackageIconUrl>
+    <PackageIcon>icon.png</PackageIcon>
     <RepositoryUrl>https://github.com/PaulHatch/trancesql.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <Description>
@@ -20,6 +21,7 @@ TranceSQL provides an easy to use, high performance data access interface for SQ
 
   <ItemGroup>
     <PackageReference Include="MySqlConnector" Version="0.*" />
+    <None Include="..\..\icon.png" Pack="true" PackagePath="\"/>
   </ItemGroup>
 
   <ItemGroup>
