@@ -27,7 +27,7 @@ jobs:
         env:
           DOTNET_CLI_TELEMETRY_OPTOUT: 1
           VERSION: ${{ steps.version.outputs.version }}.${{ steps.version.outputs.increment }}
-          PACKAGE_VERSION: ${{ steps.version.outputs.version }}
+          PACKAGE_VERSION: ${{ steps.version.outputs.version }}+${{ steps.version.outputs.increment }}
       - name: Store Image Artifact
         uses: actions/upload-artifact@v1
         with:
