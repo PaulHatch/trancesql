@@ -142,6 +142,11 @@ namespace TranceSql
                     context.RenderDelimited(_returning);
                 }
             }
+
+            if (context.Mode == RenderMode.Statment)
+            {
+                context.Write(';');
+            }
         }
 
         /// <summary>
