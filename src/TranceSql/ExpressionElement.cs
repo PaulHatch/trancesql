@@ -13,7 +13,8 @@ namespace TranceSql
 
 
     /// <summary>
-    /// Base class for SQL elements which supports expression operators.
+    /// Base class for SQL elements which supports expression operators. Derived
+    /// classes must also implement <see cref="ISqlElement"/>.
     /// </summary>
     public abstract class ExpressionElement : ISqlElement
     {
@@ -165,10 +166,12 @@ namespace TranceSql
             => new Condition(OperationType.NotEqual, left, right);
 
         /// <summary>
-        /// Not implemented.
+        /// Not implemented. This is included as an implementation rather than
+        /// an abstract method so that derived classes do not expose the render
+        /// method directly and clutter up the API.
         /// </summary>
         /// <param name="context">The render context.</param>
-        public void Render(RenderContext context) => throw new NotImplementedException();
+        void ISqlElement.Render(RenderContext context) => throw new NotImplementedException();
     }
 
 #pragma warning restore CS0661 // Type defines operator == or operator != but does not override Object.GetHashCode()
