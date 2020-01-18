@@ -12,66 +12,28 @@ namespace TranceSql.Sqlite
     /// </summary>
     public class SqliteDialect : IDialect
     {
-        /// <summary>
-        /// Gets the limit keyword behavior used by this dialect.
-        /// </summary>
+        /// <inheritdoc/>
         public LimitBehavior LimitBehavior => LimitBehavior.Limit;
 
-        /// <summary>
-        /// Gets the offset behavior and support used by this dialect.
-        /// </summary>
+        /// <inheritdoc/>
         public OffsetBehavior OffsetBehavior => OffsetBehavior.Offset;
 
-        /// <summary>
-        /// Gets the type of the output supported by this dialect.
-        /// </summary>
+        /// <inheritdoc/>
         public OutputType OutputType => OutputType.None;
 
-        /// <summary>
-        /// Formats a date constant.
-        /// </summary>
-        /// <param name="date">The date to format.</param>
-        /// <returns>
-        /// A date constant string.
-        /// </returns>
+        /// <inheritdoc/>
         public string FormatDate(DateTime date) => $"'{date}'";
 
-        /// <summary>
-        /// Formats a date constant.
-        /// </summary>
-        /// <param name="date">The date to format.</param>
-        /// <returns>
-        /// A date constant string.
-        /// </returns>
+        /// <inheritdoc/>
         public string FormatDate(DateTimeOffset date) => $"'{date}'";
 
-        /// <summary>
-        /// Returns a string with the provider-specific escaping applied
-        /// for an identifier like a table or column name.
-        /// </summary>
-        /// <param name="identifier">The raw identifier name.</param>
-        /// <returns>
-        /// A correctly formatted string.
-        /// </returns>
+        /// <inheritdoc/>
         public string FormatIdentifier(string identifier) => $"\"{identifier}\"";
 
-        /// <summary>
-        /// Escapes and formats a string constant.
-        /// </summary>
-        /// <param name="value">The string value to format.</param>
-        /// <returns>
-        /// A formatted string constant.
-        /// </returns>
+        /// <inheritdoc/>
         public string FormatString(string value) => $"'{value.Replace("'", "''")}'";
 
-        /// <summary>
-        /// Creates a string representing the specified type.
-        /// </summary>
-        /// <param name="type">The SQL type class.</param>
-        /// <param name="parameters">The type parameters, if any.</param>
-        /// <returns>
-        /// The name of the parameter type for this dialect.
-        /// </returns>
+        /// <inheritdoc/>
         public string FormatType(DbType type, IEnumerable<object> parameters)
         {
             var typeName = GetType(type);
@@ -83,6 +45,22 @@ namespace TranceSql.Sqlite
             {
                 return typeName;
             }
+        }
+
+        /// <inheritdoc/>
+        public void Render(RenderContext context, BeginTransaction beginTransaction)
+        {
+            if (beginTransaction.Isolation != null)
+            {
+                throw new InvalidCommandException($"BeginTransaction.Isolation is not supported by this SQL dialect");
+            }
+
+            if (beginTransaction.ReadOnly.HasValue)
+            {
+                throw new InvalidCommandException($"BeginTransaction.ReadOnly is not supported by this SQL dialect");
+            }
+
+            context.Write("BEGIN TRANSACTION;");
         }
 
         private string GetType(DbType type)

@@ -11,59 +11,66 @@ namespace TranceSql.Oracle
     /// </summary>
     public class OracleDialect : IDialect
     {
-        /// <summary>
-        /// Gets the limit keyword behavior used by this dialect.
-        /// </summary>
+        /// <inheritdoc/>
         public LimitBehavior LimitBehavior => LimitBehavior.RowNumAutomatic;
 
-        /// <summary>
-        /// Gets the offset behavior and support used by this dialect.
-        /// </summary>
+        /// <inheritdoc/>
         public OffsetBehavior OffsetBehavior => OffsetBehavior.None;
 
-        /// <summary>
-        /// Gets the type of the output supported by this dialect.
-        /// </summary>
+        /// <inheritdoc/>
         public OutputType OutputType => OutputType.Returning;
 
-
-        /// <summary>
-        /// Formats a date constant.
-        /// </summary>
-        /// <param name="date">The date to format.</param>
-        /// <returns>
-        /// A date constant string.
-        /// </returns>
+        /// <inheritdoc/>
         public string FormatDate(DateTime date) => $"'{date}'";
 
-        /// <summary>
-        /// Formats a date constant.
-        /// </summary>
-        /// <param name="date">The date to format.</param>
-        /// <returns>
-        /// A date constant string.
-        /// </returns>
+        /// <inheritdoc/>
         public string FormatDate(DateTimeOffset date) => $"'{date}'";
 
-        /// <summary>
-        /// Returns a string with the provider-specific escaping applied
-        /// for an identifier like a table or column name.
-        /// </summary>
-        /// <param name="identifier">The raw identifier name.</param>
-        /// <returns>
-        /// A correctly formatted string.
-        /// </returns>
+        /// <inheritdoc/>
         public string FormatIdentifier(string identifier) => $"\"{identifier}\"";
 
-        /// <summary>
-        /// Escapes and formats a string constant.
-        /// </summary>
-        /// <param name="value">The string value to format.</param>
-        /// <returns>
-        /// A formatted string constant.
-        /// </returns>
+        /// <inheritdoc/>
         public string FormatString(string value) => $"'{value.Replace("'", "''")}'";
 
+        /// <inheritdoc/>
+        public void Render(RenderContext context, BeginTransaction beginTransaction)
+        {
+            if (beginTransaction.ReadOnly.HasValue)
+            {
+                throw new InvalidCommandException($"BeginTransaction.ReadOnly is not supported by this SQL dialect");
+            }
+
+            switch (beginTransaction.Isolation)
+            {
+                case null:
+                    context.Write("BEGIN TRANSACTION");
+                    break;
+                case Isolation.ReadUncommitted:
+                    context.WriteLine("SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;");
+                    context.Write("BEGIN TRANSACTION");
+                    break;
+                case Isolation.ReadCommitted:
+                    context.WriteLine("SET TRANSACTION ISOLATION LEVEL READ COMMITTED;");
+                    context.Write("BEGIN TRANSACTION");
+                    break;
+                case Isolation.RepeatableRead:
+                    context.WriteLine("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;");
+                    context.Write("BEGIN TRANSACTION");
+                    break;
+                case Isolation.Snapshot:
+                    context.Write("BEGIN TRANSACTION WITH CONSISTENT SNAPSHOT;");
+                    break;
+                case Isolation.Serializable:
+                    context.WriteLine("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;");
+                    context.Write("BEGIN TRANSACTION");
+                    break;
+                default:
+                    throw new InvalidCommandException($"Unsupported isolation level '{beginTransaction.Isolation}'");
+            }
+
+            context.Write(';');
+        }
+        
         /// <summary>
         /// Creates a string representing the specified type.
         /// </summary>

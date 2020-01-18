@@ -23,6 +23,18 @@ namespace TranceSql
         LimitBehavior LimitBehavior { get; }
 
         /// <summary>
+        /// Renders a begin transaction statement.
+        /// </summary>
+        /// <param name="context">The render context.</param>
+        /// <param name="beginTransaction">The statement to render.</param>
+        /// <remarks>
+        /// The begin transaction behavior is so database-specific that we
+        /// place the render implementation here rather than adding a lot of
+        /// dialect specific properties.
+        /// </remarks>
+        void Render(RenderContext context, BeginTransaction beginTransaction);
+
+        /// <summary>
         /// Gets the offset behavior and support used by this dialect.
         /// </summary>
         OffsetBehavior OffsetBehavior { get; }
