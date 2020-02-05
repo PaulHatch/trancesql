@@ -301,7 +301,7 @@ namespace TranceSql
         public Func<CancellationToken, Task<TResult>> FetchCached<TResult>(params Expression<Func<TResult, IEnumerable>>[] collections)
         {
             var cached = new CachedContext(Render());
-            return (c) => _manager.ExecuteResultAsync<TResult>(Render(), default, collections.Select(c => c.GetPropertyInfo()), c);
+            return (c) => _manager.ExecuteResultAsync<TResult>(Render(), default, collections.Select(i => i.GetPropertyInfo()), c);
         }
 
         /// <summary>
@@ -532,7 +532,7 @@ namespace TranceSql
         /// </returns>
         public TResult Fetch<TResult>(params Expression<Func<TResult, IEnumerable>>[] collections)
         {
-            return _manager.ExecuteResult<TResult>(Render(), default, collections.Select(c => c.GetPropertyInfo()));
+            return _manager.ExecuteResult<TResult>(Render(), default, collections.Select(i => i.GetPropertyInfo()));
         }
 
         /// <summary>
@@ -682,7 +682,7 @@ namespace TranceSql
         /// </returns>
         public Task<TResult> FetchAsync<TResult>(CancellationToken cancel = default, params Expression<Func<TResult, IEnumerable>>[] collections)
         {
-            return _manager.ExecuteResultAsync<TResult>(Render(), default, collections.Select(c => c.GetPropertyInfo()), cancel);
+            return _manager.ExecuteResultAsync<TResult>(Render(), default, collections.Select(i => i.GetPropertyInfo()), cancel);
         }
 
         /// <summary>
@@ -698,7 +698,7 @@ namespace TranceSql
         /// </returns>
         public Task<TResult> FetchAsync<TResult>(params Expression<Func<TResult, IEnumerable>>[] collections)
         {
-            return _manager.ExecuteResultAsync<TResult>(Render(), default, collections.Select(c => c.GetPropertyInfo()), default);
+            return _manager.ExecuteResultAsync<TResult>(Render(), default, collections.Select(i => i.GetPropertyInfo()), default);
         }
 
         /// <summary>
@@ -770,7 +770,7 @@ namespace TranceSql
         /// </returns>
         private static IEnumerable<Tuple<PropertyInfo, Type>> MapProperties<TResult>(IEnumerable<Expression<Func<TResult, object>>> map)
         {
-            return MapProperties(map.Select(c => c.GetPropertyInfo()));
+            return MapProperties(map.Select(i => i.GetPropertyInfo()));
         }
 
         /// <summary>
@@ -910,7 +910,7 @@ namespace TranceSql
         public Deferred<TResult> FetchDeferred<TResult>(params Expression<Func<TResult, object>>[] collections)
         {
             AssertDeferredAvailable();
-            return _deferContext.ExecuteResultDeferred<TResult>(Render(), default(TResult), collections.Select(c => c.GetPropertyInfo()));
+            return _deferContext.ExecuteResultDeferred<TResult>(Render(), default(TResult), collections.Select(i => i.GetPropertyInfo()));
         }
 
         /// <summary>
