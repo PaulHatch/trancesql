@@ -129,11 +129,12 @@ namespace TranceSql.Processing
         /// </summary>
         /// <typeparam name="T">Result element type.</typeparam>
         /// <param name="context">A SQL command context which includes a SELECT command.</param>
+        /// <param name="cancel">A token to monitor for cancellation requests.</param>
         /// <returns>The result of the SQL command.</returns>
-        internal Task<IEnumerable<T>> ExecuteListResultAsync<T>(IContext context)
+        internal Task<IEnumerable<T>> ExecuteListResultAsync<T>(IContext context, CancellationToken cancel)
         {
             var processor = new ListResultProcessor<T>();
-            return RunCommandAsync<IEnumerable<T>>(context, processor);
+            return RunCommandAsync<IEnumerable<T>>(context, processor, cancel);
         }
 
         /// <summary>
@@ -148,11 +149,12 @@ namespace TranceSql.Processing
         /// <param name="collections">A list of IEnumerable property selectors that should be populated from the command.
         /// These properties should appear in the same order as their select command.</param>
         /// <returns>The result of the SQL command.</returns>
+        /// <param name="cancel">A token to monitor for cancellation requests.</param>
         /// <exception cref="System.InvalidOperationException">Each collection argument must have a corresponding select command.</exception>
-        internal Task<T> ExecuteResultAsync<T>(IContext context, T defaultResult, IEnumerable<PropertyInfo> collections)
+        internal Task<T> ExecuteResultAsync<T>(IContext context, T defaultResult, IEnumerable<PropertyInfo> collections, CancellationToken cancel)
         {
             var processor = new SingleResultProcessor<T>(defaultResult, collections);
-            return RunCommandAsync<T>(context, processor);
+            return RunCommandAsync<T>(context, processor, cancel);
         }
 
         /// <summary>
@@ -162,24 +164,26 @@ namespace TranceSql.Processing
         /// <typeparam name="T">Result type.</typeparam>
         /// <param name="context">A SQL command context which includes a SELECT command.</param>
         /// <param name="map">The map.</param>
+        /// <param name="cancel">A token to monitor for cancellation requests.</param>
         /// <returns>
         /// The result of the SQL command.
         /// </returns>
-        internal Task<T> ExecuteMapResultAsync<T>(IContext context, IEnumerable<Tuple<PropertyInfo, Type>> map)
+        internal Task<T> ExecuteMapResultAsync<T>(IContext context, IEnumerable<Tuple<PropertyInfo, Type>> map, CancellationToken cancel)
             where T : new()
         {
             var processor = new MappedResultProcessor<T>(map);
-            return RunCommandAsync<T>(context, processor);
+            return RunCommandAsync<T>(context, processor, cancel);
         }
 
         /// <summary>
         /// Executes a non-query SQL command and returns the number of rows affected.
         /// </summary>
         /// <param name="context">The SQL context to run.</param>
+        /// <param name="cancel">A token to monitor for cancellation requests.</param>
         /// <returns>The number of rows affected.</returns>
-        internal Task<int> ExecuteAsync(IContext context)
+        internal Task<int> ExecuteAsync(IContext context, CancellationToken cancel)
         {
-            return RunCommandAsync<int>(context, null);
+            return RunCommandAsync<int>(context, null, cancel);
         }
 
         /// <summary>
@@ -189,11 +193,12 @@ namespace TranceSql.Processing
         /// <typeparam name="T">Result type.</typeparam>
         /// <param name="context">A SQL command context which includes a SELECT command.</param>
         /// <param name="valueProvider">Custom delegate to create the result.</param>
+        /// <param name="cancel">A token to monitor for cancellation requests.</param>
         /// <returns>The result of the SQL command.</returns>
-        internal Task<T> ExecuteCustomAsync<T>(IContext context, CreateEntity<T> valueProvider)
+        internal Task<T> ExecuteCustomAsync<T>(IContext context, CreateEntity<T> valueProvider, CancellationToken cancel)
         {
             var processor = new CustomResultProcessor<T>(valueProvider);
-            return RunCommandAsync<T>(context, processor);
+            return RunCommandAsync<T>(context, processor, cancel);
         }
 
         /// <summary>
@@ -203,11 +208,12 @@ namespace TranceSql.Processing
         /// <typeparam name="TKey">The key type.</typeparam>
         /// <typeparam name="TValue">The key type.</typeparam>
         /// <param name="context">A SQL command context which includes a SELECT command.</param>
+        /// <param name="cancel">A token to monitor for cancellation requests.</param>
         /// <returns>The result of the SQL command.</returns>
-        internal Task<IDictionary<TKey, TValue>> ExecuteRowKeyedDictionaryResultAsync<TKey, TValue>(IContext context)
+        internal Task<IDictionary<TKey, TValue>> ExecuteRowKeyedDictionaryResultAsync<TKey, TValue>(IContext context, CancellationToken cancel)
         {
             var processor = new RowKeyedDictionaryResultProcessor<TKey, TValue>();
-            return RunCommandAsync<IDictionary<TKey, TValue>>(context, processor);
+            return RunCommandAsync<IDictionary<TKey, TValue>>(context, processor, cancel);
         }
 
         /// <summary>
@@ -216,11 +222,12 @@ namespace TranceSql.Processing
         /// </summary>
         /// <param name="context">A SQL command context which includes a SELECT command.</param>
         /// <param name="columns">The columns to return. If null, all columns will be returned.</param>
+        /// <param name="cancel">A token to monitor for cancellation requests.</param>
         /// <returns>The result of the SQL command.</returns>
-        internal Task<IDictionary<string, object>> ExecuteColumnKeyedDictionaryResultAsync(IContext context, IEnumerable<string> columns)
+        internal Task<IDictionary<string, object>> ExecuteColumnKeyedDictionaryResultAsync(IContext context, IEnumerable<string> columns, CancellationToken cancel)
         {
             var processor = new ColumnKeyedDictionaryResultProcessor(columns);
-            return RunCommandAsync<IDictionary<string, object>>(context, processor);
+            return RunCommandAsync<IDictionary<string, object>>(context, processor, cancel);
         }
 
         #endregion
@@ -474,8 +481,9 @@ namespace TranceSql.Processing
         /// The query processor. If this value is null, a non-query type command
         /// is assumed and the integer type will be assumed.
         /// </param>
+        /// <param name="cancel">A token to monitor for cancellation requests.</param>
         /// <returns>An asynchronous task for the query result.</returns>
-        private async Task<T> RunCommandAsync<T>(IContext context, IResultProcessor processor = null)
+        private async Task<T> RunCommandAsync<T>(IContext context, IResultProcessor processor = null, CancellationToken cancel = default)
         {
             AssertCorrectReturnType<T>(processor);
 
@@ -494,14 +502,14 @@ namespace TranceSql.Processing
                     {
                         try
                         {
-                            await connection.OpenAsync();
+                            await connection.OpenAsync(cancel);
                             if (processor == null)
                             {
-                                result = await command.ExecuteNonQueryAsync();
+                                result = await command.ExecuteNonQueryAsync(cancel);
                             }
                             else
                             {
-                                using (var reader = await command.ExecuteReaderAsync())
+                                using (var reader = await command.ExecuteReaderAsync(cancel))
                                 {
                                     result = processor.Process(reader);
                                 }
@@ -545,7 +553,7 @@ namespace TranceSql.Processing
 
                     object result;
 
-                    using (IScope scope = CreateScope(context))
+                    using (var scope = CreateScope(context))
                     {
                         try
                         {
