@@ -291,7 +291,7 @@ namespace TranceSql.Postgres
 
             private void OnNotification(object sender, NpgsqlNotificationEventArgs e)
             {
-                _observable.OnNext(e.AdditionalInformation);
+                _observable.OnNext(e.Payload);
             }
 
             /// <summary>Gets an observable for this event listener.</summary>
