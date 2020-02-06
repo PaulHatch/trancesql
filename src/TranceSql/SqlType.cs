@@ -5,9 +5,7 @@ using System.Linq;
 
 namespace TranceSql
 {
-    /// <summary>
-    /// Represents a SQL type for a <see cref="ColumnDefinition"/>.
-    /// </summary>
+    /// <summary>Represents a SQL type.</summary>
     public class SqlType : ISqlElement
     {
         /// <summary>
