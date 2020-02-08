@@ -21,15 +21,7 @@ namespace TranceSql
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
-        public static implicit operator FilterClause(Condition value)
-            => new FilterClause(value);
-
-        /// <summary>
-        /// Performs an implicit conversion from a condition pair to a filter clause.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <returns>The result of the conversion.</returns>
-        public static implicit operator FilterClause(ConditionPair value)
+        public static implicit operator FilterClause(ConditionBase value)
             => new FilterClause(value);
 
         /// <summary>Implements the AND operator.</summary>
@@ -38,13 +30,13 @@ namespace TranceSql
         /// <returns>The result of the operator.</returns>
         public static FilterClause operator &(FilterClause clause, Condition condition)
         {
-            switch (clause?.Value)
+            return (clause?.Value) switch
             {
-                case null: return new FilterClause(condition);
-                case Condition clauseCondition: return clauseCondition & condition;
-                case ConditionPair clauseConditionPair: return clauseConditionPair & condition;
-                default: throw new InvalidOperationException($"Operations on {clause.Value.GetType().Name} type filter clauses are not supported");
-            }
+                null => new FilterClause(condition),
+                Condition clauseCondition => clauseCondition & condition,
+                ConditionPair clauseConditionPair => clauseConditionPair & condition,
+                _ => throw new InvalidOperationException($"Operations on {clause.Value.GetType().Name} type filter clauses are not supported"),
+            };
         }
 
         /// <summary>Implements the AND operator.</summary>
@@ -53,13 +45,13 @@ namespace TranceSql
         /// <returns>The result of the operator.</returns>
         public static FilterClause operator &(FilterClause clause, ConditionPair conditionPair)
         {
-            switch (clause?.Value)
+            return (clause?.Value) switch
             {
-                case null: return new FilterClause(conditionPair);
-                case Condition clauseCondition: return clauseCondition & conditionPair;
-                case ConditionPair clauseConditionPair: return clauseConditionPair & conditionPair;
-                default: throw new InvalidOperationException($"Operations on {clause.Value.GetType().Name} type filter clauses are not supported");
-            }
+                null => new FilterClause(conditionPair),
+                Condition clauseCondition => clauseCondition & conditionPair,
+                ConditionPair clauseConditionPair => clauseConditionPair & conditionPair,
+                _ => throw new InvalidOperationException($"Operations on {clause.Value.GetType().Name} type filter clauses are not supported"),
+            };
         }
 
         /// <summary>Implements the OR operator.</summary>
@@ -68,13 +60,13 @@ namespace TranceSql
         /// <returns>The result of the operator.</returns>
         public static FilterClause operator |(FilterClause clause, Condition condition)
         {
-            switch (clause?.Value)
+            return (clause?.Value) switch
             {
-                case null: return new FilterClause(condition);
-                case Condition clauseCondition: return clauseCondition | condition;
-                case ConditionPair clauseConditionPair: return clauseConditionPair | condition;
-                default: throw new InvalidOperationException($"Operations on {clause.Value.GetType().Name} type filter clauses are not supported");
-            }
+                null => new FilterClause(condition),
+                Condition clauseCondition => clauseCondition | condition,
+                ConditionPair clauseConditionPair => clauseConditionPair | condition,
+                _ => throw new InvalidOperationException($"Operations on {clause.Value.GetType().Name} type filter clauses are not supported"),
+            };
         }
 
         /// <summary>Implements the OR operator.</summary>
@@ -83,13 +75,13 @@ namespace TranceSql
         /// <returns>The result of the operator.</returns>
         public static FilterClause operator |(FilterClause clause, ConditionPair conditionPair)
         {
-            switch (clause?.Value)
+            return (clause?.Value) switch
             {
-                case null: return new FilterClause(conditionPair);
-                case Condition clauseCondition: return clauseCondition | conditionPair;
-                case ConditionPair clauseConditionPair: return clauseConditionPair | conditionPair;
-                default: throw new InvalidOperationException($"Operations on {clause.Value.GetType().Name} type filter clauses are not supported");
-            }
+                null => new FilterClause(conditionPair),
+                Condition clauseCondition => clauseCondition | conditionPair,
+                ConditionPair clauseConditionPair => clauseConditionPair | conditionPair,
+                _ => throw new InvalidOperationException($"Operations on {clause.Value.GetType().Name} type filter clauses are not supported"),
+            };
         }
     }
 }
