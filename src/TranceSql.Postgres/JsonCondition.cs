@@ -8,7 +8,7 @@ namespace TranceSql.Postgres
     /// Represents a Postgres JSON operator or expression.
     /// </summary>
     /// <seealso cref="TranceSql.ISqlElement" />
-    public class JsonExpression : ExpressionElement, ISqlElement
+    public class JsonCondition : ConditionBase, ISqlElement
     {
         /// <summary>
         /// Gets the left element of this expression.
@@ -18,7 +18,7 @@ namespace TranceSql.Postgres
         /// <summary>
         /// Gets the operator for this expression.
         /// </summary>
-        public JsonExpressionOperator Symbol { get; }
+        public JsonConditionOperator Symbol { get; }
 
         /// <summary>
         /// Gets the right element of this expression.
@@ -31,7 +31,7 @@ namespace TranceSql.Postgres
         /// <param name="left">The left element for this expression. Must not be null.</param>
         /// <param name="symbol">The operator for this expression.</param>
         /// <param name="right">The right element for this expression. Must not be null.</param>
-        public JsonExpression(ExpressionElement left, JsonExpressionOperator symbol, ExpressionElement right)
+        public JsonCondition(ExpressionElement left, JsonConditionOperator symbol, ExpressionElement right)
         {
             Left = left as ISqlElement ?? throw new ArgumentNullException(nameof(left));
             Symbol = symbol;
@@ -46,26 +46,17 @@ namespace TranceSql.Postgres
                 context.Render(Left);
                 switch (Symbol)
                 {
-                    case JsonExpressionOperator.Get:
-                        context.Write("->");
+                    case JsonConditionOperator.LeftContainsRight:
+                        context.Write("@>");
                         break;
-                    case JsonExpressionOperator.GetAsText:
-                        context.Write("->>");
+                    case JsonConditionOperator.RightContainsLeft:
+                        context.Write("<@");
                         break;
-                    case JsonExpressionOperator.GetByPath:
-                        context.Write("#>");
+                    case JsonConditionOperator.Contains:
+                        context.Write("?");
                         break;
-                    case JsonExpressionOperator.GetByPathAsText:
-                        context.Write("#>>");
-                        break;
-                    case JsonExpressionOperator.Concat:
-                        context.Write("||");
-                        break;
-                    case JsonExpressionOperator.Delete:
-                        context.Write("-");
-                        break;
-                    case JsonExpressionOperator.DeletePath:
-                        context.Write("#-");
+                    case JsonConditionOperator.ContainsAny:
+                        context.Write("?|");
                         break;
                     default:
                         break;
