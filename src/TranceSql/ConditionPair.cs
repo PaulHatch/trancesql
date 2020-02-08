@@ -7,7 +7,7 @@ namespace TranceSql
     /// <summary>
     /// Represents boolean pair of conditions combined with AND or OR.
     /// </summary>
-    public class ConditionPair : ICondition
+    public class ConditionPair : ConditionBase, ISqlElement
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ConditionPair" /> class.
@@ -15,7 +15,7 @@ namespace TranceSql
         /// <param name="type">The operator used to combine this collection with previous conditions.</param>
         /// <param name="left">The left condition.</param>
         /// <param name="right">The right condition.</param>
-        public ConditionPair(BooleanOperator type, ICondition left, ICondition right)
+        public ConditionPair(BooleanOperator type, ConditionBase left, ConditionBase right)
             : this(type, left, right, false)
         {
         }
@@ -27,7 +27,7 @@ namespace TranceSql
         /// <param name="left">The left condition.</param>
         /// <param name="right">The right condition.</param>
         /// <param name="nested">True if this collection is nested (wrapped in parentheses.</param>
-        public ConditionPair(BooleanOperator type, ICondition left, ICondition right, bool nested)
+        public ConditionPair(BooleanOperator type, ConditionBase left, ConditionBase right, bool nested)
         {
             Left = left;
             Right = right;
@@ -46,7 +46,7 @@ namespace TranceSql
         /// <param name="left">The left condition.</param>
         /// <param name="right">The right condition.</param>
         /// <returns>A new condition pair.</returns>
-        public static ConditionPair And(ICondition left, ICondition right) => new ConditionPair(BooleanOperator.And, left, right);
+        public static ConditionPair And(ConditionBase left, ConditionBase right) => new ConditionPair(BooleanOperator.And, left, right);
         
         /// <summary>
         /// Creates an OR condition pair.
@@ -54,7 +54,7 @@ namespace TranceSql
         /// <param name="left">The left condition.</param>
         /// <param name="right">The right condition.</param>
         /// <returns>A new condition pair.</returns>
-        public static ConditionPair Or(ICondition left, ICondition right) => new ConditionPair(BooleanOperator.Or, left, right);
+        public static ConditionPair Or(ConditionBase left, ConditionBase right) => new ConditionPair(BooleanOperator.Or, left, right);
 
 
         /// <summary>
@@ -96,12 +96,12 @@ namespace TranceSql
         /// <summary>
         /// Gets the left condition clause.
         /// </summary>
-        public ICondition Left { get; }
+        public ConditionBase Left { get; }
 
         /// <summary>
         /// Gets the left condition clause.
         /// </summary>
-        public ICondition Right { get; }
+        public ConditionBase Right { get; }
 
         // These bool operators cover combining condition collections and mixed condition
         // collections and conditions. The condition class contains additional bool operators

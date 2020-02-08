@@ -9,12 +9,12 @@ namespace TranceSql
     /// </summary>
     public class FilterClause
     {
-        internal FilterClause(ICondition condition) => Value = condition;
+        internal FilterClause(ConditionBase condition) => Value = condition;
 
         /// <summary>
         /// Gets the condition value for this instance.
         /// </summary>
-        public ICondition Value { get; }
+        public ConditionBase Value { get; }
 
         /// <summary>
         /// Performs an implicit conversion from a condition to a filter clause.

@@ -7,7 +7,7 @@ namespace TranceSql
     /// <summary>
     /// Represents a condition, for example in a where clause.
     /// </summary>
-    public class Condition : ICondition
+    public class Condition : ConditionBase, ISqlElement
     {
         /// <summary>
         /// Initializes a new condition instance.
@@ -662,28 +662,6 @@ namespace TranceSql
             => new Condition(OperationType.IsNotNull, new Column(table, column), null);
 
         #endregion
-
-        /// <summary>
-        /// Combines two conditions using AND.
-        /// </summary>
-        /// <param name="left">The left expression.</param>
-        /// <param name="right">The right expression.</param>
-        /// <returns>
-        /// A new condition collection.
-        /// </returns>
-        public static ConditionPair operator &(Condition left, Condition right) => ConditionPair.And(left, right);
-
-        // Some of the bool operators are here, the reset are in ConditionCollection class
-
-        /// <summary>
-        /// Combines two conditions using OR.
-        /// </summary>
-        /// <param name="left">The left expression.</param>
-        /// <param name="right">The right expression.</param>
-        /// <returns>
-        /// A new condition collection.
-        /// </returns>
-        public static ConditionPair operator |(Condition left, Condition right) => ConditionPair.Or(left, right);
 
         void ISqlElement.Render(RenderContext context)
         {

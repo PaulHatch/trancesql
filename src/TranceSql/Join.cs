@@ -39,11 +39,11 @@ namespace TranceSql
         /// <param name="joinType">Type of the join to create.</param>
         /// <param name="table">The table to join.</param>
         /// <param name="on">The join condition.</param>
-        public Join(JoinType joinType, IDataSource table, ICondition on)
+        public Join(JoinType joinType, IDataSource table, ConditionBase on)
         {
             JoinType = joinType;
             Table = table;
-            if (on != null)
+            if (!(on is null))
             {
                 On = new FilterClause(on);
             }

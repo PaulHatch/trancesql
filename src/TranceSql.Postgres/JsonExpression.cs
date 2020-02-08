@@ -38,6 +38,7 @@ namespace TranceSql.Postgres
             Right = right as ISqlElement ?? throw new ArgumentNullException(nameof(right));
         }
 
+        /// <inheritdoc/>
         void ISqlElement.Render(RenderContext context)
         {
             using (context.EnterChildMode(RenderMode.Nested))

@@ -5,7 +5,7 @@ namespace TranceSql
     /// <summary>
     /// Represents a collection of join clause elements. This class supports implicit casting from 
     /// <see cref="Join"/>, as well as collection initialization from <see cref="JoinType"/>, 
-    /// <see cref="string"/>, and <see cref="ICondition"/> combinations. See documentation of 
+    /// <see cref="string"/>, and <see cref="ConditionBase"/> combinations. See documentation of 
     /// the <see cref="Select"/> command for usage examples.
     /// </summary>
     public class JoinCollection : List<Join>
@@ -16,7 +16,7 @@ namespace TranceSql
         /// <param name="joinType">Type of the join to add.</param>
         /// <param name="table">The table name.</param>
         /// <param name="on">The join condition.</param>
-        public void Add(JoinType joinType, string table, ICondition on)
+        public void Add(JoinType joinType, string table, ConditionBase on)
         {
             Add(new Join(joinType, new Table(table), on));
         }
@@ -28,7 +28,7 @@ namespace TranceSql
         /// <param name="schema">The table's schema's name.</param>
         /// <param name="table">The table name.</param>
         /// <param name="on">The join condition.</param>
-        public void Add(JoinType joinType, string schema, string table, ICondition on)
+        public void Add(JoinType joinType, string schema, string table, ConditionBase on)
         {
             Add(new Join(joinType, new Table(table), on));
         }
