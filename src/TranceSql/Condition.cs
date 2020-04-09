@@ -496,6 +496,63 @@ namespace TranceSql
         public static Condition NotIn(ISqlElement column, params object[] values)
             => new Condition(OperationType.NotIn, column, new Value(values));
 
+        // With multiple column
+
+        /// <summary>
+        /// Creates a new condition.
+        /// </summary>
+        /// <param name="columns">The column for the condition.</param>
+        /// <param name="query">The query for the condition.</param>
+        /// <returns>
+        /// A new condition.
+        /// </returns>
+        public static Condition In(IEnumerable<Column> columns, Select query)
+            => new Condition(OperationType.In, new Columns(columns), query);
+
+        /// <summary>
+        /// Creates a new condition.
+        /// </summary>
+        /// <param name="columns">The column for the condition.</param>
+        /// <param name="query">The query for the condition.</param>
+        /// <returns>
+        /// A new condition.
+        /// </returns>
+        public static Condition NotIn(IEnumerable<Column> columns, Select query)
+            => new Condition(OperationType.NotIn, new Columns(columns), query);
+
+        /// <summary>
+        /// Creates a new condition.
+        /// </summary>
+        /// <param name="columns">The column for the condition.</param>
+        /// <param name="values">The values for the condition.</param>
+        /// <returns>
+        /// A new condition.
+        /// </returns>
+        public static Condition In(IEnumerable<Column> columns, Values values)
+            => new Condition(OperationType.In, new Columns(columns), values);
+
+        /// <summary>
+        /// Creates a new condition.
+        /// </summary>
+        /// <param name="columns">The column for the condition.</param>
+        /// <param name="values">The values for the condition.</param>
+        /// <returns>
+        /// A new condition.
+        /// </returns>
+        public static Condition In(IEnumerable<Column> columns, params object[] values)
+            => new Condition(OperationType.In, new Columns(columns), new Values(values));
+
+        /// <summary>
+        /// Creates a new condition.
+        /// </summary>
+        /// <param name="columns">The column for the condition.</param>
+        /// <param name="values">The values for the condition.</param>
+        /// <returns>
+        /// A new condition.
+        /// </returns>
+        public static Condition NotIn(IEnumerable<Column> columns, params object[] values)
+            => new Condition(OperationType.NotIn, new Columns(columns), new Value(values));
+
         // With string column name
 
         /// <summary>
