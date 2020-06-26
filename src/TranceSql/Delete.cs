@@ -56,18 +56,56 @@ namespace TranceSql
 
         void ISqlElement.Render(RenderContext context)
         {
+            var output = OutputType.None;
+            if (_returning?.Any() == true)
+            {
+                output = context.Dialect.OutputType;
+                if (output == OutputType.None)
+                {
+                    throw new InvalidCommandException("This dialect does not support return clauses in delete statements.");
+                }
+            }
+
             using (context.EnterChildMode(RenderMode.Nested))
             {
                 context.Write("DELETE FROM ");
                 context.Render(_from.Value);
+                
+                // OUTPUT statements are rendered before where clauses
+                if (output == OutputType.Output)
+                {
+                    context.WriteLine();
+                    context.Write("OUTPUT ");
+                    context.RenderDelimited(_returning);
+                }
+
                 if (Where != null)
                 {
                     context.WriteLine();
                     context.Write("WHERE ");
                     context.Render(Where.Value);
                 }
+
+                // RETURNING statements are rendered after where clauses
+                if (output == OutputType.Returning)
+                {
+                    context.WriteLine();
+                    context.Write("RETURNING ");
+                    context.RenderDelimited(_returning);
+                }
+
                 context.Write(';');
             }
+        }
+
+        private ColumnCollection _returning;
+        /// <summary>
+        /// Gets or sets the columns to return/output.
+        /// </summary>
+        public ColumnCollection Returning
+        {
+            get => _returning = _returning ?? new ColumnCollection();
+            set => _returning = value;
         }
 
         /// <summary>
