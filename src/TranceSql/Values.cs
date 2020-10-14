@@ -32,12 +32,16 @@ namespace TranceSql
         /// Initializes a new instance of the <see cref="Values"/> class.
         /// </summary>
         /// <param name="values">The values for this set.</param>
-        public Values(IEnumerable<object> values)
+        public Values(IEnumerable values)
         {
-            var data = values?.Select(v => v is ISqlElement element ? element : new Value(v));
-            if (data != null)
+            if (values is null)
             {
-                _data.AddRange(data);
+                throw new ArgumentNullException(nameof(values));
+            }
+
+            foreach (var value in values)
+            {
+                _data.Add(value as ISqlElement ?? new Value(value));
             }
         }
 
