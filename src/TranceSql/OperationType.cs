@@ -32,6 +32,15 @@ namespace TranceSql
         /// <summary>Is Null</summary>
         IsNull,
         /// <summary>Is Not Null</summary>
-        IsNotNull
+        IsNotNull,
+        /// <summary>Like</summary>
+        Like,
+        /// <summary>Not Like</summary>
+        NotLike,
+        /// <summary>Similar To</summary>
+        SimilarTo,
+        /// <summary>Not Similar To</summary>
+        NotSimilarTo
+
     }
 }

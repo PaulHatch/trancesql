@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 
 namespace TranceSql
 {
@@ -435,6 +435,98 @@ namespace TranceSql
         public static Condition NotExists(Select query)
             => new Condition(OperationType.NotExists, query, null);
 
+        /// <summary>
+        /// Creates a new condition.
+        /// </summary>
+        /// <param name="column">The column name.</param>
+        /// <param name="value">The value for the condition.</param>
+        /// <returns>
+        /// A new condition.
+        /// </returns>
+        public static Condition Like(string column, string value)
+            => new Condition(OperationType.Like, new Column(column), new Value(value));
+
+        /// <summary>
+        /// Creates a new condition.
+        /// </summary>
+        /// <param name="table">The column's table name.</param>
+        /// <param name="column">The column name.</param>
+        /// <param name="value">The value for the condition.</param>
+        /// <returns>
+        /// A new condition.
+        /// </returns>
+        public static Condition Like(string table, string column, string value)
+            => new Condition(OperationType.Like, new Column(table, column), new Value(value));
+
+        /// <summary>
+        /// Creates a new condition.
+        /// </summary>
+        /// <param name="column">The column name.</param>
+        /// <param name="value">The value for the condition.</param>
+        /// <returns>
+        /// A new condition.
+        /// </returns>
+        public static Condition NotLike(string column, string value)
+            => new Condition(OperationType.NotLike, new Column(column), new Value(value));
+
+        /// <summary>
+        /// Creates a new condition.
+        /// </summary>
+        /// <param name="table">The column's table name.</param>
+        /// <param name="column">The column name.</param>
+        /// <param name="value">The value for the condition.</param>
+        /// <returns>
+        /// A new condition.
+        /// </returns>
+        public static Condition NotLike(string table, string column, string value)
+            => new Condition(OperationType.NotLike, new Column(table, column), new Value(value));
+
+        /// <summary>
+        /// Creates a new condition.
+        /// </summary>
+        /// <param name="column">The column name.</param>
+        /// <param name="value">The value for the condition.</param>
+        /// <returns>
+        /// A new condition.
+        /// </returns>
+        public static Condition SimilarTo(string column, string value)
+            => new Condition(OperationType.SimilarTo, new Column(column), new Value(value));
+
+        /// <summary>
+        /// Creates a new condition.
+        /// </summary>
+        /// <param name="table">The column's table name.</param>
+        /// <param name="column">The column name.</param>
+        /// <param name="value">The value for the condition.</param>
+        /// <returns>
+        /// A new condition.
+        /// </returns>
+        public static Condition SimilarTo(string table, string column, string value)
+            => new Condition(OperationType.SimilarTo, new Column(table, column), new Value(value));
+
+        /// <summary>
+        /// Creates a new condition.
+        /// </summary>
+        /// <param name="column">The column name.</param>
+        /// <param name="value">The value for the condition.</param>
+        /// <returns>
+        /// A new condition.
+        /// </returns>
+        public static Condition NotSimilarTo(string column, string value)
+            => new Condition(OperationType.NotSimilarTo, new Column(column), new Value(value));
+
+        /// <summary>
+        /// Creates a new condition.
+        /// </summary>
+        /// <param name="table">The column's table name.</param>
+        /// <param name="column">The column name.</param>
+        /// <param name="value">The value for the condition.</param>
+        /// <returns>
+        /// A new condition.
+        /// </returns>
+        public static Condition NotSimilarTo(string table, string column, string value)
+            => new Condition(OperationType.NotSimilarTo, new Column(table, column), new Value(value));
+
         // in and not in query or values list
 
         #region In / Not In
@@ -493,8 +585,30 @@ namespace TranceSql
         /// <returns>
         /// A new condition.
         /// </returns>
+        public static Condition In(ISqlElement column, IEnumerable values)
+            => new Condition(OperationType.In, column, new Values(values));
+
+        /// <summary>
+        /// Creates a new condition.
+        /// </summary>
+        /// <param name="column">The column for the condition.</param>
+        /// <param name="values">The values for the condition.</param>
+        /// <returns>
+        /// A new condition.
+        /// </returns>
         public static Condition NotIn(ISqlElement column, params object[] values)
-            => new Condition(OperationType.NotIn, column, new Value(values));
+            => new Condition(OperationType.NotIn, column, new Values(values));
+
+        /// <summary>
+        /// Creates a new condition.
+        /// </summary>
+        /// <param name="column">The column for the condition.</param>
+        /// <param name="values">The values for the condition.</param>
+        /// <returns>
+        /// A new condition.
+        /// </returns>
+        public static Condition NotIn(ISqlElement column, IEnumerable values)
+            => new Condition(OperationType.NotIn, column, new Values(values));
 
         // With multiple column
 
@@ -551,7 +665,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition NotIn(IEnumerable<Column> columns, params object[] values)
-            => new Condition(OperationType.NotIn, new Columns(columns), new Value(values));
+            => new Condition(OperationType.NotIn, new Columns(columns), new Values(values));
 
         // With string column name
 
@@ -794,6 +908,18 @@ namespace TranceSql
                             break;
                         case OperationType.NotIn:
                             context.Write(" NOT IN ");
+                            break;
+                        case OperationType.Like:
+                            context.Write(" LIKE ");
+                            break;
+                        case OperationType.NotLike:
+                            context.Write(" NOT LIKE ");
+                            break;
+                        case OperationType.SimilarTo:
+                            context.Write(" SIMILAR TO ");
+                            break;
+                        case OperationType.NotSimilarTo:
+                            context.Write(" NOT SIMILAR TO ");
                             break;
                         case OperationType.Exists:
                         case OperationType.NotExists:
