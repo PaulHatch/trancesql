@@ -461,6 +461,17 @@ namespace TranceSql
         /// <summary>
         /// Creates a new condition.
         /// </summary>
+        /// <param name="element">The condition element.</param>
+        /// <param name="value">The value for the condition.</param>
+        /// <returns>
+        /// A new condition.
+        /// </returns>
+        public static Condition Like(ISqlElement element, string value)
+            => new Condition(OperationType.Like, element, new Value(value));
+
+        /// <summary>
+        /// Creates a new condition.
+        /// </summary>
         /// <param name="column">The column name.</param>
         /// <param name="value">The value for the condition.</param>
         /// <returns>
@@ -480,6 +491,17 @@ namespace TranceSql
         /// </returns>
         public static Condition NotLike(string table, string column, string value)
             => new Condition(OperationType.NotLike, new Column(table, column), new Value(value));
+
+        /// <summary>
+        /// Creates a new condition.
+        /// </summary>
+        /// <param name="element">The condition element.</param>
+        /// <param name="value">The value for the condition.</param>
+        /// <returns>
+        /// A new condition.
+        /// </returns>
+        public static Condition NotLike(ISqlElement element, string value)
+            => new Condition(OperationType.NotLike, element, new Value(value));
 
         /// <summary>
         /// Creates a new condition.
@@ -507,6 +529,17 @@ namespace TranceSql
         /// <summary>
         /// Creates a new condition.
         /// </summary>
+        /// <param name="element">The condition element.</param>
+        /// <param name="value">The value for the condition.</param>
+        /// <returns>
+        /// A new condition.
+        /// </returns>
+        public static Condition SimilarTo(ISqlElement element, string value)
+            => new Condition(OperationType.SimilarTo, element, new Value(value));
+
+        /// <summary>
+        /// Creates a new condition.
+        /// </summary>
         /// <param name="column">The column name.</param>
         /// <param name="value">The value for the condition.</param>
         /// <returns>
@@ -526,6 +559,17 @@ namespace TranceSql
         /// </returns>
         public static Condition NotSimilarTo(string table, string column, string value)
             => new Condition(OperationType.NotSimilarTo, new Column(table, column), new Value(value));
+
+        /// <summary>
+        /// Creates a new condition.
+        /// </summary>
+        /// <param name="element">The condition element.</param>
+        /// <param name="value">The value for the condition.</param>
+        /// <returns>
+        /// A new condition.
+        /// </returns>
+        public static Condition NotSimilarTo(ISqlElement element, string value)
+            => new Condition(OperationType.NotSimilarTo, element, new Value(value));
 
         // in and not in query or values list
 
