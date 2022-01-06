@@ -1,10 +1,4 @@
-﻿using MySql.Data.MySqlClient;
-using OpenTracing;
-using System;
-using System.Collections.Generic;
-using System.Data.Common;
-using System.Text;
-using System.Threading.Tasks;
+﻿using OpenTracing;
 using TranceSql.Processing;
 
 namespace TranceSql.MySql
@@ -17,56 +11,52 @@ namespace TranceSql.MySql
         /// <summary>
         /// Creates command parameters for a MySQL database reference.
         /// </summary>
-        /// <param name="rollingCredentials">
-        /// A connection string provider which uses rolling credentials such as
-        /// dynamic credentials from a Vault database provider.
+        /// <param name="connectionFactory">
+        /// A connection factory that returns a MySQL DB connection.
         /// </param>
-        public MySqlDatabase(MySqlRollingCredentials rollingCredentials)
-            : this(rollingCredentials, null, null)
+        public MySqlDatabase(MySqlConnectionFactory connectionFactory)
+            : this(connectionFactory, null, null)
         {
         }
 
         /// <summary>
         /// Creates command parameters for a MySQL database reference.
         /// </summary>
-        /// <param name="rollingCredentials">
-        /// A connection string provider which uses rolling credentials such as
-        /// dynamic credentials from a Vault database provider.
+        /// <param name="connectionFactory">
+        /// A connection factory that returns a MySQL DB connection.
         /// </param>
         /// <param name="parameterMapper">The parameter mapper.</param>
-        public MySqlDatabase(MySqlRollingCredentials rollingCredentials, IParameterMapper parameterMapper)
-            : this(rollingCredentials, parameterMapper, null)
+        public MySqlDatabase(MySqlConnectionFactory connectionFactory, IParameterMapper parameterMapper)
+            : this(connectionFactory, parameterMapper, null)
         {
         }
 
         /// <summary>
         /// Creates command parameters for a MySQL database reference.
         /// </summary>
-        /// <param name="rollingCredentials">
-        /// A connection string provider which uses rolling credentials such as
-        /// dynamic credentials from a Vault database provider.
+        /// <param name="connectionFactory">
+        /// A connection factory that returns a MySQL DB connection.
         /// </param>
         /// <param name="tracer">
         /// The OpenTracing tracer instance to use. If this value is null the global tracer will
         /// be used instead.
         /// </param>
-        public MySqlDatabase(MySqlRollingCredentials rollingCredentials, ITracer tracer)
-            : this(rollingCredentials, null, tracer)
+        public MySqlDatabase(MySqlConnectionFactory connectionFactory, ITracer tracer)
+            : this(connectionFactory, null, tracer)
         {
         }
 
         /// <summary>
         /// Creates command parameters for a MySQL database reference.
         /// </summary>
-        /// <param name="rollingCredentials">
-        /// A connection string provider which uses rolling credentials such as
-        /// dynamic credentials from a Vault database provider.
+        /// <param name="connectionFactory">
+        /// A connection factory that returns a MySQL DB connection.
         /// </param>
         /// <param name="parameterMapper">The parameter mapper.</param>
         /// <param name="tracer">The OpenTracing tracer instance to use. If this value is null the global tracer will
         /// be used instead.</param>
-        public MySqlDatabase(MySqlRollingCredentials rollingCredentials, IParameterMapper parameterMapper, ITracer tracer)
-            : base(new SqlCommandManager(rollingCredentials, GetConnection, parameterMapper ?? new DefaultParameterMapper(), tracer, ExtractDbInfo), new MySqlDialect())
+        public MySqlDatabase(MySqlConnectionFactory connectionFactory, IParameterMapper? parameterMapper, ITracer? tracer)
+            : base(new SqlCommandManager(connectionFactory, parameterMapper ?? new DefaultParameterMapper(), tracer), new MySqlDialect())
         {
         }
 
@@ -112,17 +102,9 @@ namespace TranceSql.MySql
         /// The OpenTracing tracer instance to use. If this value is null the global tracer will
         /// be used instead.
         /// </param>
-        public MySqlDatabase(string connectionString, IParameterMapper parameterMapper, ITracer tracer)
-            : base(new SqlCommandManager(connectionString, GetConnection, parameterMapper ?? new DefaultParameterMapper(), tracer, ExtractDbInfo(connectionString)), new MySqlDialect())
+        public MySqlDatabase(string connectionString, IParameterMapper? parameterMapper, ITracer? tracer)
+            : base(new SqlCommandManager(new MySqlConnectionFactory(connectionString), parameterMapper ?? new DefaultParameterMapper(), tracer), new MySqlDialect())
         {
         }
-
-        private static DbInfo ExtractDbInfo(string connectionString)
-        {
-            var builder = new MySqlConnectionStringBuilder(connectionString);
-            return new DbInfo(builder.Server, builder.Database, builder.UserID);
-        }
-
-        private static DbConnection GetConnection() => new MySqlConnection();
     }
 }

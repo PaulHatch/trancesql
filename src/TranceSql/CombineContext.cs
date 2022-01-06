@@ -10,8 +10,8 @@ namespace TranceSql
     /// </summary>
     internal class CombineContext : IContext
     {
-        StringBuilder _commandText = new StringBuilder();
-        Dictionary<string, object> _parameters = new Dictionary<string, object>();
+        private readonly StringBuilder _commandText = new();
+        private readonly Dictionary<string, object> _parameters = new();
 
         /// <summary>
         /// Gets the SQL command text for this context.
@@ -27,7 +27,7 @@ namespace TranceSql
         /// Gets or sets the name of the operation to be used for recording
         /// tracing information.
         /// </summary>
-        public string OperationName { get; set; }
+        public string? OperationName { get; set; }
 
         /// <summary>
         /// Appends the specified context result to this context.

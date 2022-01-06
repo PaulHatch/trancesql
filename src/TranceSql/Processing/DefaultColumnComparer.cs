@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace TranceSql.Processing
 {
@@ -14,7 +13,7 @@ namespace TranceSql.Processing
         /// <summary>
         /// Gets the default instance of the comparer.
         /// </summary>
-        public static DefaultCaseComparer Comparer { get; } = new DefaultCaseComparer();
+        public static DefaultCaseComparer Comparer { get; } = new();
 
         /// <summary>Determines whether the specified objects are equal.</summary>
         /// <param name="x">The first object of type T to compare.</param>

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace TranceSql
 {
@@ -49,7 +48,7 @@ namespace TranceSql
         /// The result of the conversion.
         /// </returns>
         public static implicit operator DataSourceCollection(string table)
-            => new DataSourceCollection { table };
+            => new() { table };
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="Table"/> to <see cref="DataSourceCollection"/>.
@@ -59,7 +58,7 @@ namespace TranceSql
         /// The result of the conversion.
         /// </returns>
         public static implicit operator DataSourceCollection(Table table)
-            => new DataSourceCollection { table };
+            => new() { table };
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="TableSchema"/> to <see cref="DataSourceCollection"/>.
@@ -69,7 +68,7 @@ namespace TranceSql
         /// The result of the conversion.
         /// </returns>
         public static implicit operator DataSourceCollection(TableSchema tableSchema)
-            => new DataSourceCollection { (Table)tableSchema };
+            => new() { (Table)tableSchema };
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="Select"/> to <see cref="DataSourceCollection"/>.
@@ -79,7 +78,7 @@ namespace TranceSql
         /// The result of the conversion.
         /// </returns>
         public static implicit operator DataSourceCollection(Select select)
-            => new DataSourceCollection { select };
+            => new() { select };
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="Alias"/> to <see cref="DataSourceCollection"/>.
@@ -89,6 +88,6 @@ namespace TranceSql
         /// The result of the conversion.
         /// </returns>
         public static implicit operator DataSourceCollection(Alias table)
-            => new DataSourceCollection { table };
+            => new() { table };
     }
 }

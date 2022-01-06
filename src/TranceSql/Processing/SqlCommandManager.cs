@@ -2,83 +2,40 @@
 using OpenTracing.Tag;
 using OpenTracing.Util;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.Common;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using TranceSql.Processing;
 
 namespace TranceSql.Processing
 {
     /// <summary>Handler for ADO interactions.</summary>
     public class SqlCommandManager
     {
-        /// <summary>Connection factory delegate for target database.</summary>
-        internal Func<DbConnection> ConnectionFactory { get; }
-
         /// <summary>Provides parameter value from input object instances.</summary>
         internal IParameterMapper ParameterMapper { get; }
 
-        private enum ConnectionMode { String, AsyncFactory, Factory }
-
-        private DbInfo _dbInfo;
-        private volatile string _connectionString;
         private readonly ITracer _tracer;
-        private readonly RollingCredentials _rollingCredentials;
-        private readonly ConnectionMode _connectionMode = ConnectionMode.String;
-        private readonly Func<string, DbInfo> _dbInfoFactory;
+        private readonly IConnectionFactory _connectionFactory;
 
         /// <summary>
         /// Initialize a new instance of a generic ADO transaction. Use
         /// a provider-specific subclass for better performance.
         /// </summary>
-        /// <param name="rollingCredentials">A connection string provider which uses rolling credentials.</param>
-        /// <param name="connectionFactory">Delegate to create connections for current database.</param>
+        /// <param name="connectionFactory">Factory to create connections for current database.</param>
         /// <param name="parameterMapper">Provides parameter value from input object instances.</param>
         /// <param name="tracer">The OpenTracing tracer instance to use. If this value is null the global tracer will
         /// be used instead.</param>
-        /// <param name="dbInfoFactory">The information about the connection string being used.</param>
         public SqlCommandManager(
-            RollingCredentials rollingCredentials,
-            Func<DbConnection> connectionFactory,
+            IConnectionFactory connectionFactory,
             IParameterMapper parameterMapper,
-            ITracer tracer,
-            Func<string, DbInfo> dbInfoFactory)
-            : this((string)null, connectionFactory, parameterMapper, tracer, null)
+            ITracer? tracer)
         {
-            _rollingCredentials = rollingCredentials;
-            _connectionMode = ConnectionMode.AsyncFactory;
-            _dbInfoFactory = dbInfoFactory;
-        }
-
-        /// <summary>
-        /// Initialize a new instance of a generic ADO transaction. Use
-        /// a provider-specific subclass for better performance.
-        /// </summary>
-        /// <param name="connectionString">Connection string to target database.</param>
-        /// <param name="connectionFactory">Delegate to create connections for current database.</param>
-        /// <param name="parameterMapper">Provides parameter value from input object instances.</param>
-        /// <param name="tracer">The OpenTracing tracer instance to use. If this value is null the global tracer will
-        /// be used instead.</param>
-        /// <param name="dbInfo">The information about the connection string being used.</param>
-        public SqlCommandManager(
-            string connectionString,
-            Func<DbConnection> connectionFactory,
-            IParameterMapper parameterMapper,
-            ITracer tracer,
-            DbInfo dbInfo)
-        {
-            _connectionString = connectionString;
-            ConnectionFactory = connectionFactory;
+            _connectionFactory = connectionFactory;
             ParameterMapper = parameterMapper;
             _tracer = tracer ?? GlobalTracer.Instance;
-            _dbInfo = dbInfo;
         }
 
         /// <summary>
@@ -98,28 +55,8 @@ namespace TranceSql.Processing
             }
         }
 
-        /// <summary>
-        /// Creates a connection for this transaction.
-        /// </summary>
-        /// <param name="forceRefresh">True if refreshing credentials must be refreshed.</param>
-        /// <returns>
-        /// A DbConnection instance for this transaction's target database.
-        /// </returns>
-        internal async Task<DbConnection> CreateConnectionAsync(bool forceRefresh = false)
-        {
-            var newConnection = ConnectionFactory();
+        internal Task<DbConnection> CreateConnectionAsync() => Task.FromResult(_connectionFactory.CreateConnection());
 
-            if (_connectionMode == ConnectionMode.String)
-            {
-                newConnection.ConnectionString = _connectionString;
-            }
-            else
-            {
-                newConnection.ConnectionString = await _rollingCredentials.GetConnectionStringAsync();
-            }
-
-            return newConnection;
-        }
 
         #region Async Execution
 
@@ -290,7 +227,7 @@ namespace TranceSql.Processing
         /// <returns>The number of rows affected.</returns>
         internal int Execute(IContext context)
         {
-            return RunCommand<int>(context, null);
+            return RunCommand<int>(context);
         }
 
         /// <summary>
@@ -356,10 +293,10 @@ namespace TranceSql.Processing
                 .WithTag(Tags.DbType, "sql")
                 .WithTag(Tags.Component.Key, "trancesql");
 
-            if (!String.IsNullOrEmpty(_dbInfo.User)) { builder.WithTag(Tags.DbUser, _dbInfo.User); }
-            if (!String.IsNullOrEmpty(_dbInfo.Database)) { builder.WithTag(Tags.DbInstance, _dbInfo.Database); }
+            //if (!String.IsNullOrEmpty(_dbInfo.User)) { builder.WithTag(Tags.DbUser, _dbInfo.User); }
+            //if (!String.IsNullOrEmpty(_dbInfo.Database)) { builder.WithTag(Tags.DbInstance, _dbInfo.Database); }
             if (!String.IsNullOrEmpty(context.CommandText)) { builder.WithTag(Tags.DbStatement, context.CommandText); }
-            if (!String.IsNullOrEmpty(_dbInfo.Server)) { builder.WithTag("peer.address", _dbInfo.Server); }
+            //if (!String.IsNullOrEmpty(_dbInfo.Server)) { builder.WithTag("peer.address", _dbInfo.Server); }
 
             return builder.StartActive(finishSpanOnDispose: true);
         }
@@ -370,51 +307,43 @@ namespace TranceSql.Processing
         /// <param name="context">The SQL context to run.</param>
         /// <param name="processors">The processors to use for the result sets.</param>
         /// <returns>A task for the operation.</returns>
-        internal void RunCommandSet(IContext context, IEnumerable<ProcessorContext> processors)
+        internal void RunCommandSet(IContext context, IList<ProcessorContext> processors)
         {
-            using (var connection = AsyncHelper.RunSync(() => CreateConnectionAsync()))
-            {
-                using (var command = connection.CreateCommand())
-                {
-                    // initialize command
-                    command.Connection = connection;
-                    command.CommandText = context.CommandText;
-                    AddParametersToCommand(command, context);
+            using var connection = AsyncHelper.RunSync(CreateConnectionAsync);
+            using var command = connection.CreateCommand();
+            // initialize command
+            command.Connection = connection;
+            command.CommandText = context.CommandText;
+            AddParametersToCommand(command, context);
 
-                    using (IScope scope = CreateScope(context))
+            using IScope scope = CreateScope(context);
+            try
+            {
+                connection.Open();
+                if (processors.Any() != true)
+                {
+                    command.ExecuteNonQuery();
+                }
+                else
+                {
+                    using var reader = command.ExecuteReader();
+                    var results = 0;
+                    foreach (var item in processors)
                     {
-                        try
+                        if (results > 0 && !reader.NextResult())
                         {
-                            connection.Open();
-                            if (processors?.Any() != true)
-                            {
-                                command.ExecuteNonQuery();
-                            }
-                            else
-                            {
-                                using (var reader = command.ExecuteReader())
-                                {
-                                    var results = 0;
-                                    foreach (var item in processors)
-                                    {
-                                        if (results > 0 && !reader.NextResult())
-                                        {
-                                            throw new InvalidOperationException($"Expected {processors.Count()} but result only contained {results}");
-                                        }
-                                        item.Deferred.SetValue(item.Processer.Process(reader));
-                                        results++;
-                                    }
-                                }
-                            }
-                            connection.Close();
+                            throw new InvalidOperationException($"Expected {processors.Count} but result only contained {results}");
                         }
-                        catch
-                        {
-                            scope.Span.SetTag(Tags.Error, true);
-                            throw;
-                        }
+                        item.Deferred.SetValue(item.Processer.Process(reader));
+                        results++;
                     }
                 }
+                connection.Close();
+            }
+            catch
+            {
+                scope.Span.SetTag(Tags.Error, true);
+                throw;
             }
         }
 
@@ -424,51 +353,43 @@ namespace TranceSql.Processing
         /// <param name="context">The SQL context to run.</param>
         /// <param name="processors">The processors to use for the result sets.</param>
         /// <returns>A task for the operation.</returns>
-        internal async Task RunCommandSetAsync(IContext context, IEnumerable<ProcessorContext> processors)
+        internal async Task RunCommandSetAsync(IContext context, IList<ProcessorContext> processors)
         {
-            using (var connection = await CreateConnectionAsync())
-            {
-                using (var command = connection.CreateCommand())
-                {
-                    // initialize command
-                    command.Connection = connection;
-                    command.CommandText = context.CommandText;
-                    AddParametersToCommand(command, context);
+            using var connection = await CreateConnectionAsync();
+            using var command = connection.CreateCommand();
+            // initialize command
+            command.Connection = connection;
+            command.CommandText = context.CommandText;
+            AddParametersToCommand(command, context);
 
-                    using (IScope scope = CreateScope(context))
+            using IScope scope = CreateScope(context);
+            try
+            {
+                await connection.OpenAsync();
+                if (processors.Any() != true)
+                {
+                    await command.ExecuteNonQueryAsync();
+                }
+                else
+                {
+                    using var reader = await command.ExecuteReaderAsync();
+                    var results = 0;
+                    foreach (var item in processors)
                     {
-                        try
+                        if (results > 0 && !await reader.NextResultAsync())
                         {
-                            await connection.OpenAsync();
-                            if (processors?.Any() != true)
-                            {
-                                await command.ExecuteNonQueryAsync();
-                            }
-                            else
-                            {
-                                using (var reader = await command.ExecuteReaderAsync())
-                                {
-                                    var results = 0;
-                                    foreach (var item in processors)
-                                    {
-                                        if (results > 0 && !await reader.NextResultAsync())
-                                        {
-                                            throw new InvalidOperationException($"Expected {processors.Count()} but result only contained {results}");
-                                        }
-                                        item.Deferred.SetValue(item.Processer.Process(reader));
-                                        results++;
-                                    }
-                                }
-                            }
-                            connection.Close();
+                            throw new InvalidOperationException($"Expected {processors.Count} but result only contained {results}");
                         }
-                        catch
-                        {
-                            scope.Span.SetTag(Tags.Error, true);
-                            throw;
-                        }
+                        item.Deferred.SetValue(item.Processer.Process(reader));
+                        results++;
                     }
                 }
+                connection.Close();
+            }
+            catch
+            {
+                scope.Span.SetTag(Tags.Error, true);
+                throw;
             }
         }
 
@@ -483,49 +404,41 @@ namespace TranceSql.Processing
         /// </param>
         /// <param name="cancel">A token to monitor for cancellation requests.</param>
         /// <returns>An asynchronous task for the query result.</returns>
-        private async Task<T> RunCommandAsync<T>(IContext context, IResultProcessor processor = null, CancellationToken cancel = default)
+        private async Task<T> RunCommandAsync<T>(IContext context, IResultProcessor? processor = null, CancellationToken cancel = default)
         {
             AssertCorrectReturnType<T>(processor);
 
-            using (var connection = await CreateConnectionAsync())
+            using var connection = await CreateConnectionAsync();
+            using var command = connection.CreateCommand();
+            // initialize command
+            command.Connection = connection;
+            command.CommandText = context.CommandText;
+            AddParametersToCommand(command, context);
+
+            object result;
+
+            using var scope = CreateScope(context);
+            try
             {
-                using (var command = connection.CreateCommand())
+                await connection.OpenAsync(cancel);
+                if (processor == null)
                 {
-                    // initialize command
-                    command.Connection = connection;
-                    command.CommandText = context.CommandText;
-                    AddParametersToCommand(command, context);
-
-                    object result;
-
-                    using (var scope = CreateScope(context))
-                    {
-                        try
-                        {
-                            await connection.OpenAsync(cancel);
-                            if (processor == null)
-                            {
-                                result = await command.ExecuteNonQueryAsync(cancel);
-                            }
-                            else
-                            {
-                                using (var reader = await command.ExecuteReaderAsync(cancel))
-                                {
-                                    result = processor.Process(reader);
-                                }
-                            }
-                            connection.Close();
-                        }
-                        catch
-                        {
-                            scope.Span.SetTag(Tags.Error, true);
-                            throw;
-                        }
-                    }
-
-                    return (T)result;
+                    result = await command.ExecuteNonQueryAsync(cancel);
                 }
+                else
+                {
+                    using var reader = await command.ExecuteReaderAsync(cancel);
+                    result = processor.Process(reader);
+                }
+                connection.Close();
             }
+            catch
+            {
+                scope.Span.SetTag(Tags.Error, true);
+                throw;
+            }
+
+            return (T)result;
         }
 
         /// <summary>
@@ -538,56 +451,48 @@ namespace TranceSql.Processing
         /// is assumed and the integer type will be assumed.
         /// </param>
         /// <returns>An asynchronous task for the query result.</returns>
-        private T RunCommand<T>(IContext context, IResultProcessor processor = null)
+        private T RunCommand<T>(IContext context, IResultProcessor? processor = null)
         {
             AssertCorrectReturnType<T>(processor);
 
-            using (var connection = AsyncHelper.RunSync(() => CreateConnectionAsync()))
+            using var connection = AsyncHelper.RunSync(CreateConnectionAsync);
+            using var command = connection.CreateCommand();
+            // initialize command
+            command.Connection = connection;
+            command.CommandText = context.CommandText;
+            AddParametersToCommand(command, context);
+
+            object result;
+
+            using var scope = CreateScope(context);
+            try
             {
-                using (var command = connection.CreateCommand())
+                connection.Open();
+                if (processor == null)
                 {
-                    // initialize command
-                    command.Connection = connection;
-                    command.CommandText = context.CommandText;
-                    AddParametersToCommand(command, context);
-
-                    object result;
-
-                    using (var scope = CreateScope(context))
-                    {
-                        try
-                        {
-                            connection.Open();
-                            if (processor == null)
-                            {
-                                result = command.ExecuteNonQuery();
-                            }
-                            else
-                            {
-                                using (var reader = command.ExecuteReader())
-                                {
-                                    result = processor.Process(reader);
-                                }
-                            }
-                            connection.Close();
-                        }
-                        catch
-                        {
-                            scope.Span.SetTag(Tags.Error, true);
-                            throw;
-                        }
-                    }
-
-                    return (T)result;
+                    result = command.ExecuteNonQuery();
                 }
+                else
+                {
+                    using var reader = command.ExecuteReader();
+                    result = processor.Process(reader);
+                }
+                connection.Close();
             }
+            catch
+            {
+                scope.Span.SetTag(Tags.Error, true);
+                throw;
+            }
+
+            return (T)result;
         }
 
-        private static void AssertCorrectReturnType<T>(IResultProcessor processor)
+        private static void AssertCorrectReturnType<T>(IResultProcessor? processor)
         {
             if (processor == null && typeof(T) != typeof(int))
             {
-                throw new ArgumentException($"Attempted to run a non-query command with the return type '{typeof(T).FullName}'. Non-query commands must return the type 'int'.", "T");
+                throw new ArgumentException($"Attempted to run a non-query command with the return type '{typeof(T).FullName}'. Non-query commands must return the type 'int'.", nameof(T));
             }
         }
     }

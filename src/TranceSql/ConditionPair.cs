@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace TranceSql
 {
@@ -46,7 +44,7 @@ namespace TranceSql
         /// <param name="left">The left condition.</param>
         /// <param name="right">The right condition.</param>
         /// <returns>A new condition pair.</returns>
-        public static ConditionPair And(ConditionBase left, ConditionBase right) => new ConditionPair(BooleanOperator.And, left, right);
+        public static ConditionPair And(ConditionBase left, ConditionBase right) => new(BooleanOperator.And, left, right);
         
         /// <summary>
         /// Creates an OR condition pair.
@@ -54,7 +52,7 @@ namespace TranceSql
         /// <param name="left">The left condition.</param>
         /// <param name="right">The right condition.</param>
         /// <returns>A new condition pair.</returns>
-        public static ConditionPair Or(ConditionBase left, ConditionBase right) => new ConditionPair(BooleanOperator.Or, left, right);
+        public static ConditionPair Or(ConditionBase left, ConditionBase right) => new(BooleanOperator.Or, left, right);
 
 
         /// <summary>

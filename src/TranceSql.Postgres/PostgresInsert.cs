@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 
 namespace TranceSql.Postgres
 {
@@ -19,7 +16,7 @@ namespace TranceSql.Postgres
         /// <summary>
         /// Gets or sets the ON CONFLICT definition for this statement.
         /// </summary>
-        public PostgresOnConflict OnConflict { get; set; }
+        public PostgresOnConflict? OnConflict { get; set; }
 
 
         internal PostgresInsert(Insert insert)
@@ -38,9 +35,12 @@ namespace TranceSql.Postgres
                 context.Render(Insert);
             }
 
-            context.Render(OnConflict);
+            if (OnConflict != null)
+            {
+                context.Render(OnConflict);
+            }
 
-            var returning = Insert.Returning ?? OnConflict?.DoUpdate.Returning;
+            var returning = Insert.Returning ?? OnConflict?.DoUpdate?.Returning;
 
             if (returning?.Any() == true)
             {

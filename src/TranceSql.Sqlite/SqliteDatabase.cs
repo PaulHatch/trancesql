@@ -1,9 +1,4 @@
-﻿using Microsoft.Data.Sqlite;
-using OpenTracing;
-using System;
-using System.Collections.Generic;
-using System.Data.Common;
-using System.Text;
+﻿using OpenTracing;
 using TranceSql.Processing;
 
 namespace TranceSql.Sqlite
@@ -55,17 +50,25 @@ namespace TranceSql.Sqlite
         /// The OpenTracing tracer instance to use. If this value is null the global tracer will
         /// be used instead.
         /// </param>
-        public SqliteDatabase(string connectionString, IParameterMapper parameterMapper, ITracer tracer)
-            : base(new SqlCommandManager(connectionString, GetConnection, parameterMapper ?? new DefaultParameterMapper(), tracer, ExtractDbInfo(connectionString)), new SqliteDialect())
+        public SqliteDatabase(string connectionString, IParameterMapper? parameterMapper, ITracer? tracer)
+            : base(new SqlCommandManager(new SqliteConnectionFactory(connectionString), parameterMapper ?? new DefaultParameterMapper(), tracer), new SqliteDialect())
         {
         }
-
-        private static DbInfo ExtractDbInfo(string connectionString)
+        
+        /// <summary>
+        /// Creates command parameters for a SQLite connection.
+        /// </summary>
+        /// <param name="connectionFactory">
+        /// A connection factory that returns a Sqlite DB connection.
+        /// </param>
+        /// <param name="parameterMapper">The parameter mapper.</param>
+        /// <param name="tracer">
+        /// The OpenTracing tracer instance to use. If this value is null the global tracer will
+        /// be used instead.
+        /// </param>
+        public SqliteDatabase(IConnectionFactory connectionFactory, IParameterMapper parameterMapper, ITracer tracer)
+            : base(new SqlCommandManager(connectionFactory, parameterMapper ?? new DefaultParameterMapper(), tracer), new SqliteDialect())
         {
-            var builder = new SqliteConnectionStringBuilder(connectionString);
-            return new DbInfo(builder.DataSource, null, null);
         }
-
-        private static DbConnection GetConnection() => new SqliteConnection();
     }
 }

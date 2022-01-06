@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TranceSql
+﻿namespace TranceSql
 {
     /// <summary>
     /// Represents a CREATE DATABASE statement.

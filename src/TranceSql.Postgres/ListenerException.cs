@@ -1,6 +1,4 @@
-﻿using System;
-using System.Data.Common;
-using System.Runtime.Serialization;
+﻿using System.Data.Common;
 
 namespace TranceSql.Postgres
 {

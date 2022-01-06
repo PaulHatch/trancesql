@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace TranceSql
 {
@@ -60,7 +59,7 @@ namespace TranceSql
         /// The result of the conversion.
         /// </returns>
         public static implicit operator ColumnCollection(string column)
-            => new ColumnCollection { column };
+            => new() { column };
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="Alias"/> to <see cref="ColumnCollection"/>.
@@ -70,7 +69,7 @@ namespace TranceSql
         /// The result of the conversion.
         /// </returns>
         public static implicit operator ColumnCollection(Alias aliasedElement)
-            => new ColumnCollection { aliasedElement };
+            => new() { aliasedElement };
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="ExpressionElement"/> to <see cref="ColumnCollection"/>.
@@ -80,6 +79,6 @@ namespace TranceSql
         /// The result of the conversion.
         /// </returns>
         public static implicit operator ColumnCollection(ExpressionElement element)
-            => new ColumnCollection { element };
+            => new() { element };
     }
 }

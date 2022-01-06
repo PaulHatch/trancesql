@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 
 namespace TranceSql
 {
@@ -51,7 +49,7 @@ namespace TranceSql
         /// <summary>
         /// Gets the column definition collection.
         /// </summary>
-        public ColumnDefinitionCollection Columns { get; } = new ColumnDefinitionCollection();
+        public ColumnDefinitionCollection Columns { get; } = new();
 
         /// <summary>
         /// Gets the table constraints collection.

@@ -1,12 +1,8 @@
 ﻿using Npgsql;
 using OpenTracing;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Common;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using TranceSql.Processing;
@@ -21,54 +17,51 @@ namespace TranceSql.Postgres
         /// <summary>
         /// Creates command parameters for Postgres database reference.
         /// </summary>
-        /// <param name="rollingCredentials">
-        /// A connection string provider which uses rolling credentials such as
-        /// dynamic credentials from a Vault database provider.
+        /// <param name="connectionFactory">
+        /// A connection factory that returns a Postgres DB connection.
         /// </param>
-        public PostgresDatabase(PostgresRollingCredentials rollingCredentials)
-            : this(rollingCredentials, null, null)
+
+        public PostgresDatabase(PostgresConnectionFactory connectionFactory)
+            : this(connectionFactory, null, null)
         {
         }
 
         /// <summary>
         /// Creates command parameters for Postgres database reference.
         /// </summary>
-        /// <param name="rollingCredentials">
-        /// A connection string provider which uses rolling credentials such as
-        /// dynamic credentials from a Vault database provider.
+        /// <param name="connectionFactory">
+        /// A connection factory that returns a Postgres DB connection.
         /// </param>
         /// <param name="parameterMapper">The parameter mapper.</param>
-        public PostgresDatabase(PostgresRollingCredentials rollingCredentials, IParameterMapper parameterMapper)
-            : this(rollingCredentials, parameterMapper, null)
+        public PostgresDatabase(IConnectionFactory connectionFactory, IParameterMapper parameterMapper)
+            : this(connectionFactory, parameterMapper, null)
         {
         }
 
         /// <summary>
         /// Creates command parameters for Postgres database reference.
         /// </summary>
-        /// <param name="rollingCredentials">
-        /// A connection string provider which uses rolling credentials such as
-        /// dynamic credentials from a Vault database provider.
+        /// <param name="connectionFactory">
+        /// A connection factory that returns a Postgres DB connection.
         /// </param>
         /// <param name="tracer">The OpenTracing tracer instance to use. If this value is null the global tracer will
         /// be used instead.</param>
-        public PostgresDatabase(PostgresRollingCredentials rollingCredentials, ITracer tracer)
-            : this(rollingCredentials, null, tracer)
+        public PostgresDatabase(IConnectionFactory connectionFactory, ITracer tracer)
+            : this(connectionFactory, null, tracer)
         {
         }
 
         /// <summary>
         /// Creates command parameters for Postgres database reference.
         /// </summary>
-        /// <param name="rollingCredentials">
-        /// A connection string provider which uses rolling credentials such as
-        /// dynamic credentials from a Vault database provider.
+        /// <param name="connectionFactory">
+        /// A connection factory that returns a Postgres DB connection.
         /// </param>
         /// <param name="parameterMapper">The parameter mapper.</param>
         /// <param name="tracer">The OpenTracing tracer instance to use. If this value is null the global tracer will
         /// be used instead.</param>
-        public PostgresDatabase(PostgresRollingCredentials rollingCredentials, IParameterMapper parameterMapper, ITracer tracer)
-            : base(new SqlCommandManager(rollingCredentials, GetConnection, parameterMapper ?? new DefaultParameterMapper(), tracer, ExtractDbInfo), new PostgresDialect())
+        public PostgresDatabase(IConnectionFactory connectionFactory, IParameterMapper? parameterMapper, ITracer? tracer)
+            : base(new SqlCommandManager(connectionFactory, parameterMapper ?? new DefaultParameterMapper(), tracer), new PostgresDialect())
         {
         }
 
@@ -113,24 +106,20 @@ namespace TranceSql.Postgres
         /// The OpenTracing tracer instance to use. If this value is null the global tracer will
         /// be used instead.
         /// </param>
-        public PostgresDatabase(string connectionString, IParameterMapper parameterMapper, ITracer tracer)
-            : base(new SqlCommandManager(connectionString, GetConnection, parameterMapper ?? new DefaultParameterMapper(), tracer, ExtractDbInfo(connectionString)), new PostgresDialect())
+        public PostgresDatabase(string connectionString, IParameterMapper? parameterMapper, ITracer? tracer)
+            : base(
+                new SqlCommandManager(
+                    new PostgresConnectionFactory(connectionString),
+                    parameterMapper ?? new DefaultParameterMapper(),
+                    tracer),
+                new PostgresDialect())
         {
         }
-
-        private static DbInfo ExtractDbInfo(string connectionString)
-        {
-            var builder = new NpgsqlConnectionStringBuilder(connectionString);
-            return new DbInfo(builder.Host, builder.Database, builder.Username);
-        }
-
-        private static DbConnection GetConnection() => new NpgsqlConnection();
-
-
+        
         private class ListenObservable : IObservable<string>
         {
-            private readonly List<IObserver<string>> _observers = new List<IObserver<string>>();
-            private ReaderWriterLockSlim _lock = new ReaderWriterLockSlim();
+            private readonly List<IObserver<string>> _observers = new();
+            private readonly ReaderWriterLockSlim _lock = new();
             private bool _complete;
 
             public IDisposable Subscribe(IObserver<string> observer)
@@ -260,9 +249,8 @@ namespace TranceSql.Postgres
         /// </summary>
         public class PostgresEventListener : IDisposable
         {
-            private NpgsqlConnection _connection;
-            private readonly object _observableLocker = new object();
-            private ListenObservable _observable = new ListenObservable();
+            private readonly NpgsqlConnection _connection;
+            private readonly ListenObservable _observable = new();
 
             /// <summary>
             /// Initializes a new instance of the <see cref="PostgresEventListener"/> class.
@@ -316,8 +304,7 @@ namespace TranceSql.Postgres
             /// </summary>
             public void Dispose()
             {
-                _connection?.Dispose();
-                _connection = null;
+                _connection.Dispose();
             }
         }
 
@@ -330,7 +317,9 @@ namespace TranceSql.Postgres
         /// <returns>An event listener for the specified channel.</returns>
         public async Task<PostgresEventListener> CreateListenerAsync(string channel)
         {
-            var connection = await CreateConnectionAsync() as NpgsqlConnection;
+            var connection = await CreateConnectionAsync() as NpgsqlConnection ??
+                             throw new ListenerException("Null or invalid connection provided by factory.");
+            
             await connection.OpenAsync();
 
             var listener = new PostgresEventListener(connection);

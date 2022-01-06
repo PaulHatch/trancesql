@@ -4,13 +4,14 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Authors>Paul Hatcherian</Authors>
     <PackageTags>Trance TranceSQL SQL Database Client Oracle</PackageTags>
-    <Copyright>2019 Paul Hatcherian</Copyright>
+    <Copyright>2022 Paul Hatcherian</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://www.trancesql.com</PackageProjectUrl>
     <PackageIconUrl>https://www.trancesql.com/logo.png</PackageIconUrl>
     <PackageIcon>icon.png</PackageIcon>
     <RepositoryUrl>https://github.com/PaulHatch/trancesql.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
+    <Nullable>enable</Nullable>
     <Description>
       This is the Oracle driver for TranceSQL.
 
@@ -22,7 +23,7 @@ TranceSQL provides an easy to use, high performance data access interface for SQ
 
   <ItemGroup>
     <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="[2,)" />
-    <None Include="..\..\icon.png" Pack="true" PackagePath="\"/>
+    <None Include="..\..\icon.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <ItemGroup>

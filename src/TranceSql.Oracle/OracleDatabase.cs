@@ -1,10 +1,4 @@
 ﻿using OpenTracing;
-using Oracle.ManagedDataAccess.Client;
-using System;
-using System.Collections.Generic;
-using System.Data.Common;
-using System.Text;
-using System.Threading.Tasks;
 using TranceSql.Processing;
 
 namespace TranceSql.Oracle
@@ -15,58 +9,54 @@ namespace TranceSql.Oracle
     public class OracleDatabase : Database
     {
         /// <summary>
-        /// Creates command parameters for a Microsoft SQL Server database reference.
+        /// Creates command parameters for an Oracle database reference.
         /// </summary>
-        /// <param name="rollingCredentials">
-        /// A connection string provider which uses rolling credentials such as
-        /// dynamic credentials from a Vault database provider.
+        /// <param name="connectionFactory">
+        /// A connection factory that returns an Oracle DB connection.
         /// </param>
-        public OracleDatabase(OracleRollingCredentials rollingCredentials)
-            : this(rollingCredentials, null, null)
+        public OracleDatabase(IConnectionFactory connectionFactory)
+            : this(connectionFactory, null, null)
         {
         }
 
         /// <summary>
-        /// Creates command parameters for a Microsoft SQL Server database reference.
+        /// Creates command parameters for an Oracle database reference.
         /// </summary>
-        /// <param name="rollingCredentials">
-        /// A connection string provider which uses rolling credentials such as
-        /// dynamic credentials from a Vault database provider.
+        /// <param name="connectionFactory">
+        /// A connection factory that returns an Oracle DB connection.
         /// </param>
         /// <param name="parameterMapper">The parameter mapper.</param>
-        public OracleDatabase(OracleRollingCredentials rollingCredentials, IParameterMapper parameterMapper)
-            : this(rollingCredentials, parameterMapper, null)
+        public OracleDatabase(IConnectionFactory connectionFactory, IParameterMapper parameterMapper)
+            : this(connectionFactory, parameterMapper, null)
         {
         }
 
         /// <summary>
-        /// Creates command parameters for a Microsoft SQL Server database reference.
+        /// Creates command parameters for an Oracle database reference.
         /// </summary>
-        /// <param name="rollingCredentials">
-        /// A connection string provider which uses rolling credentials such as
-        /// dynamic credentials from a Vault database provider.
+        /// <param name="connectionFactory">
+        /// A connection factory that returns an Oracle DB connection.
         /// </param>
         /// <param name="tracer">
         /// The OpenTracing tracer instance to use. If this value is null the global tracer will
         /// be used instead.
         /// </param>
-        public OracleDatabase(OracleRollingCredentials rollingCredentials, ITracer tracer)
-            : this(rollingCredentials, null, tracer)
+        public OracleDatabase(IConnectionFactory connectionFactory, ITracer tracer)
+            : this(connectionFactory, null, tracer)
         {
         }
 
         /// <summary>
-        /// Creates command parameters for a Microsoft SQL Server database reference.
+        /// Creates command parameters for an Oracle database reference.
         /// </summary>
-        /// <param name="rollingCredentials">
-        /// A connection string provider which uses rolling credentials such as
-        /// dynamic credentials from a Vault database provider.
+        /// <param name="connectionFactory">
+        /// A connection factory that returns an Oracle DB connection.
         /// </param>
         /// <param name="parameterMapper">The parameter mapper.</param>
         /// <param name="tracer">The OpenTracing tracer instance to use. If this value is null the global tracer will
         /// be used instead.</param>
-        public OracleDatabase(OracleRollingCredentials rollingCredentials, IParameterMapper parameterMapper, ITracer tracer)
-            : base(new SqlCommandManager(rollingCredentials, GetConnection, parameterMapper ?? new DefaultParameterMapper(), tracer, ExtractDbInfo), new OracleDialect())
+        public OracleDatabase(IConnectionFactory connectionFactory, IParameterMapper? parameterMapper, ITracer? tracer)
+            : base(new SqlCommandManager(connectionFactory, parameterMapper ?? new DefaultParameterMapper(), tracer), new OracleDialect())
         {
         }
 
@@ -113,17 +103,9 @@ namespace TranceSql.Oracle
         /// The OpenTracing tracer instance to use. If this value is null the global tracer will
         /// be used instead.
         /// </param>
-        public OracleDatabase(string connectionString, IParameterMapper parameterMapper, ITracer tracer)
-            : base(new SqlCommandManager(connectionString, GetConnection, parameterMapper ?? new DefaultParameterMapper(), tracer, ExtractDbInfo(connectionString)), new OracleDialect())
+        public OracleDatabase(string connectionString, IParameterMapper? parameterMapper, ITracer? tracer)
+            : base(new SqlCommandManager(new OracleConnectionFactory(connectionString), parameterMapper ?? new DefaultParameterMapper(), tracer), new OracleDialect())
         {
         }
-
-        private static DbInfo ExtractDbInfo(string connectionString)
-        {
-            var builder = new OracleConnectionStringBuilder(connectionString);
-            return new DbInfo(builder.DataSource, null, null);
-        }
-
-        private static DbConnection GetConnection() => new OracleConnection();
     }
 }

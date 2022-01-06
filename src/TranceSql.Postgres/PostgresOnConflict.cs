@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 
 namespace TranceSql.Postgres
 {
@@ -12,7 +9,7 @@ namespace TranceSql.Postgres
     /// </summary>
     public class PostgresOnConflict : ISqlElement
     {
-        private ColumnCollection _target;
+        private ColumnCollection? _target;
 
         /// <summary>
         /// Specifies which conflicts ON CONFLICT takes the alternative action
@@ -29,7 +26,7 @@ namespace TranceSql.Postgres
         /// The operation to perform on conflict, if this value is null, a DO
         /// NOTHING operation will be specified.
         /// </summary>
-        public Update DoUpdate { get; set; }
+        public Update? DoUpdate { get; set; }
 
         void ISqlElement.Render(RenderContext context)
         {

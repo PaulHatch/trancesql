@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace TranceSql
 {
@@ -34,7 +33,7 @@ namespace TranceSql
     /// </summary>
     public class Union : IEnumerable<ISqlElement>, ISqlStatement
     {
-        private List<(ISqlElement element, UnionType type)> _statements = new List<(ISqlElement element, UnionType type)>();
+        private List<(ISqlElement element, UnionType type)> _statements = new();
         private UnionType? _nextType = null;
 
         /// <summary>

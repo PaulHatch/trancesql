@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 
 namespace TranceSql
 {
@@ -36,11 +33,11 @@ namespace TranceSql
             set => _values = value;
         }
 
-        private ColumnCollection _returning;
+        private ColumnCollection? _returning;
         /// <summary>
         /// Gets or sets the columns to return/output.
         /// </summary>
-        public ColumnCollection Returning
+        public ColumnCollection? Returning
         {
             get => _returning = _returning ?? new ColumnCollection();
             set => _returning = value;

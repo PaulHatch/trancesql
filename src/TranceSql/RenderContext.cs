@@ -12,9 +12,9 @@ namespace TranceSql
     {
         private int _index = 1;
 
-        private Dictionary<Value, string> _dynamicParameters = new Dictionary<Value, string>();
-        private Stack<RenderMode> _modes = new Stack<RenderMode>(new[] { RenderMode.Statment });
-        private StringBuilder _result = new StringBuilder();
+        private Dictionary<Value, string> _dynamicParameters = new();
+        private Stack<RenderMode> _modes = new(new[] { RenderMode.Statment });
+        private StringBuilder _result = new();
         private DeferContext _deferContext;
 
         /// <summary>
@@ -206,7 +206,7 @@ namespace TranceSql
         /// If true only the name of any column in the specified list will be used.
         /// </param>
         public void RenderDelimited(
-            IEnumerable<ISqlElement> items,
+            IEnumerable<ISqlElement>? items,
             string delimiter = ", ",
             bool columnNamesOnly = false)
         {

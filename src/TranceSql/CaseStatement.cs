@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace TranceSql
 {
@@ -12,7 +11,7 @@ namespace TranceSql
         /// <summary>
         /// Gets a list of cases for this clause.
         /// </summary>
-        public List<Case> Cases { get; } = new List<Case>();
+        public List<Case> Cases { get; } = new();
 
         /// <summary>
         /// Gets or sets the final default else value for this clause.

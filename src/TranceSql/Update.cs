@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 
 namespace TranceSql
 {
@@ -17,13 +14,13 @@ namespace TranceSql
         // - Restricts input to valid 
         // - Allows straightforward inspection and access to the table values by external code
 
-        private AnyOf<Table, Alias, ISqlElement> _table;
+        private AnyOf<Table, Alias, ISqlElement>? _table;
         /// <summary>
         /// Gets or sets the table to update. This can be set to a <see cref="Table"/>, a
         /// <see cref="Alias"/> of a table, or a <see cref="string"/> which will be converted
         /// to a <see cref="Table"/>.
         /// </summary>
-        public Any<Table, TableSchema, Alias, string> Table
+        public Any<Table, TableSchema, Alias, string>? Table
         {
             get
             {
@@ -57,7 +54,7 @@ namespace TranceSql
             }
         }
 
-        private AssignmentCollection _set;
+        private AssignmentCollection? _set;
         /// <summary>
         /// Gets or sets the assignment collection for this statement.
         /// </summary>
@@ -67,7 +64,7 @@ namespace TranceSql
             set => _set = value;
         }
 
-        private DataSourceCollection _from;
+        private DataSourceCollection? _from;
         /// <summary>
         /// Gets or sets table or tables for the from clause of this statement.
         /// </summary>
@@ -80,9 +77,9 @@ namespace TranceSql
         /// <summary>
         /// Gets or sets the condition filter this statement applies to.
         /// </summary>
-        public FilterClause Where { get; set; }
+        public FilterClause? Where { get; set; }
 
-        private ColumnCollection _returning;
+        private ColumnCollection? _returning;
         /// <summary>
         /// Gets or sets the columns to return/output.
         /// </summary>
@@ -107,7 +104,7 @@ namespace TranceSql
             using (context.EnterChildMode(RenderMode.Nested))
             {
                 context.Write("UPDATE ");
-                context.Render(Table.Value as ISqlElement);
+                context.Render(Table?.Value as ISqlElement ?? throw new InvalidCommandException("Missing table in update command."));
                 context.WriteLine();
                 context.Write("SET ");
                 context.RenderDelimited(_set);

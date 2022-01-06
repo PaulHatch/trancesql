@@ -4,7 +4,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
-using System.Text;
 
 namespace TranceSql.Postgres
 {
@@ -20,25 +19,23 @@ namespace TranceSql.Postgres
         /// JSONB when automatically assigning the parameter type for unknown values.
         /// If true JSONB will be used, if false, JSON will be used instead.
         /// </summary>
-        public bool UseJsonb { get; set;  } = true;
+        public bool UseJsonb { get; set; } = true;
 
         /// <summary>
         /// Gets the custom type map. When the type specified in the map is
         /// provided to a command, the corresponding type name or DB type will
         /// be used as the Postgres type name.
         /// </summary>
-        public CustomTypeMap CustomTypes { get; }
-            = new CustomTypeMap();
+        public CustomTypeMap CustomTypes { get; } = new();
 
         /// <summary>
         /// Map of custom Postgres types.
         /// </summary>
         public class CustomTypeMap : IEnumerable
         {
-            private readonly IDictionary<Type, (object type, Func<object, object> extractor)> _values
-                = new Dictionary<Type, (object type, Func<object, object> extractor)>();
+            private readonly Dictionary<Type, (object type, Func<object, object>? extractor)> _values = new();
 
-            internal bool TryGetMapping(Type type, out object dbType, out Func<object, object> extractor)
+            internal bool TryGetMapping(Type type, out object? dbType, out Func<object, object>? extractor)
             {
                 if (_values.ContainsKey(type))
                 {
@@ -65,7 +62,7 @@ namespace TranceSql.Postgres
             /// parameters.</param>
             /// <param name="extractor">A delegate which extracts the value to
             /// be assigned to the parameter.</param>
-            public void Add(Type type, string dbType, Func<object, object> extractor)
+            public void Add(Type type, string dbType, Func<object, object>? extractor)
             {
                 if (type == null)
                 {
@@ -95,7 +92,7 @@ namespace TranceSql.Postgres
             /// <param name="dbType">The Postgres type to assign to parameters.</param>
             /// <param name="extractor">A delegate which extracts the value to
             /// be assigned to parameters.</param>
-            public void Add(Type type, NpgsqlDbType dbType, Func<object, object> extractor)
+            public void Add(Type type, NpgsqlDbType dbType, Func<object, object>? extractor)
             {
                 if (type == null)
                 {
@@ -114,7 +111,7 @@ namespace TranceSql.Postgres
         /// </summary>
         /// <param name="parameter">The parameter to be set.</param>
         /// <param name="value">The input value.</param>
-        public override void SetValue(DbParameter parameter, object value)
+        public override void SetValue(DbParameter parameter, object? value)
         {
             if (value != null && parameter is NpgsqlParameter npgsqlParameter)
             {
@@ -125,7 +122,7 @@ namespace TranceSql.Postgres
                 {
                     base.SetValue(parameter, value);
                 }
-                else if (CustomTypes.TryGetMapping(valueType, out object dbType, out Func<object,object> extractor))
+                else if (CustomTypes.TryGetMapping(valueType, out var dbType, out var extractor))
                 {
                     switch (dbType)
                     {

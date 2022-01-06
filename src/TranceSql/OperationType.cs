@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TranceSql
+﻿namespace TranceSql
 {
     /// <summary>
     /// Represents the type of operation used between two sides of a filter clause.

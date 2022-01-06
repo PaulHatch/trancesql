@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TranceSql.Postgres
+﻿namespace TranceSql.Postgres
 {
     /// <summary>
     /// Provides extension helper methods for expression elements to create 
@@ -15,76 +11,76 @@ namespace TranceSql.Postgres
         /// <param name="value">The right side value of the expression.</param>
         /// <returns>JSON expression instance for the specified operation.</returns>
         public static JsonExpression JsonGet(this ExpressionElement element, ExpressionElement value)
-            => new JsonExpression(element, JsonExpressionOperator.Get, value);
+            => new(element, JsonExpressionOperator.Get, value);
 
         /// <summary>Creates '-&gt;&gt;' operation on this value.</summary>
         /// <param name="element">The left side value of the expression.</param>
         /// <param name="value">The right side value of the expression.</param>
         /// <returns>JSON expression instance for the specified operation.</returns>
         public static JsonExpression JsonGetAsText(this ExpressionElement element, ExpressionElement value)
-            => new JsonExpression(element, JsonExpressionOperator.GetAsText, value);
+            => new(element, JsonExpressionOperator.GetAsText, value);
 
         /// <summary>Creates '#&gt;' operation on this value.</summary>
         /// <param name="element">The left side value of the expression.</param>
         /// <param name="value">The right side value of the expression.</param>
         /// <returns>JSON expression instance for the specified operation.</returns>
         public static JsonExpression JsonGetByPath(this ExpressionElement element, ExpressionElement value)
-            => new JsonExpression(element, JsonExpressionOperator.GetByPath, value);
+            => new(element, JsonExpressionOperator.GetByPath, value);
 
         /// <summary>Creates '#&gt;&gt;' operation on this value.</summary>
         /// <param name="element">The left side value of the expression.</param>
         /// <param name="value">The right side value of the expression.</param>
         /// <returns>JSON expression instance for the specified operation.</returns>
         public static JsonExpression JsonGetByPathAsText(this ExpressionElement element, ExpressionElement value)
-            => new JsonExpression(element, JsonExpressionOperator.GetByPathAsText, value);
+            => new(element, JsonExpressionOperator.GetByPathAsText, value);
 
         /// <summary>Creates '@>' operation on this value.</summary>
         /// <param name="element">The left side value of the expression.</param>
         /// <param name="value">The right side value of the expression.</param>
         /// <returns>JSON expression instance for the specified operation.</returns>
         public static JsonCondition JsonLeftContainsRight(this ExpressionElement element, ExpressionElement value)
-            => new JsonCondition(element, JsonConditionOperator.LeftContainsRight, value);
+            => new(element, JsonConditionOperator.LeftContainsRight, value);
 
         /// <summary>Creates '&lt;@' operation on this value.</summary>
         /// <param name="element">The left side value of the expression.</param>
         /// <param name="value">The right side value of the expression.</param>
         /// <returns>JSON expression instance for the specified operation.</returns>
         public static JsonCondition JsonRightContainsLeft(this ExpressionElement element, ExpressionElement value)
-            => new JsonCondition(element, JsonConditionOperator.RightContainsLeft, value);
+            => new(element, JsonConditionOperator.RightContainsLeft, value);
 
         /// <summary>Creates '?' operation on this value.</summary>
         /// <param name="element">The left side value of the expression.</param>
         /// <param name="value">The right side value of the expression.</param>
         /// <returns>JSON expression instance for the specified operation.</returns>
         public static JsonCondition JsonContains(this ExpressionElement element, ExpressionElement value)
-            => new JsonCondition(element, JsonConditionOperator.Contains, value);
+            => new(element, JsonConditionOperator.Contains, value);
 
         /// <summary>Creates '?|' operation on this value.</summary>
         /// <param name="element">The left side value of the expression.</param>
         /// <param name="value">The right side value of the expression.</param>
         /// <returns>JSON expression instance for the specified operation.</returns>
         public static JsonCondition JsonContainsAny(this ExpressionElement element, ExpressionElement value)
-            => new JsonCondition(element, JsonConditionOperator.ContainsAny, value);
+            => new(element, JsonConditionOperator.ContainsAny, value);
 
         /// <summary>Creates '||' operation on this value.</summary>
         /// <param name="element">The left side value of the expression.</param>
         /// <param name="value">The right side value of the expression.</param>
         /// <returns>JSON expression instance for the specified operation.</returns>
         public static JsonExpression JsonConcat(this ExpressionElement element, ExpressionElement value)
-            => new JsonExpression(element, JsonExpressionOperator.Concat, value);
+            => new(element, JsonExpressionOperator.Concat, value);
 
         /// <summary>Creates '-' operation on this value.</summary>
         /// <param name="element">The left side value of the expression.</param>
         /// <param name="value">The right side value of the expression.</param>
         /// <returns>JSON expression instance for the specified operation.</returns>
         public static JsonExpression JsonDelete(this ExpressionElement element, ExpressionElement value)
-            => new JsonExpression(element, JsonExpressionOperator.Delete, value);
+            => new(element, JsonExpressionOperator.Delete, value);
 
         /// <summary>Creates '#-' operation on this value.</summary>
         /// <param name="element">The left side value of the expression.</param>
         /// <param name="value">The right side value of the expression.</param>
         /// <returns>JSON expression instance for the specified operation.</returns>
         public static JsonExpression JsonDeletePath(this ExpressionElement element, ExpressionElement value)
-            => new JsonExpression(element, JsonExpressionOperator.DeletePath, value);
+            => new(element, JsonExpressionOperator.DeletePath, value);
     }
 }

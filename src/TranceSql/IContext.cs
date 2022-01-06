@@ -22,6 +22,6 @@ namespace TranceSql
         /// Gets or sets the name of the operation to be used for recording
         /// tracing information.
         /// </summary>
-        string OperationName { get; set; }
+        string? OperationName { get; set; }
     }
 }

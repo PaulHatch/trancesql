@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace TranceSql
 {
@@ -22,7 +20,7 @@ namespace TranceSql
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
         public static implicit operator FilterClause(ConditionBase value)
-            => new FilterClause(value);
+            => new(value);
 
         /// <summary>Implements the AND operator.</summary>
         /// <param name="clause">The clause.</param>

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Common;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Data.Common;
 
 namespace TranceSql
 {
@@ -17,6 +12,6 @@ namespace TranceSql
         /// </summary>
         /// <param name="parameter">The parameter to set.</param>
         /// <param name="value">The input value.</param>
-        void SetValue(DbParameter parameter, object value);
+        void SetValue(DbParameter parameter, object? value);
     }
 }

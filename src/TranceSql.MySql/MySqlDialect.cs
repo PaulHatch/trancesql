@@ -87,18 +87,17 @@ namespace TranceSql.MySql
                 DbType = type
             };
 
-            switch (parameter.MySqlDbType)
+            switch (parameter.DbType)
             {
-                case MySqlDbType.Bool: return "BIT";
-                case MySqlDbType.Decimal: return "DECIMAL";
-                case MySqlDbType.Byte: return "TINYINT";
-                case MySqlDbType.Int16: return "SMALLINT";
-                case MySqlDbType.Int24: return "MEDIUMINT";
-                case MySqlDbType.Int32: return "INT";
-                case MySqlDbType.Int64: return "BIGINT";
-                case MySqlDbType.Float: return "FLOAT";
-                case MySqlDbType.Double: return "DOUBLE";
-                default: return parameter.MySqlDbType.ToString().ToUpper();
+                case DbType.Boolean: return "BIT";
+                case DbType.Decimal: return "DECIMAL";
+                case DbType.Byte: return "TINYINT";
+                case DbType.Int16: return "SMALLINT";
+                case DbType.Int32: return "INT";
+                case DbType.Int64: return "BIGINT";
+                case DbType.Single: return "FLOAT";
+                case DbType.Double: return "DOUBLE";
+                default: return parameter.DbType.ToString().ToUpper();
             }
         }
     }

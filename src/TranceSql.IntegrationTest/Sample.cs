@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TranceSql.IntegrationTest
+﻿namespace TranceSql.IntegrationTest
 {
     internal class Sample
     {

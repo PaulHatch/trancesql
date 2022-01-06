@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace TranceSql
 {
@@ -40,10 +38,10 @@ namespace TranceSql
 
         /// <summary>Converts list of to a columns type.</summary>
         /// <param name="columns">List of columns to convert.</param>
-        public static implicit operator Columns(List<Column> columns) => new Columns(columns);
+        public static implicit operator Columns(List<Column> columns) => new(columns);
 
         /// <summary>Converts list of to a columns type.</summary>
         /// <param name="columns">List of columns to convert.</param>
-        public static implicit operator Columns(Column[] columns) => new Columns(columns);
+        public static implicit operator Columns(Column[] columns) => new(columns);
     }
 }

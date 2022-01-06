@@ -20,7 +20,7 @@
         /// </summary>
         /// <param name="value">The value to create.</param>
         /// <returns>New AnyOf instance.</returns>
-        public static AnyOf<T1, T2, TRoot> Of(TRoot value) => new AnyOf<T1, T2, TRoot>(value);
+        public static AnyOf<T1, T2, TRoot> Of(TRoot value) => new(value);
 
         /// <summary>
         /// Gets the value for this instance.
@@ -35,7 +35,7 @@
         /// The result of the conversion.
         /// </returns>
         public static implicit operator AnyOf<T1, T2, TRoot>(T1 value)
-            => new AnyOf<T1, T2, TRoot>(value);
+            => new(value);
 
         /// <summary>
         /// Performs an implicit conversion from T2 to <see cref="AnyOf{T1, T2, TRoot}"/>.
@@ -45,7 +45,7 @@
         /// The result of the conversion.
         /// </returns>
         public static implicit operator AnyOf<T1, T2, TRoot>(T2 value)
-            => new AnyOf<T1, T2, TRoot>(value);
+            => new(value);
     }
 
     /// <summary>
@@ -70,7 +70,7 @@
         /// </summary>
         /// <param name="value">The value to create.</param>
         /// <returns>New AnyOf instance.</returns>
-        public static AnyOf<T1, T2, T3, TRoot> Of(TRoot value) => new AnyOf<T1, T2, T3, TRoot>(value);
+        public static AnyOf<T1, T2, T3, TRoot> Of(TRoot value) => new(value);
 
         /// <summary>
         /// Gets the value for this instance.
@@ -85,7 +85,7 @@
         /// The result of the conversion.
         /// </returns>
         public static implicit operator AnyOf<T1, T2, T3, TRoot>(T1 value)
-            => new AnyOf<T1, T2, T3, TRoot>(value);
+            => new(value);
 
         /// <summary>
         /// Performs an implicit conversion from T2 to <see cref="AnyOf{T1, T2, T3, TRoot}"/>.
@@ -95,7 +95,7 @@
         /// The result of the conversion.
         /// </returns>
         public static implicit operator AnyOf<T1, T2, T3, TRoot>(T2 value)
-            => new AnyOf<T1, T2, T3, TRoot>(value);
+            => new(value);
 
         /// <summary>
         /// Performs an implicit conversion from T2 to <see cref="AnyOf{T1, T2, T3, TRoot}"/>.
@@ -105,7 +105,7 @@
         /// The result of the conversion.
         /// </returns>
         public static implicit operator AnyOf<T1, T2, T3, TRoot>(T3 value)
-            => new AnyOf<T1, T2, T3, TRoot>(value);
+            => new(value);
     }
 
 }

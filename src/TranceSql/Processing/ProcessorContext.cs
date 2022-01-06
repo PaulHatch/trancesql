@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TranceSql.Processing
+﻿namespace TranceSql.Processing
 {
     internal class ProcessorContext
     {

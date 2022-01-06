@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,8 +9,7 @@ namespace TranceSql
     /// </summary>
     internal static class AsyncHelper
     {
-        private static readonly TaskFactory _taskFactory = new
-            TaskFactory(CancellationToken.None,
+        private static readonly TaskFactory _taskFactory = new(CancellationToken.None,
                         TaskCreationOptions.None,
                         TaskContinuationOptions.None,
                         TaskScheduler.Default);

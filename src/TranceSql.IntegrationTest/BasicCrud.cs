@@ -1,10 +1,5 @@
-using System;
 using System.Data;
-using System.Data.Common;
-using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
-using TranceSql.Sqlite;
 using Xunit;
 using Xunit.Abstractions;
 using static TranceSql.UsingStatic;

@@ -1,11 +1,7 @@
 ﻿using OpenTracing;
 using OpenTracing.Mock;
-using OpenTracing.Propagation;
-using OpenTracing.Util;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Threading;
 using TranceSql.MySql;
 using TranceSql.Oracle;
@@ -46,7 +42,7 @@ namespace TranceSql.IntegrationTest
 
             var dialect = Environment.GetEnvironmentVariable("DIALECT");
             var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
-            if (!Enum.TryParse<Dialect>(dialect, true, out _dialect))
+            if (!Enum.TryParse(dialect, true, out _dialect))
             {
                 Console.WriteLine($"Warning, could not resolve DIALECT={dialect} to known dialect.");
                 _dialect = Dialect.Sqlite;

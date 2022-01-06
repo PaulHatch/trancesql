@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
 
 namespace TranceSql.Processing
 {
@@ -18,13 +15,13 @@ namespace TranceSql.Processing
         /// <summary>
         /// The internal entity creation delegate library.
         /// </summary>
-        private static Dictionary<Type, Delegate> _creationDelegates = new Dictionary<Type, Delegate>();
-        private static readonly object _creationDelegatesLocker = new object();
+        private static Dictionary<Type, Delegate> _creationDelegates = new();
+        private static readonly object _creationDelegatesLocker = new();
 
         /// <summary>
         /// The custom binders registered for the application.
         /// </summary>
-        private static List<ICustomBinder> _customBinders = new List<ICustomBinder>();
+        private static List<ICustomBinder> _customBinders = new();
 
 
         // TODO: perhaps make this configurable per SQL manager instance at some point
@@ -181,7 +178,7 @@ namespace TranceSql.Processing
                 throw new ArgumentException("Cannot register entity creator for type '" + typeof(T).Name + "' because it is a simple type which will be cast directly from a result.", "T");
             }
 
-            if (!TryRegister<T>(() => createEntity))
+            if (!TryRegister(() => createEntity))
             {
                 throw new InvalidOperationException("The delegate library already contains a definition for the type '" + typeof(T).Name + "'. RegisterCustomEntityCreator must be called before the type has been bound.");
             }

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TranceSql
+﻿namespace TranceSql
 {
     /// <summary>
     /// Represents a table column name.
@@ -12,7 +8,7 @@ namespace TranceSql
         /// <summary>
         /// Gets an "ALL" column instance, e.g. "*".
         /// </summary>
-        public static Column All => new Column("*");
+        public static Column All => new("*");
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Column"/> class.
@@ -66,7 +62,7 @@ namespace TranceSql
         /// </summary>
         /// <param name="tableAlias">The table alias name.</param>
         /// <returns>A column for the specified table alias.</returns>
-        public Column Of(string tableAlias) => new Column(tableAlias, Name);
+        public Column Of(string tableAlias) => new(tableAlias, Name);
 
         void ISqlElement.Render(RenderContext context)
         {

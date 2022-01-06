@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 
 namespace TranceSql
@@ -18,7 +17,7 @@ namespace TranceSql
         public Condition(
             OperationType operationType,
             ISqlElement left,
-            ISqlElement right)
+            ISqlElement? right)
         {
             OperationType = operationType;
             Left = left;
@@ -33,12 +32,12 @@ namespace TranceSql
         /// <summary>
         /// Gets the left condition element.
         /// </summary>
-        public ISqlElement Left { get; }
+        public ISqlElement? Left { get; }
 
         /// <summary>
         /// Gets the right condition element.
         /// </summary>
-        public ISqlElement Right { get; }
+        public ISqlElement? Right { get; }
 
         // Both sides explicitly provided
 
@@ -51,7 +50,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition Equal(ISqlElement left, ISqlElement right)
-            => new Condition(OperationType.Equal, left, right);
+            => new(OperationType.Equal, left, right);
 
         /// <summary>
         /// Creates a new condition.
@@ -62,7 +61,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition NotEqual(ISqlElement left, ISqlElement right)
-            => new Condition(OperationType.NotEqual, left, right);
+            => new(OperationType.NotEqual, left, right);
 
         /// <summary>
         /// Creates a new condition.
@@ -73,7 +72,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition GreaterThan(ISqlElement left, ISqlElement right)
-            => new Condition(OperationType.GreaterThan, left, right);
+            => new(OperationType.GreaterThan, left, right);
 
         /// <summary>
         /// Creates a new condition.
@@ -84,7 +83,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition GreaterThanOrEqual(ISqlElement left, ISqlElement right)
-            => new Condition(OperationType.GreaterThanOrEqual, left, right);
+            => new(OperationType.GreaterThanOrEqual, left, right);
 
         /// <summary>
         /// Creates a new condition.
@@ -95,7 +94,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition LessThan(ISqlElement left, ISqlElement right)
-            => new Condition(OperationType.LessThan, left, right);
+            => new(OperationType.LessThan, left, right);
 
         /// <summary>
         /// Creates a new condition.
@@ -106,7 +105,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition LessThanOrEqual(ISqlElement left, ISqlElement right)
-            => new Condition(OperationType.LessThanOrEqual, left, right);
+            => new(OperationType.LessThanOrEqual, left, right);
 
         /// <summary>
         /// Creates a new condition.
@@ -116,7 +115,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition IsNull(ISqlElement element)
-            => new Condition(OperationType.IsNull, element, null);
+            => new(OperationType.IsNull, element, null);
 
         /// <summary>
         /// Creates a new condition.
@@ -126,7 +125,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition IsNotNull(ISqlElement element)
-            => new Condition(OperationType.IsNotNull, element, null);
+            => new(OperationType.IsNotNull, element, null);
 
 
         // Automatic column + value
@@ -140,7 +139,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition Equal(string column, object value)
-            => new Condition(OperationType.Equal, new Column(column), new Value(value));
+            => new(OperationType.Equal, new Column(column), new Value(value));
 
         /// <summary>
         /// Creates a new condition.
@@ -151,7 +150,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition NotEqual(string column, object value)
-            => new Condition(OperationType.NotEqual, new Column(column), new Value(value));
+            => new(OperationType.NotEqual, new Column(column), new Value(value));
 
         /// <summary>
         /// Creates a new condition.
@@ -162,7 +161,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition GreaterThan(string column, object value)
-            => new Condition(OperationType.GreaterThan, new Column(column), new Value(value));
+            => new(OperationType.GreaterThan, new Column(column), new Value(value));
 
         /// <summary>
         /// Creates a new condition.
@@ -173,7 +172,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition GreaterThanOrEqual(string column, object value)
-            => new Condition(OperationType.GreaterThanOrEqual, new Column(column), new Value(value));
+            => new(OperationType.GreaterThanOrEqual, new Column(column), new Value(value));
 
         /// <summary>
         /// Creates a new condition.
@@ -184,7 +183,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition LessThan(string column, object value)
-            => new Condition(OperationType.LessThan, new Column(column), new Value(value));
+            => new(OperationType.LessThan, new Column(column), new Value(value));
 
         /// <summary>
         /// Creates a new condition.
@@ -195,7 +194,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition LessThanOrEqual(string column, object value)
-            => new Condition(OperationType.LessThanOrEqual, new Column(column), new Value(value));
+            => new(OperationType.LessThanOrEqual, new Column(column), new Value(value));
 
         // Automatic column w/table + value
 
@@ -209,7 +208,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition Equal(string table, string column, object value)
-            => new Condition(OperationType.Equal, new Column(table, column), new Value(value));
+            => new(OperationType.Equal, new Column(table, column), new Value(value));
 
         /// <summary>
         /// Creates a new condition.
@@ -221,7 +220,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition NotEqual(string table, string column, object value)
-            => new Condition(OperationType.NotEqual, new Column(table, column), new Value(value));
+            => new(OperationType.NotEqual, new Column(table, column), new Value(value));
 
         /// <summary>
         /// Creates a new condition.
@@ -233,7 +232,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition GreaterThan(string table, string column, object value)
-            => new Condition(OperationType.GreaterThan, new Column(table, column), new Value(value));
+            => new(OperationType.GreaterThan, new Column(table, column), new Value(value));
 
         /// <summary>
         /// Creates a new condition.
@@ -245,7 +244,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition GreaterThanOrEqual(string table, string column, object value)
-            => new Condition(OperationType.GreaterThanOrEqual, new Column(table, column), new Value(value));
+            => new(OperationType.GreaterThanOrEqual, new Column(table, column), new Value(value));
 
         /// <summary>
         /// Creates a new condition.
@@ -257,7 +256,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition LessThan(string table, string column, object value)
-            => new Condition(OperationType.LessThan, new Column(table, column), new Value(value));
+            => new(OperationType.LessThan, new Column(table, column), new Value(value));
 
         /// <summary>
         /// Creates a new condition.
@@ -269,7 +268,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition LessThanOrEqual(string table, string column, object value)
-            => new Condition(OperationType.LessThanOrEqual, new Column(table, column), new Value(value));
+            => new(OperationType.LessThanOrEqual, new Column(table, column), new Value(value));
 
         // Automatic column + explicit parameter
 
@@ -282,7 +281,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition Equal(string column, ISqlElement value)
-            => new Condition(OperationType.Equal, new Column(column), value);
+            => new(OperationType.Equal, new Column(column), value);
 
         /// <summary>
         /// Creates a new condition.
@@ -293,7 +292,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition NotEqual(string column, ISqlElement value)
-            => new Condition(OperationType.NotEqual, new Column(column), value);
+            => new(OperationType.NotEqual, new Column(column), value);
 
         /// <summary>
         /// Creates a new condition.
@@ -304,7 +303,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition GreaterThan(string column, ISqlElement value)
-            => new Condition(OperationType.GreaterThan, new Column(column), value);
+            => new(OperationType.GreaterThan, new Column(column), value);
 
         /// <summary>
         /// Creates a new condition.
@@ -315,7 +314,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition GreaterThanOrEqual(string column, ISqlElement value)
-            => new Condition(OperationType.GreaterThanOrEqual, new Column(column), value);
+            => new(OperationType.GreaterThanOrEqual, new Column(column), value);
 
         /// <summary>
         /// Creates a new condition.
@@ -326,7 +325,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition LessThan(string column, ISqlElement value)
-            => new Condition(OperationType.LessThan, new Column(column), value);
+            => new(OperationType.LessThan, new Column(column), value);
 
         /// <summary>
         /// Creates a new condition.
@@ -337,7 +336,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition LessThanOrEqual(string column, ISqlElement value)
-            => new Condition(OperationType.LessThanOrEqual, new Column(column), value);
+            => new(OperationType.LessThanOrEqual, new Column(column), value);
 
         // Automatic column w/table + explicit parameter
 
@@ -351,7 +350,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition Equal(string table, string column, ISqlElement value)
-            => new Condition(OperationType.Equal, new Column(table, column), value);
+            => new(OperationType.Equal, new Column(table, column), value);
 
         /// <summary>
         /// Creates a new condition.
@@ -363,7 +362,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition NotEqual(string table, string column, ISqlElement value)
-            => new Condition(OperationType.NotEqual, new Column(table, column), value);
+            => new(OperationType.NotEqual, new Column(table, column), value);
 
         /// <summary>
         /// Creates a new condition.
@@ -375,7 +374,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition GreaterThan(string table, string column, ISqlElement value)
-            => new Condition(OperationType.GreaterThan, new Column(table, column), value);
+            => new(OperationType.GreaterThan, new Column(table, column), value);
 
         /// <summary>
         /// Creates a new condition.
@@ -387,7 +386,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition GreaterThanOrEqual(string table, string column, ISqlElement value)
-            => new Condition(OperationType.GreaterThanOrEqual, new Column(table, column), value);
+            => new(OperationType.GreaterThanOrEqual, new Column(table, column), value);
 
         /// <summary>
         /// Creates a new condition.
@@ -399,7 +398,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition LessThan(string table, string column, ISqlElement value)
-            => new Condition(OperationType.LessThan, new Column(table, column), value);
+            => new(OperationType.LessThan, new Column(table, column), value);
 
         /// <summary>
         /// Creates a new condition.
@@ -411,7 +410,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition LessThanOrEqual(string table, string column, ISqlElement value)
-            => new Condition(OperationType.LessThanOrEqual, new Column(table, column), value);
+            => new(OperationType.LessThanOrEqual, new Column(table, column), value);
 
         // exists and not exists in query
 
@@ -423,7 +422,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition Exists(Select query)
-            => new Condition(OperationType.Exists, query, null);
+            => new(OperationType.Exists, query, null);
 
         /// <summary>
         /// Creates a new condition.
@@ -433,7 +432,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition NotExists(Select query)
-            => new Condition(OperationType.NotExists, query, null);
+            => new(OperationType.NotExists, query, null);
 
         /// <summary>
         /// Creates a new condition.
@@ -444,7 +443,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition Like(string column, string value)
-            => new Condition(OperationType.Like, new Column(column), new Value(value));
+            => new(OperationType.Like, new Column(column), new Value(value));
 
         /// <summary>
         /// Creates a new condition.
@@ -456,7 +455,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition Like(string table, string column, string value)
-            => new Condition(OperationType.Like, new Column(table, column), new Value(value));
+            => new(OperationType.Like, new Column(table, column), new Value(value));
 
         /// <summary>
         /// Creates a new condition.
@@ -467,7 +466,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition Like(ISqlElement element, string value)
-            => new Condition(OperationType.Like, element, new Value(value));
+            => new(OperationType.Like, element, new Value(value));
 
         /// <summary>
         /// Creates a new condition.
@@ -478,7 +477,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition NotLike(string column, string value)
-            => new Condition(OperationType.NotLike, new Column(column), new Value(value));
+            => new(OperationType.NotLike, new Column(column), new Value(value));
 
         /// <summary>
         /// Creates a new condition.
@@ -490,7 +489,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition NotLike(string table, string column, string value)
-            => new Condition(OperationType.NotLike, new Column(table, column), new Value(value));
+            => new(OperationType.NotLike, new Column(table, column), new Value(value));
 
         /// <summary>
         /// Creates a new condition.
@@ -501,7 +500,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition NotLike(ISqlElement element, string value)
-            => new Condition(OperationType.NotLike, element, new Value(value));
+            => new(OperationType.NotLike, element, new Value(value));
 
         /// <summary>
         /// Creates a new condition.
@@ -512,7 +511,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition SimilarTo(string column, string value)
-            => new Condition(OperationType.SimilarTo, new Column(column), new Value(value));
+            => new(OperationType.SimilarTo, new Column(column), new Value(value));
 
         /// <summary>
         /// Creates a new condition.
@@ -524,7 +523,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition SimilarTo(string table, string column, string value)
-            => new Condition(OperationType.SimilarTo, new Column(table, column), new Value(value));
+            => new(OperationType.SimilarTo, new Column(table, column), new Value(value));
 
         /// <summary>
         /// Creates a new condition.
@@ -535,7 +534,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition SimilarTo(ISqlElement element, string value)
-            => new Condition(OperationType.SimilarTo, element, new Value(value));
+            => new(OperationType.SimilarTo, element, new Value(value));
 
         /// <summary>
         /// Creates a new condition.
@@ -546,7 +545,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition NotSimilarTo(string column, string value)
-            => new Condition(OperationType.NotSimilarTo, new Column(column), new Value(value));
+            => new(OperationType.NotSimilarTo, new Column(column), new Value(value));
 
         /// <summary>
         /// Creates a new condition.
@@ -558,7 +557,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition NotSimilarTo(string table, string column, string value)
-            => new Condition(OperationType.NotSimilarTo, new Column(table, column), new Value(value));
+            => new(OperationType.NotSimilarTo, new Column(table, column), new Value(value));
 
         /// <summary>
         /// Creates a new condition.
@@ -569,7 +568,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition NotSimilarTo(ISqlElement element, string value)
-            => new Condition(OperationType.NotSimilarTo, element, new Value(value));
+            => new(OperationType.NotSimilarTo, element, new Value(value));
 
         // in and not in query or values list
 
@@ -586,7 +585,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition In(ISqlElement column, Select query)
-            => new Condition(OperationType.In, column, query);
+            => new(OperationType.In, column, query);
 
         /// <summary>
         /// Creates a new condition.
@@ -597,7 +596,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition NotIn(ISqlElement column, Select query)
-            => new Condition(OperationType.NotIn, column, query);
+            => new(OperationType.NotIn, column, query);
 
         /// <summary>
         /// Creates a new condition.
@@ -608,7 +607,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition In(ISqlElement column, Values values)
-            => new Condition(OperationType.In, column, values);
+            => new(OperationType.In, column, values);
 
         /// <summary>
         /// Creates a new condition.
@@ -619,7 +618,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition In(ISqlElement column, params object[] values)
-            => new Condition(OperationType.In, column, new Values(values));
+            => new(OperationType.In, column, new Values(values));
 
         /// <summary>
         /// Creates a new condition.
@@ -630,7 +629,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition In(ISqlElement column, IEnumerable values)
-            => new Condition(OperationType.In, column, new Values(values));
+            => new(OperationType.In, column, new Values(values));
 
         /// <summary>
         /// Creates a new condition.
@@ -641,7 +640,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition NotIn(ISqlElement column, params object[] values)
-            => new Condition(OperationType.NotIn, column, new Values(values));
+            => new(OperationType.NotIn, column, new Values(values));
 
         /// <summary>
         /// Creates a new condition.
@@ -652,7 +651,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition NotIn(ISqlElement column, IEnumerable values)
-            => new Condition(OperationType.NotIn, column, new Values(values));
+            => new(OperationType.NotIn, column, new Values(values));
 
         // With multiple column
 
@@ -665,7 +664,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition In(IEnumerable<Column> columns, Select query)
-            => new Condition(OperationType.In, new Columns(columns), query);
+            => new(OperationType.In, new Columns(columns), query);
 
         /// <summary>
         /// Creates a new condition.
@@ -676,7 +675,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition NotIn(IEnumerable<Column> columns, Select query)
-            => new Condition(OperationType.NotIn, new Columns(columns), query);
+            => new(OperationType.NotIn, new Columns(columns), query);
 
         /// <summary>
         /// Creates a new condition.
@@ -687,7 +686,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition In(IEnumerable<Column> columns, Values values)
-            => new Condition(OperationType.In, new Columns(columns), values);
+            => new(OperationType.In, new Columns(columns), values);
 
         /// <summary>
         /// Creates a new condition.
@@ -698,7 +697,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition In(IEnumerable<Column> columns, params object[] values)
-            => new Condition(OperationType.In, new Columns(columns), new Values(values));
+            => new(OperationType.In, new Columns(columns), new Values(values));
 
         /// <summary>
         /// Creates a new condition.
@@ -709,7 +708,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition NotIn(IEnumerable<Column> columns, params object[] values)
-            => new Condition(OperationType.NotIn, new Columns(columns), new Values(values));
+            => new(OperationType.NotIn, new Columns(columns), new Values(values));
 
         // With string column name
 
@@ -722,7 +721,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition In(string column, Select query)
-            => new Condition(OperationType.In, new Column(column), query);
+            => new(OperationType.In, new Column(column), query);
 
         /// <summary>
         /// Creates a new condition.
@@ -733,7 +732,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition NotIn(string column, Select query)
-            => new Condition(OperationType.NotIn, new Column(column), query);
+            => new(OperationType.NotIn, new Column(column), query);
 
         /// <summary>
         /// Creates a new condition.
@@ -744,7 +743,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition In(string column, Values values)
-            => new Condition(OperationType.In, new Column(column), values);
+            => new(OperationType.In, new Column(column), values);
 
         /// <summary>
         /// Creates a new condition.
@@ -755,7 +754,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition In(string column, params object[] values)
-            => new Condition(OperationType.In, new Column(column), new Values(values));
+            => new(OperationType.In, new Column(column), new Values(values));
 
         /// <summary>
         /// Creates a new condition.
@@ -766,7 +765,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition NotIn(string column, params object[] values)
-            => new Condition(OperationType.NotIn, new Column(column), new Value(values));
+            => new(OperationType.NotIn, new Column(column), new Value(values));
 
         // With string column and table name
 
@@ -780,7 +779,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition In(string table, string column, Select query)
-            => new Condition(OperationType.In, new Column(table, column), query);
+            => new(OperationType.In, new Column(table, column), query);
 
         /// <summary>
         /// Creates a new condition.
@@ -792,7 +791,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition NotIn(string table, string column, Select query)
-            => new Condition(OperationType.NotIn, new Column(table, column), query);
+            => new(OperationType.NotIn, new Column(table, column), query);
 
         /// <summary>
         /// Creates a new condition.
@@ -804,7 +803,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition In(string table, string column, Values values)
-            => new Condition(OperationType.In, new Column(table, column), values);
+            => new(OperationType.In, new Column(table, column), values);
 
         /// <summary>
         /// Creates a new condition.
@@ -816,7 +815,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition In(string table, string column, params object[] values)
-            => new Condition(OperationType.In, new Column(table, column), new Values(values));
+            => new(OperationType.In, new Column(table, column), new Values(values));
 
         /// <summary>
         /// Creates a new condition.
@@ -828,7 +827,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition NotIn(string table, string column, params object[] values)
-            => new Condition(OperationType.NotIn, new Column(table, column), new Value(values));
+            => new(OperationType.NotIn, new Column(table, column), new Value(values));
 
         #endregion
 
@@ -842,7 +841,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition IsNull(string column)
-            => new Condition(OperationType.IsNull, new Column(column), null);
+            => new(OperationType.IsNull, new Column(column), null);
 
         /// <summary>
         /// Creates a new condition.
@@ -852,7 +851,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition IsNotNull(string column)
-            => new Condition(OperationType.IsNotNull, new Column(column), null);
+            => new(OperationType.IsNotNull, new Column(column), null);
 
         /// <summary>
         /// Creates a new condition.
@@ -863,7 +862,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition IsNull(string table, string column)
-            => new Condition(OperationType.IsNull, new Column(table, column), null);
+            => new(OperationType.IsNull, new Column(table, column), null);
 
         /// <summary>
         /// Creates a new condition.
@@ -874,7 +873,7 @@ namespace TranceSql
         /// A new condition.
         /// </returns>
         public static Condition IsNotNull(string table, string column)
-            => new Condition(OperationType.IsNotNull, new Column(table, column), null);
+            => new(OperationType.IsNotNull, new Column(table, column), null);
 
         #endregion
 

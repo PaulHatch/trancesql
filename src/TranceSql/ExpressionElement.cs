@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace TranceSql
 {
@@ -29,7 +27,7 @@ namespace TranceSql
         /// A new binary expression.
         /// </returns>
         public static BinaryExpression operator +(ExpressionElement left, ExpressionElement right)
-            => new BinaryExpression(left, ArithmeticOperator.Add, right);
+            => new(left, ArithmeticOperator.Add, right);
 
         /// <summary>
         /// Creates a binary expression from two expression elements.
@@ -40,7 +38,7 @@ namespace TranceSql
         /// A new binary expression.
         /// </returns>
         public static BinaryExpression operator -(ExpressionElement left, ExpressionElement right)
-            => new BinaryExpression(left, ArithmeticOperator.Subtract, right);
+            => new(left, ArithmeticOperator.Subtract, right);
 
         /// <summary>
         /// Creates a binary expression from two expression elements.
@@ -51,7 +49,7 @@ namespace TranceSql
         /// A new binary expression.
         /// </returns>
         public static BinaryExpression operator *(ExpressionElement left, ExpressionElement right)
-            => new BinaryExpression(left, ArithmeticOperator.Multiply, right);
+            => new(left, ArithmeticOperator.Multiply, right);
 
         /// <summary>
         /// Creates a binary expression from two expression elements.
@@ -62,7 +60,7 @@ namespace TranceSql
         /// A new binary expression.
         /// </returns>
         public static BinaryExpression operator /(ExpressionElement left, ExpressionElement right)
-            => new BinaryExpression(left, ArithmeticOperator.Divide, right);
+            => new(left, ArithmeticOperator.Divide, right);
 
         /// <summary>
         /// Creates a binary expression from two expression elements.
@@ -73,7 +71,7 @@ namespace TranceSql
         /// A new binary expression.
         /// </returns>
         public static BinaryExpression operator %(ExpressionElement left, ExpressionElement right)
-            => new BinaryExpression(left, ArithmeticOperator.Modulo, right);
+            => new(left, ArithmeticOperator.Modulo, right);
 
         /// <summary>
         /// Creates a bit shift expression from an expression element.
@@ -84,7 +82,7 @@ namespace TranceSql
         /// A new binary expression.
         /// </returns>
         public static BinaryExpression operator <<(ExpressionElement element, int places)
-            => new BinaryExpression(element, ArithmeticOperator.BitShiftLeft, new Constant(places));
+            => new(element, ArithmeticOperator.BitShiftLeft, new Constant(places));
 
         /// <summary>
         /// Creates a bit shift expression from an expression element.
@@ -95,7 +93,7 @@ namespace TranceSql
         /// A new binary expression.
         /// </returns>
         public static BinaryExpression operator >>(ExpressionElement element, int places)
-            => new BinaryExpression(element, ArithmeticOperator.BitShiftRight, new Constant(places));
+            => new(element, ArithmeticOperator.BitShiftRight, new Constant(places));
 
         // Comparison
 
@@ -108,7 +106,7 @@ namespace TranceSql
         /// A new condition expression.
         /// </returns>
         public static Condition operator >(ExpressionElement left, ExpressionElement right)
-            => new Condition(OperationType.GreaterThan, left, right);
+            => new(OperationType.GreaterThan, left, right);
 
         /// <summary>
         /// Creates a condition from two expression elements.
@@ -119,7 +117,7 @@ namespace TranceSql
         /// A new condition expression.
         /// </returns>
         public static Condition operator <(ExpressionElement left, ExpressionElement right)
-            => new Condition(OperationType.LessThan, left, right);
+            => new(OperationType.LessThan, left, right);
 
         /// <summary>
         /// Creates a condition from two expression elements.
@@ -130,7 +128,7 @@ namespace TranceSql
         /// A new condition expression.
         /// </returns>
         public static Condition operator >=(ExpressionElement left, ExpressionElement right)
-            => new Condition(OperationType.GreaterThanOrEqual, left, right);
+            => new(OperationType.GreaterThanOrEqual, left, right);
 
         /// <summary>
         /// Creates a condition from two expression elements.
@@ -141,7 +139,7 @@ namespace TranceSql
         /// A new condition expression.
         /// </returns>
         public static Condition operator <=(ExpressionElement left, ExpressionElement right)
-            => new Condition(OperationType.LessThanOrEqual, left, right);
+            => new(OperationType.LessThanOrEqual, left, right);
 
         /// <summary>
         /// Creates a condition from two expression elements.
@@ -152,7 +150,7 @@ namespace TranceSql
         /// A new condition expression.
         /// </returns>
         public static Condition operator ==(ExpressionElement left, ExpressionElement right)
-            => new Condition(OperationType.Equal, left, right);
+            => new(OperationType.Equal, left, right);
 
         /// <summary>
         /// Creates a condition from two expression elements.
@@ -163,7 +161,7 @@ namespace TranceSql
         /// A new condition expression.
         /// </returns>
         public static Condition operator !=(ExpressionElement left, ExpressionElement right)
-            => new Condition(OperationType.NotEqual, left, right);
+            => new(OperationType.NotEqual, left, right);
 
         /// <summary>
         /// Not implemented. This is included as an implementation rather than

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace TranceSql
+﻿namespace TranceSql
 {
     /// <summary>
     /// Represents a JOIN clause in a <see cref="Select"/> statement.

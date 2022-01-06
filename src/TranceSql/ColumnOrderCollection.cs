@@ -54,7 +54,7 @@
         /// The result of the conversion.
         /// </returns>
         public static implicit operator ColumnOrderCollection(string column)
-            => new ColumnOrderCollection { new Column(column) };
+            => new() { new Column(column) };
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="Column"/> to <see cref="ColumnOrderCollection"/>.
@@ -64,7 +64,7 @@
         /// The result of the conversion.
         /// </returns>
         public static implicit operator ColumnOrderCollection(Column column)
-            => new ColumnOrderCollection { column };
+            => new() { column };
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="Order"/> to <see cref="ColumnOrderCollection"/>.
@@ -74,6 +74,6 @@
         /// The result of the conversion.
         /// </returns>
         public static implicit operator ColumnOrderCollection(Order order)
-            => new ColumnOrderCollection { order };
+            => new() { order };
     }
 }

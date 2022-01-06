@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TranceSql
+﻿namespace TranceSql
 {
     /// <summary>
     /// Represents a value which can be one of multiple types. This
@@ -27,7 +23,7 @@ namespace TranceSql
         /// The result of the conversion.
         /// </returns>
         public static implicit operator Any<T1, T2>(T1 value)
-            => new Any<T1, T2>(value);
+            => new(value);
 
         /// <summary>
         /// Performs an implicit conversion from T2 to <see cref="Any{T1, T2}"/>.
@@ -37,7 +33,7 @@ namespace TranceSql
         /// The result of the conversion.
         /// </returns>
         public static implicit operator Any<T1, T2>(T2 value)
-            => new Any<T1, T2>(value);
+            => new(value);
     }
 
     /// <summary>
@@ -64,7 +60,7 @@ namespace TranceSql
         /// The result of the conversion.
         /// </returns>
         public static implicit operator Any<T1, T2, T3>(T1 value)
-            => new Any<T1, T2, T3>(value);
+            => new(value);
 
         /// <summary>
         /// Performs an implicit conversion from T2 to <see cref="Any{T1, T2, T3}"/>.
@@ -74,7 +70,7 @@ namespace TranceSql
         /// The result of the conversion.
         /// </returns>
         public static implicit operator Any<T1, T2, T3>(T2 value)
-            => new Any<T1, T2, T3>(value);
+            => new(value);
 
         /// <summary>
         /// Performs an implicit conversion from T3 to <see cref="Any{T1, T2, T3}"/>.
@@ -84,7 +80,7 @@ namespace TranceSql
         /// The result of the conversion.
         /// </returns>
         public static implicit operator Any<T1, T2, T3>(T3 value)
-            => new Any<T1, T2, T3>(value);
+            => new(value);
     }
 
     /// <summary>
@@ -112,7 +108,7 @@ namespace TranceSql
         /// The result of the conversion.
         /// </returns>
         public static implicit operator Any<T1, T2, T3, T4>(T1 value)
-            => new Any<T1, T2, T3, T4>(value);
+            => new(value);
 
         /// <summary>
         /// Performs an implicit conversion from T2 to <see cref="Any{T1, T2, T3, T4}"/>.
@@ -122,7 +118,7 @@ namespace TranceSql
         /// The result of the conversion.
         /// </returns>
         public static implicit operator Any<T1, T2, T3, T4>(T2 value)
-            => new Any<T1, T2, T3, T4>(value);
+            => new(value);
 
         /// <summary>
         /// Performs an implicit conversion from T3 to <see cref="Any{T1, T2, T3, T4}"/>.
@@ -132,7 +128,7 @@ namespace TranceSql
         /// The result of the conversion.
         /// </returns>
         public static implicit operator Any<T1, T2, T3, T4>(T3 value)
-            => new Any<T1, T2, T3, T4>(value);
+            => new(value);
 
         /// <summary>
         /// Performs an implicit conversion from T4 to <see cref="Any{T1, T2, T3, T4}"/>.
@@ -142,7 +138,7 @@ namespace TranceSql
         /// The result of the conversion.
         /// </returns>
         public static implicit operator Any<T1, T2, T3, T4>(T4 value)
-            => new Any<T1, T2, T3, T4>(value);
+            => new(value);
 
     }
 }

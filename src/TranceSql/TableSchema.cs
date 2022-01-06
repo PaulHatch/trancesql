@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Text;
+﻿using System.Runtime.CompilerServices;
 
 namespace TranceSql
 {
@@ -33,7 +30,7 @@ namespace TranceSql
         /// name of the property (caller) will be used instead.</param>
         /// <returns>A new column for this table.</returns>
         protected Column Column([CallerMemberName]string name = null)
-            => new Column(_table.Schema, _table.Name, name);
+            => new(_table.Schema, _table.Name, name);
 
         /// <summary>
         /// Creates an alias for this table.

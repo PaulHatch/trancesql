@@ -15,7 +15,7 @@ namespace TranceSql
     /// </summary>
     public class ValuesCollection : IEnumerable<ISqlElement>
     {
-        private List<ISqlElement> _values = new List<ISqlElement>();
+        private List<ISqlElement> _values = new();
 
         /// <summary>
         /// Gets a value indicating whether this instance is select.
@@ -98,7 +98,7 @@ namespace TranceSql
         /// The result of the conversion.
         /// </returns>
         public static implicit operator ValuesCollection(Select select) 
-            => new ValuesCollection { select };
+            => new() { select };
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="Values"/> to <see cref="ValuesCollection"/>.
@@ -108,7 +108,7 @@ namespace TranceSql
         /// The result of the conversion.
         /// </returns>
         public static implicit operator ValuesCollection(Values values)
-            => new ValuesCollection { values as ISqlElement };
+            => new() { values as ISqlElement };
 
         /// <summary>
         /// Returns an enumerator that iterates through the collection.

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TranceSql
+﻿namespace TranceSql
 {
     /// <summary>
     /// Represents a CREATE INDEX command.
@@ -28,7 +24,7 @@ namespace TranceSql
         /// <summary>
         /// Gets the columns for this index statement.
         /// </summary>
-        public ColumnOrderCollection Columns { get; } = new ColumnOrderCollection();
+        public ColumnOrderCollection Columns { get; } = new();
 
         void ISqlElement.Render(RenderContext context)
         {

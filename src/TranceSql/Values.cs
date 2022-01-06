@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace TranceSql
 {
@@ -13,7 +11,7 @@ namespace TranceSql
     /// </summary>
     public class Values : IEnumerable<ISqlElement>, ISqlElement
     {
-        List<ISqlElement> _data = new List<ISqlElement>();
+        List<ISqlElement> _data = new();
         
         /// <summary>
         /// Gets the data. (This property would be named "Values" but C# does not

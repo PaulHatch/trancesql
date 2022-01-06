@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace TranceSql
+﻿namespace TranceSql
 {
     /// <summary>
     /// Defines a <see cref="ISqlElement"/> which can be used as a condition.

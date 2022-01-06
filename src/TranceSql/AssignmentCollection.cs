@@ -88,6 +88,6 @@ namespace TranceSql
         /// The result of the conversion.
         /// </returns>
         public static implicit operator AssignmentCollection(Assignment assignment)
-            => new AssignmentCollection { assignment };
+            => new() { assignment };
     }
 }

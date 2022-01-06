@@ -74,7 +74,7 @@ namespace TranceSql
         /// The result of the conversion.
         /// </returns>
         public static implicit operator JoinCollection(Join join)
-            => new JoinCollection { join };
+            => new() { join };
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="Alias" /> to <see cref="JoinCollection" />.
@@ -84,6 +84,6 @@ namespace TranceSql
         /// The result of the conversion.
         /// </returns>
         public static implicit operator JoinCollection(Alias join)
-            => new JoinCollection { join };
+            => new() { join };
     }
 }

@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.Common;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TranceSql.Processing
 {
@@ -44,7 +40,7 @@ namespace TranceSql.Processing
 
                 if (reader.Read())
                 {
-                    return EntityMapping.ReadHelper.Get<TResult>(reader, 0, _defaultResult);
+                    return EntityMapping.ReadHelper.Get(reader, 0, _defaultResult);
                 }
                 else
                 {
@@ -55,7 +51,7 @@ namespace TranceSql.Processing
             {
                 // else if requested type must be mapped from the result row
 
-                var result = reader.CreateInstance<TResult>(_defaultResult);
+                var result = reader.CreateInstance(_defaultResult);
 
                 // Populate collections
                 if (_properties != null)

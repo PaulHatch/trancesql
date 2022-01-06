@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace TranceSql.Postgres
 {
@@ -21,7 +19,7 @@ namespace TranceSql.Postgres
         /// the value should be created if missing.</param>
         /// <returns>Function call with specified parameters.</returns>
         public static Function JsonbSet(ISqlElement target, JsonPath path, ISqlElement newValue, ISqlElement createMissing)
-            => new Function("jsonb_set", target, Constant.Unsafe($"{{{path}}}"), newValue, createMissing);
+            => new("jsonb_set", target, Constant.Unsafe($"{{{path}}}"), newValue, createMissing);
 
         /// <summary>
         /// Creates a jsonb_set function which update the target at the

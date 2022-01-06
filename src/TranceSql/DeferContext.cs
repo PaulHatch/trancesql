@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using TranceSql.Processing;
 
@@ -14,8 +11,8 @@ namespace TranceSql
     /// </summary>
     public sealed class DeferContext
     {
-        private CombineContext _context = new CombineContext();
-        private List<ProcessorContext> _processors = new List<ProcessorContext>();
+        private readonly CombineContext _context = new();
+        private readonly List<ProcessorContext> _processors = new();
 
         /// <summary>
         /// Gets the database for execution of commands within this context.

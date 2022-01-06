@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Authors>Paul Hatcherian</Authors>
     <PackageTags>Trance TranceSQL SQL Database Client</PackageTags>
-    <Copyright>2019 Paul Hatcherian</Copyright>
+    <Copyright>2022 Paul Hatcherian</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://www.trancesql.com</PackageProjectUrl>
     <PackageIconUrl>https://www.trancesql.com/logo.png</PackageIconUrl>

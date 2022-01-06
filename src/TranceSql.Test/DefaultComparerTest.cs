@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using TranceSql.Processing;
+﻿using TranceSql.Processing;
 using Xunit;
 
 namespace TranceSql.Test

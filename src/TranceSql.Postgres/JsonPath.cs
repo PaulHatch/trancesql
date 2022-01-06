@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TranceSql.Postgres
+﻿namespace TranceSql.Postgres
 {
     /// <summary>
     /// Represents a Postgres JSON path expression.
@@ -26,7 +22,7 @@ namespace TranceSql.Postgres
         /// <summary>Performs an implicit conversion from <see cref="System.String"/> to <see cref="JsonPath"/>.</summary>
         /// <param name="path">The path.</param>
         /// <returns>The result of the conversion.</returns>
-        public static implicit operator JsonPath(string path) => new JsonPath(path);
+        public static implicit operator JsonPath(string path) => new(path);
 
         /// <summary>Performs an implicit conversion from <see cref="System.String"/> to <see cref="JsonPath"/>.</summary>
         /// <param name="path">The path.</param>

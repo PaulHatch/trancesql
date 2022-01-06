@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 
 namespace TranceSql
 {
@@ -52,6 +51,6 @@ namespace TranceSql
         /// <returns>
         /// The result of the conversion.
         /// </returns>
-        public static implicit operator Table(string table) => new Table(table);
+        public static implicit operator Table(string table) => new(table);
     }
 }

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TranceSql.Processing
+﻿namespace TranceSql.Processing
 {
     /// <summary>
     /// Holds information about a specific database connection that will

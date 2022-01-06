@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TranceSql
+﻿namespace TranceSql
 {
     /// <summary>
     /// SQL language extensions.
@@ -16,7 +12,7 @@ namespace TranceSql
         /// <param name="alias">The alias name.</param>
         /// <returns>A new <see cref="Alias"/> instance</returns>
         public static Alias As(this ISqlElement element, string alias)
-            => new Alias(element, alias);
+            => new(element, alias);
 
         /// <summary>
         /// Creates an ascending <see cref="Order" /> instance using the specified element.
@@ -24,7 +20,7 @@ namespace TranceSql
         /// <param name="element">The element to order.</param>
         /// <returns>A new <see cref="Order"/> element.</returns>
         public static Order Asc(this ISqlElement element)
-            => new Order(element, Direction.Ascending);
+            => new(element, Direction.Ascending);
 
         /// <summary>
         /// Creates a descending <see cref="Order" /> instance using the specified element.
@@ -32,7 +28,7 @@ namespace TranceSql
         /// <param name="element">The element to order.</param>
         /// <returns>A new <see cref="Order"/> element.</returns>
         public static Order Desc(this ISqlElement element)
-            => new Order(element, Direction.Descending);
+            => new(element, Direction.Descending);
 
         /// <summary>
         /// Renders an element to a string using default debug settings.
