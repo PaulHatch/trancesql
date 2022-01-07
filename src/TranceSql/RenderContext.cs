@@ -35,7 +35,7 @@ namespace TranceSql
         /// Gets or sets the name of the operation to be used for recording
         /// tracing information.
         /// </summary>
-        public string OperationName { get; set; }
+        public string? OperationName { get; set; }
 
         /// <summary>
         /// Creates a child mode context which will return to the previous mode when disposed.

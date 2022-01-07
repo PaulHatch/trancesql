@@ -33,7 +33,7 @@ namespace TranceSql.MySql
         public string FormatString(string value) => $"'{value.Replace("'", "''")}'";
 
         /// <inheritdoc/>
-        public string FormatType(DbType type, IEnumerable<object> parameters)
+        public string FormatType(DbType type, IEnumerable<object>? parameters)
         {
             var typeName = GetType(type);
             if (parameters?.Any() == true)

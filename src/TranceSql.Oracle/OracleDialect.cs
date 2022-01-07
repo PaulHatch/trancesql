@@ -79,7 +79,7 @@ namespace TranceSql.Oracle
         /// <returns>
         /// The name of the parameter type for this dialect.
         /// </returns>
-        public string FormatType(DbType type, IEnumerable<object> parameters)
+        public string FormatType(DbType type, IEnumerable<object>? parameters)
         {
             var typeName = GetType(type);
             if (parameters?.Any() == true)

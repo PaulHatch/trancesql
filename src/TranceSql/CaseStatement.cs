@@ -16,7 +16,7 @@ namespace TranceSql
         /// <summary>
         /// Gets or sets the final default else value for this clause.
         /// </summary>
-        public ISqlElement Else { get; set; }
+        public ISqlElement? Else { get; set; }
 
         void ISqlElement.Render(RenderContext context)
         {

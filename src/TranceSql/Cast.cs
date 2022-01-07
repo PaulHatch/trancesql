@@ -56,7 +56,7 @@ namespace TranceSql
         /// <summary>
         /// Gets as raw type to be cast to.
         /// </summary>
-        public string AsRaw { get; }
+        public string? AsRaw { get; }
 
         /// <summary>
         /// Gets the DB type to be cast to.
@@ -66,7 +66,7 @@ namespace TranceSql
         /// <summary>
         /// Gets any parameters for the cast type, such as length of a char type.
         /// </summary>
-        public IEnumerable<object> AsParams { get; }
+        public IEnumerable<object>? AsParams { get; }
 
         void ISqlElement.Render(RenderContext context)
         {
@@ -77,9 +77,11 @@ namespace TranceSql
             {
                 context.Write(context.Dialect.FormatType(As.Value, AsParams));
             }
-            else
+            else if(AsRaw != null)
             {
                 context.Write(AsRaw);
+            } else {
+                throw new InvalidCommandException("Either 'As' or 'AsRaw' type name must be specified in cast expression.");
             }
 
             context.Write(')');

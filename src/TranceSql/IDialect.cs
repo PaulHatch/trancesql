@@ -71,6 +71,6 @@ namespace TranceSql
         /// <param name="type">The SQL type class.</param>
         /// <param name="parameters">The type parameters, if any.</param>
         /// <returns>The name of the parameter type for this dialect.</returns>
-        string FormatType(DbType type, IEnumerable<object> parameters);
+        string FormatType(DbType type, IEnumerable<object>? parameters);
     }
 }
