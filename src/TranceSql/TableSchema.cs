@@ -11,7 +11,7 @@ namespace TranceSql
     /// </summary>
     public abstract class TableSchema
     {
-        private Table _table;
+        private readonly Table _table;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TableSchema"/> class.
@@ -30,7 +30,7 @@ namespace TranceSql
         /// name of the property (caller) will be used instead.</param>
         /// <returns>A new column for this table.</returns>
         protected Column Column([CallerMemberName]string name = null)
-            => new(_table.Schema, _table.Name, name);
+            => new(_table.Schema, _table.Name, ColumnNameTransformer(name));
 
         /// <summary>
         /// Creates an alias for this table.
@@ -45,5 +45,7 @@ namespace TranceSql
         /// <param name="schema">The schema.</param>
         /// <returns>The result of the conversion.</returns>
         public static implicit operator Table(TableSchema schema) => schema._table;
+        
+        protected virtual string ColumnNameTransformer(string name) => name;
     }
 }
