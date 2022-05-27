@@ -20,14 +20,14 @@ namespace TranceSql.Processing
         /// </typeparam>
         /// <param name="reader">An open reader ready to be read to a list.</param>
         /// <returns>An enumerable list of instances of type 'T' created from the data reader.</returns>
-        public static IEnumerable<T> ReadData<T>(this DbDataReader reader)
+        public static IEnumerable<T?> ReadData<T>(this DbDataReader reader)
         {
             if (reader == null)
             {
-                throw new ArgumentNullException("reader");
+                throw new ArgumentNullException(nameof(reader));
             }
 
-            var result = new List<T>();
+            var result = new List<T?>();
 
             if (EntityMapping.IsSimpleType<T>())
             {
@@ -46,6 +46,7 @@ namespace TranceSql.Processing
                     result.Add(readEntity(reader, map));
                 }
             }
+
             return result;
         }
 
@@ -56,27 +57,33 @@ namespace TranceSql.Processing
         /// <typeparam name="TValue">The key type.</typeparam>
         /// <param name="reader">An open reader ready to be read to a list.</param>
         /// <returns>A dictionary created from the first two columns of the data reader.</returns>
-        public static IDictionary<TKey, TValue> CreateRowKeyedDictionary<TKey, TValue>(this DbDataReader reader)
+        public static IDictionary<TKey, TValue?> CreateRowKeyedDictionary<TKey, TValue>(this DbDataReader reader)
         {
             if (reader == null)
             {
-                throw new ArgumentNullException("reader");
+                throw new ArgumentNullException(nameof(reader));
             }
 
             if (!EntityMapping.IsSimpleType<TKey>())
             {
                 throw new ArgumentException("The key type of the dictionary must be a simple type.");
             }
+
             if (!EntityMapping.IsSimpleType<TValue>())
             {
                 throw new ArgumentException("The value type of the dictionary must be a simple type.");
             }
 
-            var result = new Dictionary<TKey, TValue>();
+            var result = new Dictionary<TKey, TValue?>();
 
             while (reader.Read())
             {
-                result.Add(EntityMapping.ReadHelper.Get<TKey>(reader, 0), EntityMapping.ReadHelper.Get<TValue>(reader, 1));
+                var key = EntityMapping.ReadHelper.Get<TKey>(reader, 0);
+                var value = EntityMapping.ReadHelper.Get<TValue>(reader, 1);
+                if (key is not null)
+                {
+                    result.Add(key, value);
+                }
             }
 
             return result;
@@ -90,7 +97,8 @@ namespace TranceSql.Processing
         /// <param name="columns">The columns to read. If this value is null, all columns will be returned.</param>
         /// <returns>A dictionary created from the first row of the data reader.</returns>
         /// <remarks>Keep in mind that result may contain DbNull type values.</remarks>
-        public static IDictionary<string, object> CreateColumnKeyedDictionary(this DbDataReader reader, IEnumerable<string> columns)
+        public static IDictionary<string, object>? CreateColumnKeyedDictionary(this DbDataReader reader,
+            IEnumerable<string>? columns)
         {
             if (reader.Read())
             {
@@ -114,7 +122,7 @@ namespace TranceSql.Processing
         /// <typeparam name="T">Data object type.</typeparam>
         /// <param name="reader">Instance of an open data reader.</param>
         /// <returns>A new instance of type 'T' initialized to the value of the current row.</returns>
-        public static T CreateInstance<T>(this DbDataReader reader)
+        public static T? CreateInstance<T>(this DbDataReader reader)
         {
             return reader.CreateInstance<T>(default);
         }
@@ -126,26 +134,24 @@ namespace TranceSql.Processing
         /// <param name="reader">Instance of an open data reader.</param>
         /// <param name="defaultResult">The default result if the data reader has no rows.</param>
         /// <returns>A new instance of type 'T' initialized to the value of the current row.</returns>
-        public static T CreateInstance<T>(this DbDataReader reader, T defaultResult)
+        public static T? CreateInstance<T>(this DbDataReader reader, T? defaultResult)
         {
             // if there are no rows return the specified default
-            if (reader.Read())
+            if (!reader.Read())
             {
-                if (EntityMapping.IsSimpleType<T>())
-                {
-                    return EntityMapping.ReadHelper.Get(reader, 0, defaultResult);
-                }
-                else
-                {
-                    var map = EntityMapping.MapDbReaderColumns(reader);
-                    var readEntity = EntityMapping.GetEntityFunc<T>();
+                return defaultResult;
+            }
 
-                    return readEntity(reader, map);
-                }
+            if (EntityMapping.IsSimpleType<T>())
+            {
+                return EntityMapping.ReadHelper.Get(reader, 0, defaultResult);
             }
             else
             {
-                return defaultResult;
+                var map = EntityMapping.MapDbReaderColumns(reader);
+                var readEntity = EntityMapping.GetEntityFunc<T>();
+
+                return readEntity(reader, map);
             }
         }
     }

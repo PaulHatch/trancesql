@@ -31,7 +31,7 @@ namespace TranceSql
         /// <summary>
         /// Gets or sets the table's schema.
         /// </summary>
-        public string Schema { get; set; }
+        public string? Schema { get; set; }
 
         /// <summary>
         /// Gets or sets the table name.

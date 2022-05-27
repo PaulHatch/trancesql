@@ -15,7 +15,7 @@ jobs:
           fetch-depth: 0
       - name: Version
         id: version
-        uses: paulhatch/semantic-version@v3.1.2
+        uses: paulhatch/semantic-version@v4.0.3
         with:
           format: "${major}.${minor}.${patch}"
           tag_prefix: ""

@@ -16,7 +16,7 @@
         /// <param name="schema">The column's table's schema.</param>
         /// <param name="table">The column's table.</param>
         /// <param name="name">The column name. A wildcard (*) is allowed.</param>
-        public Column(string schema, string table, string name)
+        public Column(string? schema, string table, string name)
             : this(table, name)
         {
             Schema = schema;
@@ -45,11 +45,11 @@
         /// <summary>
         /// Gets or sets the column's table's schema's name. This property is optional.
         /// </summary>
-        public string Schema { get; set; }
+        public string? Schema { get; set; }
         /// <summary>
         /// Gets or sets the column's table's name. This property is optional.
         /// </summary>
-        public string Table { get; set; }
+        public string? Table { get; set; }
 
         /// <summary>
         /// Gets or sets the column's name. This property is required. A wildcard (*) is

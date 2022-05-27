@@ -46,6 +46,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docker", "Docker", "{776DC2
 		Dockerfile = Dockerfile
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TranceSql.Benchmarks", "TranceSql.Benchmarks\TranceSql.Benchmarks.csproj", "{AAE01CCC-65D2-484A-B259-665A779B86BA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -88,6 +90,10 @@ Global
 		{69D16E44-F2BD-466B-9B83-2131B285201E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{69D16E44-F2BD-466B-9B83-2131B285201E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{69D16E44-F2BD-466B-9B83-2131B285201E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AAE01CCC-65D2-484A-B259-665A779B86BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AAE01CCC-65D2-484A-B259-665A779B86BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AAE01CCC-65D2-484A-B259-665A779B86BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AAE01CCC-65D2-484A-B259-665A779B86BA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

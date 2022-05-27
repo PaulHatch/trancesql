@@ -17,12 +17,19 @@
     </Description>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <LangVersion>latest</LangVersion>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="OpenTracing" Version="0.12.0" />
     <PackageReference Include="System.Data.Common" Version="4.3.0" />
     <None Include="..\..\icon.png" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+      <_Parameter1>$(AssemblyName).Test</_Parameter1>
+    </AssemblyAttribute>
   </ItemGroup>
 
 </Project>

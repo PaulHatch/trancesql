@@ -72,9 +72,9 @@ namespace TranceSql
         /// <param name="defaultValue">The default value.</param>
         /// <param name="properties">The properties.</param>
         /// <returns>Deferred&lt;TResult&gt;.</returns>
-        internal Deferred<TResult> ExecuteResultDeferred<TResult>(IContext context, object defaultValue, IEnumerable<PropertyInfo> properties)
+        internal Deferred<TResult> ExecuteResultDeferred<TResult>(IContext context, object? defaultValue, IEnumerable<PropertyInfo>? properties)
         {
-            return DeferCommand<TResult>(context, new SingleResultProcessor<TResult>((TResult)defaultValue, properties));
+            return DeferCommand<TResult>(context, new SingleResultProcessor<TResult>((TResult?)defaultValue, properties));
         }
 
         /// <summary>

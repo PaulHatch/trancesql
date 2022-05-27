@@ -5,23 +5,28 @@ using System.Reflection;
 
 namespace TranceSql.Processing
 {
+    internal class SingleResultProcessor
+    {
+        internal static readonly MethodInfo ReadData = typeof(EntityMappingHelper)
+            .GetMethod(nameof(EntityMappingHelper.ReadData))!;
+    }
+    
     /// <summary>
     /// Result processor that returns a single row as the specified type. Addition properties
     /// can be populated from additional result sets returned by the query.
     /// </summary>
     internal class SingleResultProcessor<TResult> : IResultProcessor
     {
-        private readonly TResult _defaultResult;
-        private readonly IEnumerable<PropertyInfo> _properties;
-        private static readonly MethodInfo readData = typeof(EntityMappingHelper).GetMethod("ReadData");
-
+        private readonly TResult? _defaultResult;
+        private readonly IEnumerable<PropertyInfo>? _properties;
+        
         /// <summary>
         /// Result processor that returns a single row as the specified type. Addition properties
         /// can be populated from additional result sets returned by the query.
         /// </summary>
         /// <param name="defaultResult">The default result to return if the result is empty.</param>
         /// <param name="properties">Additional properties to populate from subsequent result sets.</param>
-        public SingleResultProcessor(TResult defaultResult, IEnumerable<PropertyInfo> properties)
+        public SingleResultProcessor(TResult? defaultResult, IEnumerable<PropertyInfo>? properties)
         {
             _defaultResult = defaultResult;
             _properties = properties;
@@ -32,7 +37,7 @@ namespace TranceSql.Processing
         /// </summary>
         /// <param name="reader">An open data reader queued to the appropriate result set.</param>
         /// <returns>The result for this query.</returns>
-        public object Process(DbDataReader reader)
+        public object? Process(DbDataReader reader)
         {
             if (EntityMapping.IsSimpleType<TResult>())
             {
@@ -42,39 +47,35 @@ namespace TranceSql.Processing
                 {
                     return EntityMapping.ReadHelper.Get(reader, 0, _defaultResult);
                 }
-                else
-                {
-                    return _defaultResult;
-                }
+
+                return _defaultResult;
             }
-            else
+            
+            // else if requested type must be mapped from the result row
+
+            var result = reader.CreateInstance(_defaultResult);
+
+            // Populate collections
+            if (_properties != null)
             {
-                // else if requested type must be mapped from the result row
-
-                var result = reader.CreateInstance(_defaultResult);
-
-                // Populate collections
-                if (_properties != null)
+                foreach (var collection in _properties)
                 {
-                    foreach (var collection in _properties)
+                    if (!reader.NextResult())
                     {
-                        if (!reader.NextResult())
-                        {
-                            throw new InvalidOperationException("Not enough result sets were returned by the query to assign all the requested properties.");
-                        }
+                        throw new InvalidOperationException("Not enough result sets were returned by the query to assign all the requested properties.");
+                    }
 
-                        // Don't try to assign the result if it is null
-                        if (result != null)
-                        {
-                            var genericReadData = readData.MakeGenericMethod(collection.PropertyType.GetCollectionType());
-                            var collectionResults = genericReadData.Invoke(null, new object[] { reader });
-                            collection.SetValue(result, collectionResults);
-                        }
+                    // Don't try to assign the result if it is null
+                    if (result != null)
+                    {
+                        var genericReadData = SingleResultProcessor.ReadData.MakeGenericMethod(collection.PropertyType.GetCollectionType());
+                        var collectionResults = genericReadData.Invoke(null, new object[] { reader });
+                        collection.SetValue(result, collectionResults);
                     }
                 }
-
-                return result;
             }
+
+            return result;
         }
     }
 }

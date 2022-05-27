@@ -2,8 +2,8 @@
 {
     internal class ProcessorContext
     {
-        public IResultProcessor Processer { get; set; }
-        public IDeferred Deferred { get; set; }
+        public IResultProcessor? Processer { get; set; }
+        public IDeferred? Deferred { get; set; }
     }
 
 }

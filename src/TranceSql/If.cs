@@ -34,19 +34,19 @@
         /// <summary>
         /// Gets or sets the statement conditions.
         /// </summary>
-        public FilterClause Condition { get; set; }
+        public FilterClause? Condition { get; set; }
 
         /// <summary>
         /// Gets or sets the statement to execute, to specify multiple statements,
         /// use a <see cref="StatementBlock"/>.
         /// </summary>
-        public ISqlStatement Then { get; set; }
+        public ISqlStatement? Then { get; set; }
 
         /// <summary>
         /// Gets or sets the statement to execute if conditions are not met, to specify
         /// multiple statements, use a <see cref="StatementBlock"/>.
         /// </summary>
-        public ISqlStatement Else { get; set; }
+        public ISqlStatement? Else { get; set; }
 
         void ISqlElement.Render(RenderContext context)
         {
@@ -54,7 +54,7 @@
             context.Render(Condition?.Value ?? throw new InvalidCommandException("IF condition must not be null."));
             context.WriteLine(")");
             context.Render(Then ?? throw new InvalidCommandException("Then statement of IF condition must not be null."));
-            if (Else != null)
+            if (Else is not null)
             {
                 context.WriteLine();
                 context.WriteLine("ELSE");

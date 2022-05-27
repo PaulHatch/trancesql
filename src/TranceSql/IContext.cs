@@ -16,7 +16,7 @@ namespace TranceSql
         /// <summary>
         /// Gets the parameters for this context.
         /// </summary>
-        IReadOnlyDictionary<string, object> ParameterValues { get; }
+        IReadOnlyDictionary<string, object?> ParameterValues { get; }
 
         /// <summary>
         /// Gets or sets the name of the operation to be used for recording

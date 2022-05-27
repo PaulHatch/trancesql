@@ -16,13 +16,13 @@ namespace TranceSql
         /// Creates a new columns list.
         /// </summary>
         /// <param name="columns">Columns to include.</param>
-        public Columns(IEnumerable<Column> columns) => (Items as List<Column>).AddRange(columns);
+        public Columns(IEnumerable<Column> columns) => (Items as List<Column>)!.AddRange(columns);
 
         /// <summary>
         /// Creates a new columns list.
         /// </summary>
         /// <param name="columns">Columns to include.</param>
-        public Columns(params Column[] columns) => (Items as List<Column>).AddRange(columns);
+        public Columns(params Column[] columns) => (Items as List<Column>)!.AddRange(columns);
 
         /// <summary>
         /// Creates a new columns list.

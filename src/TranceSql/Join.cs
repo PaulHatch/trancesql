@@ -13,12 +13,12 @@
         /// <summary>
         /// Gets or sets the table.
         /// </summary>
-        private IDataSource Table { get; set; }
+        private IDataSource? Table { get; set; }
 
         /// <summary>
         /// Gets or sets the join condition.
         /// </summary>
-        public FilterClause On { get; set; }
+        public FilterClause? On { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Join"/> class.
@@ -35,11 +35,11 @@
         /// <param name="joinType">Type of the join to create.</param>
         /// <param name="table">The table to join.</param>
         /// <param name="on">The join condition.</param>
-        public Join(JoinType joinType, IDataSource table, ConditionBase on)
+        public Join(JoinType joinType, IDataSource table, ConditionBase? on)
         {
             JoinType = joinType;
             Table = table;
-            if (!(on is null))
+            if (on is not null)
             {
                 On = new FilterClause(on);
             }
@@ -71,13 +71,12 @@
                     break;
             }
 
-            context.Render(Table);
+            context.Render(Table ?? throw new InvalidCommandException("Join clause requires a table to be specified."));
 
-            if (On != null)
-            {
-                context.Write(" ON ");
-                context.Render(On.Value);
-            }
+            if (On is null) return;
+            
+            context.Write(" ON ");
+            context.Render(On.Value);
         }
 
         /// <summary>

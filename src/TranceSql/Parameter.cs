@@ -24,12 +24,12 @@ namespace TranceSql
         /// </summary>
         public Parameter() { }
 
-        private string _name;
+        private string? _name;
         /// <summary>
         /// Gets or sets the name. The name will automatically be prefixed with 
         /// '@' if none is present.
         /// </summary>
-        public string Name
+        public string? Name
         {
             get => _name;
             set
@@ -38,8 +38,13 @@ namespace TranceSql
                 {
                     throw new ArgumentNullException(nameof(value), "Parameter name cannot be null");
                 }
-                _name = value.StartsWith("@") ? value : $"@{value}";
+                _name = value?.StartsWith("@") == true ? value : $"@{value}";
             }
+        }
+
+        internal string GetRequiredName()
+        {
+            return _name ?? throw new InvalidCommandException("Name cannot be null");
         }
 
         void ISqlElement.Render(RenderContext context)

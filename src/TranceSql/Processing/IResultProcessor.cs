@@ -13,6 +13,6 @@ namespace TranceSql.Processing
         /// </summary>
         /// <param name="reader">An open data reader queued to the appropriate result set.</param>
         /// <returns>The result of the processor for this query.</returns>
-        object Process(DbDataReader reader);
+        object? Process(DbDataReader reader);
     }
 }

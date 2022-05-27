@@ -33,7 +33,7 @@ namespace TranceSql.Processing
             return String.Concat(value.Substring(0, 1).ToUpper(), value.Substring(1));
         }
 
-        public static Type GetCollectionType(this Type type)
+        public static Type? GetCollectionType(this Type type)
         {
             if (type.IsArray)
             {
@@ -56,20 +56,22 @@ namespace TranceSql.Processing
             {
                 // Give it another chance, try to exclude the conversion. This allows us to use
                 // "Expression<Func<T,Object>>" as a selector when we don't care about the return type.
-                if (propertySelector.Body.NodeType == ExpressionType.Convert &&
-                    propertySelector.Body.Type == typeof(object) &&
-                    propertySelector.Body is UnaryExpression)
+                if (propertySelector.Body.Type == typeof(object) &&
+                    propertySelector.Body is UnaryExpression
+                    {
+                        NodeType: ExpressionType.Convert,
+                        Operand: MemberExpression memberExpression
+                    })
                 {
-                    var unary = propertySelector.Body as UnaryExpression;
-                    expression = unary.Operand as MemberExpression;
+                    expression = memberExpression;
                 }
                 if (expression == null)
                 {
                     throw new ArgumentException("Expression must be a property selector");
                 }
             }
-            var property = expression.Member as PropertyInfo;
-            if (property == null)
+            
+            if (expression.Member is not PropertyInfo property)
             {
                 throw new ArgumentException("Selector expression must be select a property. (Members and other values are not allowed)");
             }

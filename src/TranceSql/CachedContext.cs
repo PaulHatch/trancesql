@@ -14,7 +14,7 @@ namespace TranceSql
         /// <param name="commandText">The command text.</param>
         /// <param name="operationName">Name of the operation to use for tracing.</param>
         /// <param name="parameterValues">The parameter values.</param>
-        private CachedContext(string commandText, string? operationName, IReadOnlyDictionary<string, object> parameterValues)
+        private CachedContext(string commandText, string? operationName, IReadOnlyDictionary<string, object?> parameterValues)
         {
             CommandText = commandText;
             ParameterValues = parameterValues;
@@ -39,7 +39,7 @@ namespace TranceSql
         /// <summary>
         /// Gets the parameters for this context.
         /// </summary>
-        public IReadOnlyDictionary<string, object> ParameterValues { get; }
+        public IReadOnlyDictionary<string, object?> ParameterValues { get; }
 
         /// <summary>
         /// Gets or sets the name of the operation to be used for recording
@@ -52,7 +52,7 @@ namespace TranceSql
         /// </summary>
         /// <param name="additionalParameters">The additional parameters.</param>
         /// <returns></returns>
-        public IContext WithParameters(IDictionary<string, object> additionalParameters)
+        public IContext WithParameters(IDictionary<string, object?> additionalParameters)
         {
             return new CachedContext(
                 CommandText,

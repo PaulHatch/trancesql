@@ -25,9 +25,9 @@ namespace TranceSql
             foreach (var item in Cases)
             {
                 Console.WriteLine(" WHEN ");
-                context.Render(item.When.Value);
+                context.Render(item.When?.Value ?? throw new InvalidCommandException("CASE statement must have a WHEN clause."));
                 Console.WriteLine(" THEN ");
-                context.Render(item.Then);
+                context.Render(item.Then ?? throw new InvalidCommandException("CASE statement must have a THEN clause."));
             }
 
             if (Else != null)
@@ -56,11 +56,11 @@ namespace TranceSql
         /// <summary>
         /// Gets or sets the when condition for this clause.
         /// </summary>
-        public FilterClause When { get; set; }
+        public FilterClause? When { get; set; }
 
         /// <summary>
         /// Gets or sets the value for this case.
         /// </summary>
-        public ISqlElement Then { get; set; }
+        public ISqlElement? Then { get; set; }
     }
 }

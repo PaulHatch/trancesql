@@ -37,7 +37,7 @@ namespace TranceSql
         public Function(string name, params ISqlElement[] parameters)
         {
             Name = name ?? throw new NullReferenceException(nameof(name));
-            (Parameters as List<ISqlElement>).AddRange(parameters);
+            (Parameters as List<ISqlElement>)!.AddRange(parameters);
         }
 
         void ISqlElement.Render(RenderContext context)

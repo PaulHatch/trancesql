@@ -10,7 +10,7 @@ namespace TranceSql
         /// <summary>
         /// Gets the argument for this value.
         /// </summary>
-        public object Argument { get; }
+        public object? Argument { get; }
 
         /// <summary>
         /// Invalid operation, SQL elements are not valid as values for dynamic

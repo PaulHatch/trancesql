@@ -22,7 +22,7 @@ namespace TranceSql.Processing
         /// <summary>Processes the command and generates a custom result.</summary>
         /// <param name="reader">An open data reader queued to the appropriate result set.</param>
         /// <returns>The result of the processor for this query.</returns>
-        public object Process(DbDataReader reader)
+        public object? Process(DbDataReader reader)
         {
             var map = EntityMapping.MapDbReaderColumns(reader);
             return _valueProvider(reader, map);

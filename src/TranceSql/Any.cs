@@ -8,12 +8,12 @@
     /// <typeparam name="T2">The second possible type.</typeparam>
     public class Any<T1, T2>
     {
-        private Any(object value) => Value = value;
+        private Any(object? value) => Value = value;
 
         /// <summary>
         /// Gets the value for this instance.
         /// </summary>
-        public object Value { get; }
+        public object? Value { get; }
 
         /// <summary>
         /// Performs an implicit conversion from T1 to <see cref="Any{T1, T2}"/>.
@@ -45,12 +45,12 @@
     /// <typeparam name="T3">The third possible type.</typeparam>
     public class Any<T1, T2, T3>
     {
-        private Any(object value) => Value = value;
+        private Any(object? value) => Value = value;
 
         /// <summary>
         /// Gets the value for this instance.
         /// </summary>
-        public object Value { get; }
+        public object? Value { get; }
 
         /// <summary>
         /// Performs an implicit conversion from T1 to <see cref="Any{T1, T2, T3}"/>.
@@ -93,12 +93,12 @@
     /// <typeparam name="T4">The fourth possible type.</typeparam>
     public class Any<T1, T2, T3, T4>
     {
-        private Any(object value) => Value = value;
+        private Any(object? value) => Value = value;
 
         /// <summary>
         /// Gets the value for this instance.
         /// </summary>
-        public object Value { get; }
+        public object? Value { get; }
 
         /// <summary>
         /// Performs an implicit conversion from T1 to <see cref="Any{T1, T2, T3, T4}"/>.

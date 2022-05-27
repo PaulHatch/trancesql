@@ -24,72 +24,73 @@ namespace TranceSql
         /// </summary>
         public bool Distinct { get; set; }
 
-        private ColumnCollection _columns;
+        private ColumnCollection? _columns;
 
         /// <summary>
         /// Gets or sets the collection of columns or other elements to select.
         /// </summary>
         public ColumnCollection Columns
         {
-            get => _columns = _columns ?? new ColumnCollection();
+            get => _columns ??= new ColumnCollection();
             set => _columns = value;
         }
 
         /// <summary>
         /// Gets or sets the table for a SELECT INTO statement.
         /// </summary>
-        public Table Into { get; set; }
+        public Table? Into { get; set; }
 
-        private DataSourceCollection _from;
+        private DataSourceCollection? _from;
+        
         /// <summary>
         /// Gets or sets table or tables for the from clause of this statement.
         /// </summary>
         public DataSourceCollection From
         {
-            get => _from = _from ?? new DataSourceCollection();
+            get => _from ??= new DataSourceCollection();
             set => _from = value;
         }
 
-        private JoinCollection _join;
+        private JoinCollection? _join;
         /// <summary>
         /// Gets or sets the join clauses for this statement.
         /// </summary>
         public JoinCollection Join
         {
-            get => _join = _join ?? new JoinCollection();
+            get => _join ??= new JoinCollection();
             set => _join = value;
         }
 
         /// <summary>
         /// Gets or sets the where condition for this statement.
         /// </summary>
-        public FilterClause Where { get; set; }
+        public FilterClause? Where { get; set; }
 
-        private ColumnOrderCollection _orderBy;
+        private ColumnOrderCollection? _orderBy;
         /// <summary>
         /// Gets or sets the order by clauses for this statement.
         /// </summary>
         public ColumnOrderCollection OrderBy
         {
-            get => _orderBy = _orderBy ?? new ColumnOrderCollection();
+            get => _orderBy ??= new ColumnOrderCollection();
             set => _orderBy = value;
         }
 
 
-        private ColumnCollection _groupBy;
+        private ColumnCollection? _groupBy;
         /// <summary>
         /// Gets or sets the group by clauses for this statement.
         /// </summary>
         public ColumnCollection GroupBy
         {
-            get => _groupBy = _groupBy ?? new ColumnCollection();
+            get => _groupBy ??= new ColumnCollection();
             set => _groupBy = value;
         }
 
         /// <summary>
         /// Gets or sets the having condition for this statement.
         /// </summary>
-        public FilterClause Having { get; set; }
+        public FilterClause? Having { get; set; }
 
         void ISqlElement.Render(RenderContext context)
         {
@@ -116,8 +117,6 @@ namespace TranceSql
                             context.WriteLine("SELECT *");
                             context.WriteLine("FROM (");
                             break;
-                        default:
-                            break;
                     }
                 }
 
@@ -136,15 +135,13 @@ namespace TranceSql
                         case LimitBehavior.Top:
                             context.Write($"TOP {Limit} ");
                             break;
-                        default:
-                            break;
                     }
                 }
 
                 // Write the columns
                 context.RenderDelimited(Columns);
 
-                string rowNumberName = null;
+                string? rowNumberName = null;
 
                 if (Limit.HasValue && context.Dialect.LimitBehavior == LimitBehavior.RowNum)
                 {
@@ -242,8 +239,6 @@ namespace TranceSql
                             context.WriteLine(")");
                             context.Write($"WHERE {rowNumberName ?? "RowNum"} <= {Limit}");
                             break;
-                        default:
-                            break;
                     }
                 }
             }
@@ -255,8 +250,6 @@ namespace TranceSql
                     break;
                 case RenderMode.Nested:
                     context.Write(')');
-                    break;
-                default:
                     break;
             }
         }

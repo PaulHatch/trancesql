@@ -10,26 +10,26 @@ namespace TranceSql
         /// <summary>
         /// Gets or sets the table to insert into.
         /// </summary>
-        public Table Into { get; set; }
+        public Table? Into { get; set; }
 
-        private ColumnCollection _columns;
+        private ColumnCollection? _columns;
         /// <summary>
         /// Gets or sets the insert columns.
         /// </summary>
         public ColumnCollection Columns
         {
-            get => _columns = _columns ?? new ColumnCollection();
+            get => _columns ??= new ColumnCollection();
             set => _columns = value;
         }
 
-        private ValuesCollection _values;
+        private ValuesCollection? _values;
         /// <summary>
         /// Gets or sets the values to be inserted. This value can be
         /// assigned a <see cref="Select"/> statement as well as values.
         /// </summary>
         public ValuesCollection Values
         {
-            get => _values = _values ?? new ValuesCollection();
+            get => _values ??= new ValuesCollection();
             set => _values = value;
         }
 
@@ -39,7 +39,7 @@ namespace TranceSql
         /// </summary>
         public ColumnCollection? Returning
         {
-            get => _returning = _returning ?? new ColumnCollection();
+            get => _returning ??= new ColumnCollection();
             set => _returning = value;
         }
 
@@ -58,7 +58,7 @@ namespace TranceSql
                 var hasColumns = _columns?.Any() == true;
 
                 context.Write("INSERT INTO ");
-                context.Render(Into);
+                context.Render(Into ?? throw new InvalidCommandException("No table was specified for the insert statement."));
 
                 if (hasColumns)
                 {
@@ -92,7 +92,7 @@ namespace TranceSql
                 }
                 else
                 {
-                    var cols = hasColumns ? (int?)_columns.Count : null; // # of columns
+                    var cols = hasColumns ? (int?)_columns!.Count : null; // # of columns
                     var valueIndex = 0; // track the offset for each value in the row
                     var first = true; // track if we're on the first value
                     var isClosed = true; // track if we left a parentheses open

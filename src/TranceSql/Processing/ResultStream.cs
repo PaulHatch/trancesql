@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data.Common;
 
 namespace TranceSql.Processing
@@ -39,10 +40,11 @@ namespace TranceSql.Processing
         private DbConnection _connection;
         private DbCommand _command;
         private DbDataReader _reader;
-        private IDictionary<string, int> _map;
+        private IDictionary<string, int>? _map;
 
         public ResultStreamEnumerator(IContext context, SqlCommandManager manager)
         {
+            Current = default!;
             _isSimpleType = EntityMapping.IsSimpleType<T>();
             _readEntity = _isSimpleType ? GetSimple : EntityMapping.GetEntityFunc<T>();
 
@@ -55,7 +57,7 @@ namespace TranceSql.Processing
             _reader = _command.ExecuteReader();
             _map = _isSimpleType ? null : EntityMapping.MapDbReaderColumns(_reader);
         }
-        
+
         private T GetSimple(DbDataReader reader, IDictionary<string, int> map)
         {
             var result = reader[0];
@@ -63,14 +65,13 @@ namespace TranceSql.Processing
             {
                 return match;
             }
-            else if (Convert.IsDBNull(result))
+
+            if (Convert.IsDBNull(result))
             {
-                return default;
+                return default!;
             }
-            else
-            {
-                return (T)Convert.ChangeType(result, typeof(T));
-            }
+
+            return (T) Convert.ChangeType(result, typeof(T));
         }
 
         /// <summary>
@@ -81,7 +82,7 @@ namespace TranceSql.Processing
         /// <summary>
         /// Gets the element in the collection at the current position of the enumerator.
         /// </summary>
-        object IEnumerator.Current => Current;
+        object IEnumerator.Current => Current ?? default!;
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting
@@ -102,12 +103,13 @@ namespace TranceSql.Processing
         /// </returns>
         public bool MoveNext()
         {
-            if (_reader.Read())
+            if (!_reader.Read())
             {
-                Current = _readEntity(_reader, _map);
-                return true;
+                return false;
             }
-            return false;
+
+            Current = _readEntity(_reader, _map ?? new Dictionary<string, int>());
+            return true;
         }
 
         /// <summary>
@@ -116,10 +118,10 @@ namespace TranceSql.Processing
         /// </summary>
         public void Reset()
         {
-            Current = default;
+            Current = default!;
             _reader?.Close();
             _command?.Cancel();
-            _reader = _command.ExecuteReader();
+            _reader = _command!.ExecuteReader();
             _map = _isSimpleType ? null : EntityMapping.MapDbReaderColumns(_reader);
         }
     }

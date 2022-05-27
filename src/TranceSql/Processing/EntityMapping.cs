@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
@@ -15,13 +16,14 @@ namespace TranceSql.Processing
         /// <summary>
         /// The internal entity creation delegate library.
         /// </summary>
-        private static Dictionary<Type, Delegate> _creationDelegates = new();
+        private static readonly Dictionary<Type, Delegate> _creationDelegates = new();
+
         private static readonly object _creationDelegatesLocker = new();
 
         /// <summary>
         /// The custom binders registered for the application.
         /// </summary>
-        private static List<ICustomBinder> _customBinders = new();
+        private static readonly List<ICustomBinder> _customBinders = new();
 
 
         // TODO: perhaps make this configurable per SQL manager instance at some point
@@ -32,7 +34,7 @@ namespace TranceSql.Processing
         /// very permissive comparer will be used which ignores underscores '_' and is case
         /// insensitive.
         /// </summary>
-        public static IEqualityComparer<string> ColumnPropertyComparer { get; set; }
+        public static IEqualityComparer<string>? ColumnPropertyComparer { get; set; }
             = DefaultCaseComparer.Comparer;
 
         /// <summary>
@@ -61,20 +63,24 @@ namespace TranceSql.Processing
                 // multiple columns with the same name get
                 result[reader.GetName(i)] = i;
             }
+
             return result;
         }
 
         internal static class ReadHelper
         {
-            private static MethodInfo _ordinalHelperMethod
-                = typeof(ReadHelper).GetMethod(nameof(Get), new[] { typeof(DbDataReader), typeof(int) });
+            private static readonly MethodInfo _ordinalHelperMethod
+                = typeof(ReadHelper).GetMethod(nameof(Get), new[] {typeof(DbDataReader), typeof(int)})!;
 
-            public static MethodInfo GetOrdinalHelperMethod(Type dataType) => _ordinalHelperMethod.MakeGenericMethod(dataType);
+            public static MethodInfo GetOrdinalHelperMethod(Type dataType) =>
+                _ordinalHelperMethod.MakeGenericMethod(dataType);
 
-            public static MethodInfo PropertyHelperMethod
-                = typeof(ReadHelper).GetMethod(nameof(Get), new[] { typeof(DbDataReader), typeof(IDictionary<string, int>), typeof(string) });
+            public static readonly MethodInfo PropertyHelperMethod
+                = typeof(ReadHelper).GetMethod(nameof(Get),
+                    new[] {typeof(DbDataReader), typeof(IDictionary<string, int>), typeof(string)})!;
 
-            public static MethodInfo GetPropertyHelperMethod(Type dataType) => PropertyHelperMethod.MakeGenericMethod(dataType);
+            public static MethodInfo GetPropertyHelperMethod(Type dataType) =>
+                PropertyHelperMethod.MakeGenericMethod(dataType);
 
             /// <summary>
             /// Helper method called from dynamically generated entity map function
@@ -96,7 +102,7 @@ namespace TranceSql.Processing
             /// to get the value to ensure that if a column does not exist the default value for the 
             /// property type is used rather than throwing an exception.
             /// </remarks>
-            public static T Get<T>(DbDataReader reader, IDictionary<string, int> columnMap, string column)
+            public static T? Get<T>(DbDataReader reader, IDictionary<string, int> columnMap, string column)
             {
                 if (columnMap.ContainsKey(column))
                 {
@@ -118,7 +124,7 @@ namespace TranceSql.Processing
             /// <param name="reader">Open DbDataReader instance to retrieve value from.</param>
             /// <param name="ordinal">Ordinal position of column to get.</param>
             /// <returns>Value of column or the default for the specified type if the column does not exist.</returns>
-            public static T Get<T>(DbDataReader reader, int ordinal) => Get<T>(reader, ordinal, default);
+            public static T? Get<T>(DbDataReader reader, int ordinal) => Get<T>(reader, ordinal, default);
 
             /// <summary>Helper method called from dynamically generated entity map function
             /// to return a value from a DbDataReader or the type default if the value
@@ -128,11 +134,12 @@ namespace TranceSql.Processing
             /// <param name="ordinal">Ordinal position of column to get.</param>
             /// <param name="defaultValue">Default value to use if the reader value is null.</param>
             /// <returns>Value of column or the default for the specified type if the column does not exist.</returns>
-            public static T Get<T>(DbDataReader reader, int ordinal, T defaultValue)
+            public static T? Get<T>(DbDataReader reader, int ordinal, T? defaultValue)
             {
                 if (reader.FieldCount <= ordinal)
                 {
-                    throw new IndexOutOfRangeException($"The data result for the query includes {reader.FieldCount} columns, which is not enough to populate the requested tuple fields.");
+                    throw new IndexOutOfRangeException(
+                        $"The data result for the query includes {reader.FieldCount} columns, which is not enough to populate the requested tuple fields.");
                 }
 
                 if (reader.IsDBNull(ordinal))
@@ -146,11 +153,11 @@ namespace TranceSql.Processing
                 {
                     if (fieldType == typeof(string))
                     {
-                        return (T)Enum.Parse(typeof(T), reader.GetString(ordinal));
+                        return (T) Enum.Parse(typeof(T), reader.GetString(ordinal));
                     }
                     else
                     {
-                        return (T)Enum.ToObject(typeof(T), reader.GetValue(ordinal));
+                        return (T) Enum.ToObject(typeof(T), reader.GetValue(ordinal));
                     }
                 }
 
@@ -175,12 +182,16 @@ namespace TranceSql.Processing
         {
             if (IsSimpleType<T>())
             {
-                throw new ArgumentException("Cannot register entity creator for type '" + typeof(T).Name + "' because it is a simple type which will be cast directly from a result.", "T");
+                throw new ArgumentException(
+                    "Cannot register entity creator for type '" + typeof(T).Name +
+                    "' because it is a simple type which will be cast directly from a result.", "T");
             }
 
             if (!TryRegister(() => createEntity))
             {
-                throw new InvalidOperationException("The delegate library already contains a definition for the type '" + typeof(T).Name + "'. RegisterCustomEntityCreator must be called before the type has been bound.");
+                throw new InvalidOperationException(
+                    "The delegate library already contains a definition for the type '" + typeof(T).Name +
+                    "'. RegisterCustomEntityCreator must be called before the type has been bound.");
             }
         }
 
@@ -232,31 +243,22 @@ namespace TranceSql.Processing
         internal static CreateEntity<T> GetEntityFunc<T>()
         {
             // Ensure this type is registered
-            TryRegister(() =>
-            {
-                if (IsValueTuple(typeof(T)))
-                {
-                    return CreateTupleFunc<T>();
-                }
-                else
-                {
-                    return CreateEntityFunc<T>();
-                }
-            });
-            return (CreateEntity<T>)_creationDelegates[typeof(T)];
+            TryRegister(() => IsValueTuple(typeof(T)) ? CreateTupleFunc<T>() : CreateEntityFunc<T>());
+            return (CreateEntity<T>) _creationDelegates[typeof(T)];
         }
 
         private static CreateEntity<T> CreateTupleFunc<T>()
         {
             var readerParam = Expression.Parameter(typeof(DbDataReader), "r");
             var mapParam = Expression.Parameter(typeof(IDictionary<string, int>), "m");
-            var readMethod = typeof(DbDataReader).GetMethod("get_Item", new[] { typeof(int) });
+            var readMethod = typeof(DbDataReader).GetMethod("get_Item", new[] {typeof(int)});
 
 
             var tupleType = typeof(T);
             var newTuple = CreateTupleInitExpression(readerParam, readMethod, tupleType);
 
-            return Expression.Lambda<CreateEntity<T>>(newTuple, new ParameterExpression[] { readerParam, mapParam }).Compile();
+            return Expression.Lambda<CreateEntity<T>>(newTuple, readerParam, mapParam)
+                .Compile();
         }
 
         private static Expression CreateTupleInitExpression(
@@ -273,23 +275,20 @@ namespace TranceSql.Processing
                 {
                     return CreateTupleInitExpression(readerParam, readMethod, type, i + offset);
                 }
-                else
-                {
-                    // default property mapping, first make a generic version of the helper method call
-                    var ordinalHelper = ReadHelper.GetOrdinalHelperMethod(type);
-                    // create a call to the ReadHelper.Get<Type>(reader, original)
-                    var getValue = Expression.Call(ordinalHelper, readerParam, Expression.Constant(i + offset));
-                    // cast the result of the ReadHelper.Get call to the property type
-                    return Expression.Convert(getValue, type);
-                }
+
+                // default property mapping, first make a generic version of the helper method call
+                var ordinalHelper = ReadHelper.GetOrdinalHelperMethod(type);
+                // create a call to the ReadHelper.Get<Type>(reader, original)
+                var getValue = Expression.Call(ordinalHelper, readerParam, Expression.Constant(i + offset));
+                // cast the result of the ReadHelper.Get call to the property type
+                return Expression.Convert(getValue, type);
             });
 
             var newTuple = Expression.New(ctor, getExpressions);
             return newTuple;
         }
 
-        private static Type[] _valueTuples = new[]
-        {
+        private static readonly Type[] _valueTuples = {
             typeof(ValueTuple<>),
             typeof(ValueTuple<,>),
             typeof(ValueTuple<,,>),
@@ -332,7 +331,8 @@ namespace TranceSql.Processing
 
             if (!constructors.Any())
             {
-                throw new ArgumentException($"Type {type.Name} does not define a constructor and cannot be created dynamically by TranceSQL's dynamic mapping.");
+                throw new ArgumentException(
+                    $"Type {type.Name} does not define a constructor and cannot be created dynamically by TranceSQL's dynamic mapping.");
             }
 
             var emptyConstructorInfo = constructors.FirstOrDefault(c => !c.GetParameters().Any());
@@ -344,7 +344,8 @@ namespace TranceSql.Processing
             {
                 if (constructors.Count() != 1)
                 {
-                    throw new ArgumentException($"Type {type.Name} constructor is ambiguous, more than one constructor requiring arguments exists. Please provide a type with either a single constructor or a parameterless constructor. Alternatively, the default global {nameof(EntityMapping)}.{nameof(EntityMapping.ConstructorResolver)} method may be replace by one which knowns how to choose the correct constructor for your application.");
+                    throw new ArgumentException(
+                        $"Type {type.Name} constructor is ambiguous, more than one constructor requiring arguments exists. Please provide a type with either a single constructor or a parameterless constructor. Alternatively, the default global {nameof(EntityMapping)}.{nameof(EntityMapping.ConstructorResolver)} method may be replace by one which knowns how to choose the correct constructor for your application.");
                 }
 
                 return constructors.Single();
@@ -362,11 +363,11 @@ namespace TranceSql.Processing
         /// A function delegate which returns an instance of the specified type from a
         /// DB reader data row.
         /// </returns>
-        private static CreateEntity<T> CreateEntityFunc<T>(IEnumerable<string> propertyFilter = null)
+        private static CreateEntity<T> CreateEntityFunc<T>(IEnumerable<string>? propertyFilter = null)
         {
             var readerParam = Expression.Parameter(typeof(DbDataReader), "r");
             var mapParam = Expression.Parameter(typeof(IDictionary<string, int>), "m");
-            var readMethod = typeof(DbDataReader).GetMethod("get_Item", new[] { typeof(string) });
+            var readMethod = typeof(DbDataReader).GetMethod("get_Item", new[] {typeof(string)});
 
             // set up constructor
             NewExpression constructorExpression;
@@ -384,7 +385,8 @@ namespace TranceSql.Processing
                 {
                     // map constructor arguments to the SQL results
                     var helperMethodInfo = ReadHelper.GetPropertyHelperMethod(parameter.ParameterType);
-                    Expression getValue = Expression.Call(helperMethodInfo, readerParam, mapParam, Expression.Constant(parameter.Name.ToCamelCase()));
+                    Expression getValue = Expression.Call(helperMethodInfo, readerParam, mapParam,
+                        Expression.Constant(parameter.Name.ToCamelCase()));
 
                     constructorArguments.Add(Expression.Convert(getValue, parameter.ParameterType));
                 }
@@ -392,14 +394,41 @@ namespace TranceSql.Processing
                 constructorExpression = Expression.New(constructorInfo, constructorArguments.ToArray());
             }
 
+            // supported collection types--can be initialize with collection initialization if "set" is not supported
+            var collectionTypes = new[]
+                {typeof(IList<>), typeof(List<>), typeof(IDictionary<,>), typeof(Dictionary<,>)};
+
             // add public properties as bindings for class initialization
             var bindings = new List<MemberBinding>();
-            var properties = typeof(T).GetAllProperties().Where(p => p.CanWrite && PropertyFilter(p));
+            var properties = typeof(T)
+                .GetAllProperties()
+                .Where(p =>
+                {
+                    if (!PropertyFilter(p))
+                    {
+                        // exclude filtered properties
+                        return false;
+                    }
+                    
+                    if (p.CanWrite)
+                    {
+                        // writable properties
+                        return true;    
+                    }
+
+                    // include collection initialization properties
+                    return p.CanRead &&
+                           PropertyFilter(p) &&
+                           p.PropertyType.IsGenericType &&
+                           collectionTypes.Contains(p.PropertyType.GetGenericTypeDefinition());
+
+                });
 
             // filter properties if filter was provided
             if (propertyFilter != null)
             {
-                properties = properties.Where(p => propertyFilter.Any(f => f.Equals(p.Name, StringComparison.OrdinalIgnoreCase)));
+                properties = properties.Where(p =>
+                    propertyFilter.Any(f => f.Equals(p.Name, StringComparison.OrdinalIgnoreCase)));
             }
 
             foreach (var property in properties)
@@ -411,28 +440,48 @@ namespace TranceSql.Processing
                     //   Property =  customBinder.MapValue(property, reader[property.Name])
 
                     var readerColumn = Expression.Property(readerParam, "Item", Expression.Constant(property.Name));
-                    var mapMethod = typeof(ICustomBinder).GetMethod(nameof(ICustomBinder.MapValue));
-                    var callCustomBinder = Expression.Call(Expression.Constant(customBinder), mapMethod, Expression.Constant(property), readerColumn);
+                    var mapMethod = typeof(ICustomBinder).GetMethod(nameof(ICustomBinder.MapValue)) ?? throw new MissingMethodException(nameof(ICustomBinder.MapValue));
+                    var callCustomBinder = Expression.Call(
+                        Expression.Constant(customBinder), 
+                        mapMethod,
+                        Expression.Constant(property), 
+                        readerColumn);
 
                     // add a binding for this property to the expression
-                    bindings.Add(Expression.Bind(property, Expression.Convert(callCustomBinder, property.PropertyType)));
+                    bindings.Add(Expression.Bind(property,
+                        Expression.Convert(callCustomBinder, property.PropertyType)));
                 }
-                else
+                else if (property.CanWrite)
                 {
                     // default property mapping, first make a generic version of the helper method call
                     var helperMethodInfo = ReadHelper.GetPropertyHelperMethod(property.PropertyType);
                     // create a call to the ReadHelper.Get<PropertyType>(reader, columnMap, column)
-                    var getValue = Expression.Call(helperMethodInfo, readerParam, mapParam, Expression.Constant(property.Name));
+                    var getValue = Expression.Call(helperMethodInfo, readerParam, mapParam,
+                        Expression.Constant(property.Name));
                     // cast the result of the ReadHelper.Get call to the property type
                     var convertedValue = Expression.Convert(getValue, property.PropertyType);
                     bindings.Add(Expression.Bind(property, convertedValue));
                 }
+                else
+                {
+                    // collection initialization properties
+                    
+                }
             }
 
+            //foreach (var property in collectionProperties)
+            //{
+                
+            //}
+
             var memberInit = Expression.MemberInit(constructorExpression, bindings);
-            return Expression.Lambda<CreateEntity<T>>(memberInit, new ParameterExpression[] { readerParam, mapParam }).Compile();
+            return Expression.Lambda<CreateEntity<T>>(memberInit, readerParam, mapParam)
+                .Compile();
         }
 
+        private static readonly MethodInfo _isDbNull =
+            typeof(Convert).GetMethod(nameof(Convert.IsDBNull), BindingFlags.Public | BindingFlags.Static)!;
+        
         /// <summary>
         /// Returns an expression which converts the specified raw value to the specified
         /// type, if the type specified supports a null value, the result will include a
@@ -447,8 +496,7 @@ namespace TranceSql.Processing
             {
                 // T is nullable type:
                 // Convert.IsDbNull(rawValue) ? (T)null : (T)rawValue
-                var isDbNull = typeof(Convert).GetMethod(nameof(Convert.IsDBNull), BindingFlags.Public | BindingFlags.Static);
-                var test = Expression.Call(isDbNull, rawValue);
+                var test = Expression.Call(_isDbNull, rawValue);
                 return Expression.Condition(test,
                     Expression.TypeAs(Expression.Constant(null), type),
                     Expression.TypeAs(rawValue, type));
@@ -470,10 +518,13 @@ namespace TranceSql.Processing
         }
 
         /// <summary>List of types which convert directly from DB types.</summary>
-        private static readonly Type[] simpleTypes = new[] {
-            typeof(byte), typeof(bool), typeof(short), typeof(int), typeof(long), typeof(float),typeof(double),typeof(decimal),
-            typeof(byte?), typeof(bool?), typeof(short?), typeof(int?), typeof(long?), typeof(float?),typeof(double?),typeof(decimal?),
-            typeof(DateTime),typeof(DateTime?),typeof(DateTimeOffset),typeof(DateTimeOffset?),typeof(string), typeof(Guid), typeof(Guid?),
+        private static readonly Type[] _simpleTypes = {
+            typeof(byte), typeof(bool), typeof(short), typeof(int), typeof(long), typeof(float), typeof(double),
+            typeof(decimal),
+            typeof(byte?), typeof(bool?), typeof(short?), typeof(int?), typeof(long?), typeof(float?), typeof(double?),
+            typeof(decimal?),
+            typeof(DateTime), typeof(DateTime?), typeof(DateTimeOffset), typeof(DateTimeOffset?), typeof(string),
+            typeof(Guid), typeof(Guid?),
             typeof(object)
         };
 
@@ -502,11 +553,11 @@ namespace TranceSql.Processing
             // casting, e.g. IEnumerable<byte>, is not currently support by the EntityMapper.
             if (type.IsArray)
             {
-                return simpleTypes.Contains(type.GetElementType());
+                return _simpleTypes.Contains(type.GetElementType());
             }
             else
             {
-                return type.IsEnum || simpleTypes.Contains(type);
+                return type.IsEnum || _simpleTypes.Contains(type);
             }
         }
     }

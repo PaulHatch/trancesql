@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace TranceSql
 {
@@ -29,7 +30,7 @@ namespace TranceSql
         /// <param name="name">The column name to use. If null or omitted the
         /// name of the property (caller) will be used instead.</param>
         /// <returns>A new column for this table.</returns>
-        protected Column Column([CallerMemberName]string name = null)
+        protected Column Column([CallerMemberName] string? name = null)
             => new(_table.Schema, _table.Name, ColumnNameTransformer(name));
 
         /// <summary>
@@ -45,7 +46,13 @@ namespace TranceSql
         /// <param name="schema">The schema.</param>
         /// <returns>The result of the conversion.</returns>
         public static implicit operator Table(TableSchema schema) => schema._table;
-        
-        protected virtual string ColumnNameTransformer(string name) => name;
+
+        /// <summary>
+        /// A transform function to be used to transform column names.
+        /// </summary>
+        /// <param name="name">Input column name.</param>
+        /// <returns>Transformed column name.</returns>
+        protected virtual string ColumnNameTransformer(string? name)
+            => name ?? throw new ArgumentNullException(nameof(name), "Column name cannot be null.");
     }
 }

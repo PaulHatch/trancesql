@@ -11,7 +11,7 @@ namespace TranceSql
         /// Sets the value of this deferred result.
         /// </summary>
         /// <param name="value">The value to set.</param>
-        void SetValue(object value);
+        void SetValue(object? value);
     }
 
     /// <summary>
@@ -20,7 +20,7 @@ namespace TranceSql
     /// <typeparam name="T"></typeparam>
     public sealed class Deferred<T> : IDeferred
     {
-        private T _result;
+        private T? _result;
         private DeferContext _context;
 
         internal Deferred(DeferContext context)
@@ -32,7 +32,7 @@ namespace TranceSql
         /// Gets the result of this operation using synchronous execution if this 
         /// is the first result from the deferrer context being retrieved.
         /// </summary>
-        public T Result
+        public T? Result
         {
             get
             {
@@ -45,17 +45,17 @@ namespace TranceSql
         /// Gets the result of this operation using asynchronous execution if this
         /// is the first result from the deferrer context being retrieved.
         /// </summary>
-        public Task<T> ResultAsync => GetResultAsync();
+        public Task<T?> ResultAsync => GetResultAsync();
 
-        private async Task<T> GetResultAsync()
+        private async Task<T?> GetResultAsync()
         {
             await _context.RunAsync();
             return _result;
         }
 
-        void IDeferred.SetValue(object value)
+        void IDeferred.SetValue(object? value)
         {
-            _result = (T)value;
+            _result = (T?)value;
         }
     }
 }

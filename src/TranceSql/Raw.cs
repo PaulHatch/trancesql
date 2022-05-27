@@ -8,7 +8,7 @@
         /// <summary>
         /// Gets or sets the string value for this element.
         /// </summary>
-        public string Value { get; set; }
+        public string? Value { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Raw"/> class.
@@ -22,11 +22,13 @@
         /// <summary>
         /// Initializes a new instance of the <see cref="Raw"/> class.
         /// </summary>
-        public Raw() { }
+        public Raw()
+        {
+        }
 
         void ISqlElement.Render(RenderContext context)
         {
-            if (Value != null)
+            if (Value is not null)
             {
                 context.Write(Value);
             }

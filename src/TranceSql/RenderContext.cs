@@ -15,7 +15,7 @@ namespace TranceSql
         private Dictionary<Value, string> _dynamicParameters = new();
         private Stack<RenderMode> _modes = new(new[] { RenderMode.Statment });
         private StringBuilder _result = new();
-        private DeferContext _deferContext;
+        private DeferContext? _deferContext;
 
         /// <summary>
         /// Gets or sets the line delimiter to use when rendering commands.
@@ -47,7 +47,7 @@ namespace TranceSql
         /// <summary>
         /// Gets the named parameters for this context.
         /// </summary>
-        internal Dictionary<string, object> NamedParameters { get; set; }
+        internal Dictionary<string, object?>? NamedParameters { get; set; }
 
         /// <summary>
         /// Gets the current rendering mode.
@@ -62,7 +62,7 @@ namespace TranceSql
         /// <summary>
         /// Gets the parameters for this context.
         /// </summary>
-        public IReadOnlyDictionary<string, object> ParameterValues
+        public IReadOnlyDictionary<string, object?> ParameterValues
         {
             get
             {
@@ -94,7 +94,7 @@ namespace TranceSql
         /// </summary>
         /// <param name="dialect">The dialect to render in.</param>
         /// <param name="deferContext">The context for deferred commands.</param>
-        public RenderContext(IDialect dialect, DeferContext deferContext)
+        public RenderContext(IDialect dialect, DeferContext? deferContext)
         {
             Dialect = dialect;
             _deferContext = deferContext;
@@ -161,13 +161,11 @@ namespace TranceSql
         /// is taken.
         /// </summary>
         /// <param name="value">The identifier to write.</param>
-        public void WriteIdentifierPrefix(string value)
+        public void WriteIdentifierPrefix(string? value)
         {
-            if (!String.IsNullOrEmpty(value))
-            {
-                _result.Append(Dialect.FormatIdentifier(value));
-                _result.Append('.');
-            }
+            if (value is null or "") return;
+            _result.Append(Dialect.FormatIdentifier(value));
+            _result.Append('.');
         }
 
         /// <summary>

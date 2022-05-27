@@ -11,7 +11,7 @@ namespace TranceSql
         /// Gets or sets the name of the type. If this value is set, the <see cref="Type"/>
         /// property is ignored.
         /// </summary>
-        public string ExplicitTypeName { get; set; }
+        public string? ExplicitTypeName { get; set; }
 
         /// <summary>
         /// Gets or sets the DbType type. This value will be resolved to the appropriate
@@ -22,7 +22,7 @@ namespace TranceSql
         /// <summary>
         /// Gets or sets the type parameters, for example in VARCHAR(50), '50' is the type parameter.
         /// </summary>
-        public IEnumerable<object> Parameters { get; set; }
+        public IEnumerable<object>? Parameters { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the type is allowed to be null.
@@ -151,23 +151,11 @@ namespace TranceSql
 
         void ISqlElement.Render(RenderContext context)
         {
-            if (String.IsNullOrEmpty(ExplicitTypeName))
-            {
-                context.Write(context.Dialect.FormatType(Type, Parameters));
-            }
-            else
-            {
-                context.Write(ExplicitTypeName);
-            }
-            
-            if (AllowNull)
-            {
-                context.Write(" NULL");
-            }
-            else
-            {
-                context.Write(" NOT NULL");
-            }
+            context.Write(ExplicitTypeName is null or ""
+                ? context.Dialect.FormatType(Type, Parameters)
+                : ExplicitTypeName);
+
+            context.Write(AllowNull ? " NULL" : " NOT NULL");
         }
 
         /// <summary>

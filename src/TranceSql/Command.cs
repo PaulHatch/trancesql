@@ -18,10 +18,10 @@ namespace TranceSql
     /// </summary>
     public class Command : IEnumerable<ISqlStatement>
     {
-        private List<ISqlStatement> _statements = new();
-        private SqlCommandManager _manager;
-        private DeferContext _deferContext;
-        private readonly Dictionary<string, object> _namedParameters = new();
+        private readonly List<ISqlStatement> _statements = new();
+        private readonly SqlCommandManager _manager;
+        private readonly DeferContext? _deferContext;
+        private readonly Dictionary<string, object?> _namedParameters = new();
 
         /// <summary>
         /// Gets the dialect this command is configured for.
@@ -32,7 +32,7 @@ namespace TranceSql
         /// Gets or sets the name of the operation to be used for recording
         /// tracing information.
         /// </summary>
-        public string OperationName { get; set; }
+        public string? OperationName { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Command"/> class.
@@ -98,11 +98,12 @@ namespace TranceSql
         {
             if (value is ISqlElement)
             {
-                throw new InvalidCommandException("Attempted to pass an instance of an ISqlElement as a value in query, SQL elements should not be passed as values.");
+                throw new InvalidCommandException(
+                    "Attempted to pass an instance of an ISqlElement as a value in query, SQL elements should not be passed as values.");
             }
 
             var result = new Parameter(name);
-            _namedParameters.Add(result.Name, value);
+            _namedParameters.Add(result.GetRequiredName(), value);
             return result;
         }
 
@@ -118,7 +119,7 @@ namespace TranceSql
         /// </summary>
         /// <typeparam name="TResult">Result item type</typeparam>
         /// <returns>Delegate for specified command.</returns>
-        public Func<CancellationToken, Task<IEnumerable<TResult>>> FetchListCached<TResult>()
+        public Func<CancellationToken, Task<IEnumerable<TResult>?>> FetchListCached<TResult>()
         {
             var cached = new CachedContext(Render());
             return (c) => _manager.ExecuteListResultAsync<TResult>(cached, c);
@@ -131,10 +132,13 @@ namespace TranceSql
         /// <typeparam name="TParameter">The type of the parameter.</typeparam>
         /// <param name="parameter">The parameter, should be of type TParameter.</param>
         /// <returns>Delegate for specified command.</returns>
-        public Func<TParameter, CancellationToken, Task<IEnumerable<TResult>>> FetchListCached<TResult, TParameter>(Parameter parameter)
+        public Func<TParameter, CancellationToken, Task<IEnumerable<TResult>?>> FetchListCached<TResult, TParameter>(
+            Parameter parameter)
         {
             var cached = new CachedContext(Render());
-            return (p, c) => _manager.ExecuteListResultAsync<TResult>(cached.WithParameters(new Dictionary<string, object> { { parameter.Name, p } }), c);
+            return (p, c) =>
+                _manager.ExecuteListResultAsync<TResult>(
+                    cached.WithParameters(new Dictionary<string, object?> {{parameter.GetRequiredName(), p}}), c);
         }
 
         /// <summary>
@@ -146,10 +150,13 @@ namespace TranceSql
         /// <param name="firstParameter">The first parameter, should be of type TParameter1.</param>
         /// <param name="secondParameter">The second parameter, should be of type TParameter2.</param>
         /// <returns>Delegate for specified command.</returns>
-        public Func<TParameter1, TParameter2, CancellationToken, Task<IEnumerable<TResult>>> FetchListCached<TResult, TParameter1, TParameter2>(Parameter firstParameter, Parameter secondParameter)
+        public Func<TParameter1, TParameter2, CancellationToken, Task<IEnumerable<TResult>?>> FetchListCached<TResult,
+            TParameter1, TParameter2>(Parameter firstParameter, Parameter secondParameter)
         {
             var cached = new CachedContext(Render());
-            return (p1, p2, c) => _manager.ExecuteListResultAsync<TResult>(cached.WithParameters(new Dictionary<string, object> { { firstParameter.Name, p1 }, { secondParameter.Name, p2 } }), c);
+            return (p1, p2, c) => _manager.ExecuteListResultAsync<TResult>(
+                cached.WithParameters(new Dictionary<string, object?>
+                    {{firstParameter.GetRequiredName(), p1}, {secondParameter.GetRequiredName(), p2}}), c);
         }
 
         /// <summary>
@@ -163,10 +170,17 @@ namespace TranceSql
         /// <param name="secondParameter">The second parameter, should be of type TParameter2.</param>
         /// <param name="thirdParameter">The third parameter, should be of type TParameter3.</param>
         /// <returns>Delegate for specified command.</returns>
-        public Func<TParameter1, TParameter2, TParameter3, CancellationToken, Task<IEnumerable<TResult>>> FetchListCached<TResult, TParameter1, TParameter2, TParameter3>(Parameter firstParameter, Parameter secondParameter, Parameter thirdParameter)
+        public Func<TParameter1, TParameter2, TParameter3, CancellationToken, Task<IEnumerable<TResult>?>>
+            FetchListCached<TResult, TParameter1, TParameter2, TParameter3>(Parameter firstParameter,
+                Parameter secondParameter, Parameter thirdParameter)
         {
             var cached = new CachedContext(Render());
-            return (p1, p2, p3, c) => _manager.ExecuteListResultAsync<TResult>(cached.WithParameters(new Dictionary<string, object> { { firstParameter.Name, p1 }, { secondParameter.Name, p2 }, { thirdParameter.Name, p3 } }), c);
+            return (p1, p2, p3, c) => _manager.ExecuteListResultAsync<TResult>(
+                cached.WithParameters(new Dictionary<string, object?>
+                {
+                    {firstParameter.GetRequiredName(), p1}, {secondParameter.GetRequiredName(), p2},
+                    {thirdParameter.GetRequiredName(), p3}
+                }), c);
         }
 
         /// <summary>
@@ -182,10 +196,19 @@ namespace TranceSql
         /// <param name="thirdParameter">The third parameter, should be of type TParameter3.</param>
         /// <param name="fourthParameter">The fourth parameter, should be of type TParameter4.</param>
         /// <returns>Delegate for specified command.</returns>
-        public Func<TParameter1, TParameter2, TParameter3, TParameter4, CancellationToken, Task<IEnumerable<TResult>>> FetchListCached<TResult, TParameter1, TParameter2, TParameter3, TParameter4>(Parameter firstParameter, Parameter secondParameter, Parameter thirdParameter, Parameter fourthParameter)
+        public Func<TParameter1, TParameter2, TParameter3, TParameter4, CancellationToken, Task<IEnumerable<TResult>?>>
+            FetchListCached<TResult, TParameter1, TParameter2, TParameter3, TParameter4>(Parameter firstParameter,
+                Parameter secondParameter, Parameter thirdParameter, Parameter fourthParameter)
         {
             var cached = new CachedContext(Render());
-            return (p1, p2, p3, p4, c) => _manager.ExecuteListResultAsync<TResult>(cached.WithParameters(new Dictionary<string, object> { { firstParameter.Name, p1 }, { secondParameter.Name, p2 }, { thirdParameter.Name, p3 }, { fourthParameter.Name, p4 } }), c);
+            return (p1, p2, p3, p4, c) => _manager.ExecuteListResultAsync<TResult>(cached.WithParameters(
+                new Dictionary<string, object?>
+                {
+                    {firstParameter.GetRequiredName(), p1},
+                    {secondParameter.GetRequiredName(), p2},
+                    {thirdParameter.GetRequiredName(), p3},
+                    {fourthParameter.GetRequiredName(), p4}
+                }), c);
         }
 
         #endregion
@@ -199,7 +222,7 @@ namespace TranceSql
         /// <typeparam name="TResult">Result item type</typeparam>
         /// <param name="defaultValue">Value to return if result is null or command returns no values.</param>
         /// <returns>Result of command.</returns>
-        public Func<CancellationToken, Task<TResult>> FetchCached<TResult>(TResult defaultValue = default)
+        public Func<CancellationToken, Task<TResult?>> FetchCached<TResult>(TResult? defaultValue = default)
         {
             var cached = new CachedContext(Render());
             return (c) => _manager.ExecuteResultAsync(Render(), defaultValue, null, c);
@@ -214,10 +237,17 @@ namespace TranceSql
         /// <param name="parameter">The first parameter, should be of type TParameter1.</param>
         /// <param name="defaultValue">The default value.</param>
         /// <returns>Delegate for specified command.</returns>
-        public Func<TParameter, CancellationToken, Task<TResult>> FetchCached<TResult, TParameter>(Parameter parameter, TResult defaultValue = default)
+        public Func<TParameter, CancellationToken, Task<TResult?>> FetchCached<TResult, TParameter>(Parameter parameter,
+            TResult? defaultValue = default)
         {
             var cached = new CachedContext(Render());
-            return (p, c) => _manager.ExecuteResultAsync(cached.WithParameters(new Dictionary<string, object> { { parameter.Name, p } }), defaultValue, null, c);
+            return (p, c) =>
+                _manager.ExecuteResultAsync(
+                    cached.WithParameters(new Dictionary<string, object?>
+                    {
+                        {parameter.GetRequiredName(), p}
+                    }), defaultValue, null,
+                    c);
         }
 
         /// <summary>
@@ -233,10 +263,18 @@ namespace TranceSql
         /// <returns>
         /// Delegate for specified command.
         /// </returns>
-        public Func<TParameter1, TParameter2, CancellationToken, Task<TResult>> FetchCached<TResult, TParameter1, TParameter2>(Parameter firstParameter, Parameter secondParameter, TResult defaultValue = default)
+        public Func<TParameter1, TParameter2, CancellationToken, Task<TResult?>>
+            FetchCached<TResult, TParameter1, TParameter2>(Parameter firstParameter, Parameter secondParameter,
+                TResult? defaultValue = default)
         {
             var cached = new CachedContext(Render());
-            return (p1, p2, c) => _manager.ExecuteResultAsync(cached.WithParameters(new Dictionary<string, object> { { firstParameter.Name, p1 }, { secondParameter.Name, p2 } }), defaultValue, null, c);
+            return (p1, p2, c) =>
+                _manager.ExecuteResultAsync(
+                    cached.WithParameters(new Dictionary<string, object?>
+                    {
+                        {firstParameter.GetRequiredName(), p1},
+                        {secondParameter.GetRequiredName(), p2}
+                    }), defaultValue, null, c);
         }
 
         /// <summary>
@@ -254,10 +292,20 @@ namespace TranceSql
         /// <returns>
         /// Delegate for specified command.
         /// </returns>
-        public Func<TParameter1, TParameter2, TParameter3, CancellationToken, Task<TResult>> FetchCached<TResult, TParameter1, TParameter2, TParameter3>(Parameter firstParameter, Parameter secondParameter, Parameter thirdParameter, TResult defaultValue = default)
+        public Func<TParameter1, TParameter2, TParameter3, CancellationToken, Task<TResult?>>
+            FetchCached<TResult, TParameter1, TParameter2, TParameter3>(Parameter firstParameter,
+                Parameter secondParameter, Parameter thirdParameter, TResult? defaultValue = default)
         {
             var cached = new CachedContext(Render());
-            return (p1, p2, p3, c) => _manager.ExecuteResultAsync(cached.WithParameters(new Dictionary<string, object> { { firstParameter.Name, p1 }, { secondParameter.Name, p2 }, { thirdParameter.Name, p3 } }), defaultValue, null, c);
+            return (p1, p2, p3, c) =>
+                _manager.ExecuteResultAsync(
+                    cached.WithParameters(new Dictionary<string, object?>
+                    {
+                        {firstParameter.GetRequiredName(), p1},
+                        {secondParameter.GetRequiredName(), p2},
+                        {thirdParameter.GetRequiredName(), p3}
+                    }),
+                    defaultValue, null, c);
         }
 
         /// <summary>
@@ -277,10 +325,20 @@ namespace TranceSql
         /// <returns>
         /// Delegate for specified command.
         /// </returns>
-        public Func<TParameter1, TParameter2, TParameter3, TParameter4, CancellationToken, Task<TResult>> FetchCached<TResult, TParameter1, TParameter2, TParameter3, TParameter4>(Parameter firstParameter, Parameter secondParameter, Parameter thirdParameter, Parameter fourthParameter, TResult defaultValue = default)
+        public Func<TParameter1, TParameter2, TParameter3, TParameter4, CancellationToken, Task<TResult?>>
+            FetchCached<TResult, TParameter1, TParameter2, TParameter3, TParameter4>(Parameter firstParameter,
+                Parameter secondParameter, Parameter thirdParameter, Parameter fourthParameter,
+                TResult? defaultValue = default)
         {
             var cached = new CachedContext(Render());
-            return (p1, p2, p3, p4, c) => _manager.ExecuteResultAsync(cached.WithParameters(new Dictionary<string, object> { { firstParameter.Name, p1 }, { secondParameter.Name, p2 }, { thirdParameter.Name, p3 }, { fourthParameter.Name, p4 } }), defaultValue, null, c);
+            return (p1, p2, p3, p4, c) => _manager.ExecuteResultAsync(
+                cached.WithParameters(new Dictionary<string, object?>
+                {
+                    {firstParameter.GetRequiredName(), p1},
+                    {secondParameter.GetRequiredName(), p2},
+                    {thirdParameter.GetRequiredName(), p3},
+                    {fourthParameter.GetRequiredName(), p4}
+                }), defaultValue, null, c);
         }
 
         #endregion
@@ -296,10 +354,13 @@ namespace TranceSql
         /// <returns>
         /// Result of command.
         /// </returns>
-        public Func<CancellationToken, Task<TResult>> FetchCached<TResult>(params Expression<Func<TResult, IEnumerable>>[] collections)
+        public Func<CancellationToken, Task<TResult?>> FetchCached<TResult>(
+            params Expression<Func<TResult, IEnumerable>>[] collections)
         {
             var cached = new CachedContext(Render());
-            return (c) => _manager.ExecuteResultAsync<TResult>(Render(), default, collections.Select(i => i.GetPropertyInfo()), c);
+            return (c) =>
+                _manager.ExecuteResultAsync<TResult>(Render(), default, collections.Select(i => i.GetPropertyInfo()),
+                    c);
         }
 
         /// <summary>
@@ -313,7 +374,7 @@ namespace TranceSql
         /// <returns>
         /// Result of command.
         /// </returns>
-        public Func<CancellationToken, Task<TResult>> FetchCached<TResult>(IEnumerable<PropertyInfo> collections)
+        public Func<CancellationToken, Task<TResult?>> FetchCached<TResult>(IEnumerable<PropertyInfo> collections)
         {
             if (!collections.All(p => p.PropertyType.ImplementsInterface<IEnumerable>()))
             {
@@ -335,7 +396,8 @@ namespace TranceSql
         /// <returns>
         /// Result of command.
         /// </returns>
-        public Func<CancellationToken, Task<TResult>> FetchMappedResultCached<TResult>(params Expression<Func<TResult, object>>[] map)
+        public Func<CancellationToken, Task<TResult?>> FetchMappedResultCached<TResult>(
+            params Expression<Func<TResult, object>>[] map)
             where TResult : new()
         {
             var mappedProperties = MapProperties(map);
@@ -354,7 +416,7 @@ namespace TranceSql
         /// <returns>
         /// Result of command.
         /// </returns>
-        public Func<CancellationToken, Task<TResult>> FetchMappedResultCached<TResult>(IEnumerable<PropertyInfo> map)
+        public Func<CancellationToken, Task<TResult?>> FetchMappedResultCached<TResult>(IEnumerable<PropertyInfo> map)
             where TResult : new()
         {
             var cached = new CachedContext(Render());
@@ -370,7 +432,8 @@ namespace TranceSql
         /// Delegate function to convert the result to the specified type.
         /// </param>
         /// <returns>Result of command.</returns>
-        public Func<CancellationToken, Task<TResult>> FetchCustomResultCached<TResult>(CreateEntity<TResult> valueProvider)
+        public Func<CancellationToken, Task<TResult?>> FetchCustomResultCached<TResult>(
+            CreateEntity<TResult> valueProvider)
         {
             var cached = new CachedContext(Render());
             return (c) => _manager.ExecuteCustomAsync(Render(), valueProvider, c);
@@ -385,7 +448,7 @@ namespace TranceSql
         /// <returns>
         /// Result of command as a dictionary.
         /// </returns>
-        public Func<CancellationToken, Task<IDictionary<TKey, TValue>>> FetchRowKeyedDictionaryCached<TKey, TValue>()
+        public Func<CancellationToken, Task<IDictionary<TKey, TValue?>?>> FetchRowKeyedDictionaryCached<TKey, TValue>()
         {
             var cached = new CachedContext(Render());
             return (c) => _manager.ExecuteRowKeyedDictionaryResultAsync<TKey, TValue>(Render(), c);
@@ -397,7 +460,8 @@ namespace TranceSql
         /// </summary>
         /// <param name="columns">The columns to return. If null, all columns will be returned.</param>
         /// <returns>Result of command as a dictionary.</returns>
-        public Func<CancellationToken, Task<IDictionary<string, object>>> FetchColumnKeyedDictionaryCached(params string[] columns)
+        public Func<CancellationToken, Task<IDictionary<string, object?>?>> FetchColumnKeyedDictionaryCached(
+            params string[] columns)
         {
             var cached = new CachedContext(Render());
             return (c) => _manager.ExecuteColumnKeyedDictionaryResultAsync(Render(), columns, c);
@@ -426,7 +490,11 @@ namespace TranceSql
         public Func<TParameter, CancellationToken, Task<int>> ExecuteCached<TParameter>(Parameter parameter)
         {
             var cached = new CachedContext(Render());
-            return (p, c) => _manager.ExecuteAsync(cached.WithParameters(new Dictionary<string, object> { { parameter.Name, p } }), c);
+            return (p, c) =>
+                _manager.ExecuteAsync(cached.WithParameters(new Dictionary<string, object?>
+                {
+                    {parameter.GetRequiredName(), p}
+                }), c);
         }
 
         /// <summary>
@@ -440,10 +508,17 @@ namespace TranceSql
         /// <returns>
         /// Delegate for specified command.
         /// </returns>
-        public Func<TParameter1, TParameter2, CancellationToken, Task<int>> ExecuteCached<TParameter1, TParameter2>(Parameter firstParameter, Parameter secondParameter)
+        public Func<TParameter1, TParameter2, CancellationToken, Task<int>> ExecuteCached<TParameter1, TParameter2>(
+            Parameter firstParameter, Parameter secondParameter)
         {
             var cached = new CachedContext(Render());
-            return (p1, p2, c) => _manager.ExecuteAsync(cached.WithParameters(new Dictionary<string, object> { { firstParameter.Name, p1 }, { secondParameter.Name, p2 } }), c);
+            return (p1, p2, c) =>
+                _manager.ExecuteAsync(
+                    cached.WithParameters(new Dictionary<string, object?>
+                    {
+                        {firstParameter.GetRequiredName(), p1},
+                        {secondParameter.GetRequiredName(), p2}
+                    }), c);
         }
 
         /// <summary>
@@ -459,10 +534,19 @@ namespace TranceSql
         /// <returns>
         /// Delegate for specified command.
         /// </returns>
-        public Func<TParameter1, TParameter2, TParameter3, CancellationToken, Task<int>> ExecuteCached<TParameter1, TParameter2, TParameter3>(Parameter firstParameter, Parameter secondParameter, Parameter thirdParameter)
+        public Func<TParameter1, TParameter2, TParameter3, CancellationToken, Task<int>>
+            ExecuteCached<TParameter1, TParameter2, TParameter3>(Parameter firstParameter, Parameter secondParameter,
+                Parameter thirdParameter)
         {
             var cached = new CachedContext(Render());
-            return (p1, p2, p3, c) => _manager.ExecuteAsync(cached.WithParameters(new Dictionary<string, object> { { firstParameter.Name, p1 }, { secondParameter.Name, p2 }, { thirdParameter.Name, p3 } }), c);
+            return (p1, p2, p3, c) =>
+                _manager.ExecuteAsync(
+                    cached.WithParameters(new Dictionary<string, object?>
+                    {
+                        {firstParameter.GetRequiredName(), p1},
+                        {secondParameter.GetRequiredName(), p2},
+                        {thirdParameter.GetRequiredName(), p3}
+                    }), c);
         }
 
         /// <summary>
@@ -480,10 +564,20 @@ namespace TranceSql
         /// <returns>
         /// Delegate for specified command.
         /// </returns>
-        public Func<TParameter1, TParameter2, TParameter3, TParameter4, CancellationToken, Task<int>> ExecuteCached<TParameter1, TParameter2, TParameter3, TParameter4>(Parameter firstParameter, Parameter secondParameter, Parameter thirdParameter, Parameter fourthParameter)
+        public Func<TParameter1, TParameter2, TParameter3, TParameter4, CancellationToken, Task<int>>
+            ExecuteCached<TParameter1, TParameter2, TParameter3, TParameter4>(Parameter firstParameter,
+                Parameter secondParameter, Parameter thirdParameter, Parameter fourthParameter)
         {
             var cached = new CachedContext(Render());
-            return (p1, p2, p3, p4, c) => _manager.ExecuteAsync(cached.WithParameters(new Dictionary<string, object> { { firstParameter.Name, p1 }, { secondParameter.Name, p2 }, { thirdParameter.Name, p3 }, { fourthParameter.Name, p4 } }), c);
+            return (p1, p2, p3, p4, c) =>
+                _manager.ExecuteAsync(
+                    cached.WithParameters(new Dictionary<string, object?>
+                    {
+                        {firstParameter.GetRequiredName(), p1},
+                        {secondParameter.GetRequiredName(), p2},
+                        {thirdParameter.GetRequiredName(), p3},
+                        {fourthParameter.GetRequiredName(), p4}
+                    }), c);
         }
 
         #endregion
@@ -500,7 +594,7 @@ namespace TranceSql
         /// <returns>
         /// Result of command as a list.
         /// </returns>
-        public IEnumerable<TResult> FetchList<TResult>()
+        public IEnumerable<TResult?>? FetchList<TResult>()
         {
             return _manager.ExecuteListResult<TResult>(Render());
         }
@@ -512,7 +606,7 @@ namespace TranceSql
         /// <typeparam name="TResult">Result item type</typeparam>
         /// <param name="defaultValue">Value to return if result is null or command returns no values.</param>
         /// <returns>Result of command.</returns>
-        public TResult Fetch<TResult>(TResult defaultValue = default)
+        public TResult? Fetch<TResult>(TResult? defaultValue = default)
         {
             return _manager.ExecuteResult(Render(), defaultValue, null);
         }
@@ -528,7 +622,7 @@ namespace TranceSql
         /// <returns>
         /// Result of command.
         /// </returns>
-        public TResult Fetch<TResult>(params Expression<Func<TResult, IEnumerable>>[] collections)
+        public TResult? Fetch<TResult>(params Expression<Func<TResult, IEnumerable>>[] collections)
         {
             return _manager.ExecuteResult<TResult>(Render(), default, collections.Select(i => i.GetPropertyInfo()));
         }
@@ -544,11 +638,11 @@ namespace TranceSql
         /// <returns>
         /// Result of command.
         /// </returns>
-        public TResult Fetch<TResult>(IEnumerable<PropertyInfo> collections)
+        public TResult? Fetch<TResult>(IEnumerable<PropertyInfo> collections)
         {
             if (!collections.All(p => p.PropertyType.ImplementsInterface<IEnumerable>()))
             {
-                throw new ArgumentException("All properties must be collections", "collections");
+                throw new ArgumentException("All properties must be collections", nameof(collections));
             }
 
             return _manager.ExecuteResult<TResult>(Render(), default, collections);
@@ -564,7 +658,7 @@ namespace TranceSql
         /// <returns>
         /// The result of the SQL command.
         /// </returns>
-        public TResult FetchMappedResult<TResult>(params Expression<Func<TResult, object>>[] map)
+        public TResult? FetchMappedResult<TResult>(params Expression<Func<TResult, object>>[] map)
             where TResult : new()
         {
             var mappedProperties = MapProperties(map);
@@ -582,7 +676,7 @@ namespace TranceSql
         /// <returns>
         /// Result of command.
         /// </returns>
-        public TResult FetchMappedResult<TResult>(IEnumerable<PropertyInfo> map)
+        public TResult? FetchMappedResult<TResult>(IEnumerable<PropertyInfo> map)
             where TResult : new()
         {
             return _manager.ExecuteMapResult<TResult>(Render(), MapProperties(map));
@@ -597,7 +691,7 @@ namespace TranceSql
         /// Delegate function to convert the result to the specified type.
         /// </param>
         /// <returns>Result of command.</returns>
-        public TResult FetchCustomResult<TResult>(CreateEntity<TResult> valueProvider)
+        public TResult? FetchCustomResult<TResult>(CreateEntity<TResult> valueProvider)
         {
             return _manager.ExecuteCustom(Render(), valueProvider);
         }
@@ -611,9 +705,9 @@ namespace TranceSql
         /// <returns>
         /// Result of command as a dictionary.
         /// </returns>
-        public IDictionary<TKey, TValue> FetchRowKeyedDictionary<TKey, TValue>()
+        public IDictionary<TKey, TValue?>? FetchRowKeyedDictionary<TKey, TValue>()
         {
-            return _manager.ExecuteRowKeyedDictionaryResult<TKey, TValue>(Render());
+            return _manager.ExecuteRowKeyedDictionaryResult<TKey, TValue?>(Render());
         }
 
         /// <summary>
@@ -622,7 +716,7 @@ namespace TranceSql
         /// </summary>
         /// <param name="columns">The columns to return. If null, all columns will be returned.</param>
         /// <returns>Result of command as a dictionary.</returns>
-        public IDictionary<string, object> FetchColumnKeyedDictionary(params string[] columns)
+        public IDictionary<string, object?>? FetchColumnKeyedDictionary(params string[] columns)
         {
             return _manager.ExecuteColumnKeyedDictionaryResult(Render(), columns);
         }
@@ -648,7 +742,7 @@ namespace TranceSql
         /// <typeparam name="TResult">Result item type</typeparam>
         /// <param name="cancel">A token to monitor for cancellation requests.</param>
         /// <returns>Result of command as a list.</returns>
-        public Task<IEnumerable<TResult>> FetchListAsync<TResult>(CancellationToken cancel = default)
+        public Task<IEnumerable<TResult>?> FetchListAsync<TResult>(CancellationToken cancel = default)
         {
             return _manager.ExecuteListResultAsync<TResult>(Render(), cancel);
         }
@@ -661,7 +755,7 @@ namespace TranceSql
         /// <param name="defaultValue">Value to return if result is null or command returns no values.</param>
         /// <param name="cancel">A token to monitor for cancellation requests.</param>
         /// <returns>Result of command.</returns>
-        public Task<TResult> FetchAsync<TResult>(TResult defaultValue = default, CancellationToken cancel = default)
+        public Task<TResult?> FetchAsync<TResult>(TResult? defaultValue = default, CancellationToken cancel = default)
         {
             return _manager.ExecuteResultAsync(Render(), defaultValue, null, cancel);
         }
@@ -678,9 +772,11 @@ namespace TranceSql
         /// <returns>
         /// Result of command.
         /// </returns>
-        public Task<TResult> FetchAsync<TResult>(CancellationToken cancel = default, params Expression<Func<TResult, IEnumerable>>[] collections)
+        public Task<TResult?> FetchAsync<TResult>(CancellationToken cancel = default,
+            params Expression<Func<TResult, IEnumerable>>[] collections)
         {
-            return _manager.ExecuteResultAsync<TResult>(Render(), default, collections.Select(i => i.GetPropertyInfo()), cancel);
+            return _manager.ExecuteResultAsync<TResult>(Render(), default, collections.Select(i => i.GetPropertyInfo()),
+                cancel);
         }
 
         /// <summary>
@@ -694,9 +790,10 @@ namespace TranceSql
         /// <returns>
         /// Result of command.
         /// </returns>
-        public Task<TResult> FetchAsync<TResult>(params Expression<Func<TResult, IEnumerable>>[] collections)
+        public Task<TResult?> FetchAsync<TResult>(params Expression<Func<TResult, IEnumerable>>[] collections)
         {
-            return _manager.ExecuteResultAsync<TResult>(Render(), default, collections.Select(i => i.GetPropertyInfo()), default);
+            return _manager.ExecuteResultAsync<TResult>(Render(), default, collections.Select(i => i.GetPropertyInfo()),
+                default);
         }
 
         /// <summary>
@@ -711,7 +808,8 @@ namespace TranceSql
         /// <returns>
         /// Result of command.
         /// </returns>
-        public Task<TResult> FetchAsync<TResult>(IEnumerable<PropertyInfo> collections, CancellationToken cancel = default)
+        public Task<TResult?> FetchAsync<TResult>(IEnumerable<PropertyInfo> collections,
+            CancellationToken cancel = default)
         {
             if (!collections.All(p => p.PropertyType.ImplementsInterface<IEnumerable>()))
             {
@@ -733,7 +831,8 @@ namespace TranceSql
         /// <returns>
         /// Result of command.
         /// </returns>
-        public Task<TResult> FetchMappedResultAsync<TResult>(CancellationToken cancel, params Expression<Func<TResult, object>>[] map)
+        public Task<TResult?> FetchMappedResultAsync<TResult>(CancellationToken cancel,
+            params Expression<Func<TResult, object>>[] map)
             where TResult : new()
         {
             var mappedProperties = MapProperties(map);
@@ -751,7 +850,7 @@ namespace TranceSql
         /// <returns>
         /// Result of command.
         /// </returns>
-        public Task<TResult> FetchMappedResultAsync<TResult>(params Expression<Func<TResult, object>>[] map)
+        public Task<TResult?> FetchMappedResultAsync<TResult>(params Expression<Func<TResult, object>>[] map)
             where TResult : new()
         {
             var mappedProperties = MapProperties(map);
@@ -766,7 +865,8 @@ namespace TranceSql
         /// <returns>
         /// A list of properties and their types.
         /// </returns>
-        private static IEnumerable<Tuple<PropertyInfo, Type>> MapProperties<TResult>(IEnumerable<Expression<Func<TResult, object>>> map)
+        private static IEnumerable<Tuple<PropertyInfo, Type>> MapProperties<TResult>(
+            IEnumerable<Expression<Func<TResult, object>>> map)
         {
             return MapProperties(map.Select(i => i.GetPropertyInfo()));
         }
@@ -780,7 +880,8 @@ namespace TranceSql
         /// </returns>
         private static IEnumerable<Tuple<PropertyInfo, Type>> MapProperties(IEnumerable<PropertyInfo> properties)
         {
-            return properties.Select(p => new Tuple<PropertyInfo, Type>(p, p.PropertyType.GetCollectionType() ?? p.PropertyType));
+            return properties.Select(p =>
+                new Tuple<PropertyInfo, Type>(p, p.PropertyType.GetCollectionType() ?? p.PropertyType));
         }
 
         /// <summary>
@@ -795,7 +896,8 @@ namespace TranceSql
         /// <returns>
         /// Result of command.
         /// </returns>
-        public Task<TResult> FetchMappedResultAsync<TResult>(IEnumerable<PropertyInfo> map, CancellationToken cancel = default)
+        public Task<TResult?> FetchMappedResultAsync<TResult>(IEnumerable<PropertyInfo> map,
+            CancellationToken cancel = default)
             where TResult : new()
         {
             return _manager.ExecuteMapResultAsync<TResult>(Render(), MapProperties(map), cancel);
@@ -811,7 +913,8 @@ namespace TranceSql
         /// </param>
         /// <param name="cancel">A token to monitor for cancellation requests.</param>
         /// <returns>Result of command.</returns>
-        public Task<TResult> FetchCustomResultAsync<TResult>(CreateEntity<TResult> valueProvider, CancellationToken cancel = default)
+        public Task<TResult?> FetchCustomResultAsync<TResult>(CreateEntity<TResult> valueProvider,
+            CancellationToken cancel = default)
         {
             return _manager.ExecuteCustomAsync(Render(), valueProvider, cancel);
         }
@@ -826,7 +929,8 @@ namespace TranceSql
         /// <returns>
         /// Result of command as a dictionary.
         /// </returns>
-        public Task<IDictionary<TKey, TValue>> FetchRowKeyedDictionaryAsync<TKey, TValue>(CancellationToken cancel = default)
+        public Task<IDictionary<TKey, TValue?>?> FetchRowKeyedDictionaryAsync<TKey, TValue>(
+            CancellationToken cancel = default)
         {
             return _manager.ExecuteRowKeyedDictionaryResultAsync<TKey, TValue>(Render(), cancel);
         }
@@ -838,7 +942,8 @@ namespace TranceSql
         /// <param name="columns">The columns to return. If null, all columns will be returned.</param>
         /// <param name="cancel">A token to monitor for cancellation requests.</param>
         /// <returns>Result of command as a dictionary.</returns>
-        public Task<IDictionary<string, object>> FetchColumnKeyedDictionaryAsync(CancellationToken cancel = default, params string[] columns)
+        public Task<IDictionary<string, object?>?> FetchColumnKeyedDictionaryAsync(CancellationToken cancel = default,
+            params string[] columns)
         {
             return _manager.ExecuteColumnKeyedDictionaryResultAsync(Render(), columns, cancel);
         }
@@ -849,7 +954,7 @@ namespace TranceSql
         /// </summary>
         /// <param name="columns">The columns to return. If null, all columns will be returned.</param>
         /// <returns>Result of command as a dictionary.</returns>
-        public Task<IDictionary<string, object>> FetchColumnKeyedDictionaryAsync(params string[] columns)
+        public Task<IDictionary<string, object?>?> FetchColumnKeyedDictionaryAsync(params string[] columns)
         {
             return _manager.ExecuteColumnKeyedDictionaryResultAsync(Render(), columns, default);
         }
@@ -875,10 +980,9 @@ namespace TranceSql
         /// </summary>
         /// <typeparam name="TResult">Result item type</typeparam>
         /// <returns>Result of command as a list.</returns>
-        public Deferred<IEnumerable<TResult>> FetchListDeferred<TResult>()
+        public Deferred<IEnumerable<TResult?>> FetchListDeferred<TResult>()
         {
-            AssertDeferredAvailable();
-            return _deferContext.ExecuteListResultDeferred<TResult>(Render());
+            return GetAvailableDeferred().ExecuteListResultDeferred<TResult?>(Render());
         }
 
         /// <summary>
@@ -888,10 +992,9 @@ namespace TranceSql
         /// <typeparam name="TResult">Result item type</typeparam>
         /// <param name="defaultValue">Value to return if result is null or command returns no values.</param>
         /// <returns>Result of command.</returns>
-        public Deferred<TResult> FetchDeferred<TResult>(TResult defaultValue = default)
+        public Deferred<TResult?> FetchDeferred<TResult>(TResult? defaultValue = default)
         {
-            AssertDeferredAvailable();
-            return _deferContext.ExecuteResultDeferred<TResult>(Render(), defaultValue, null);
+            return GetAvailableDeferred().ExecuteResultDeferred<TResult?>(Render(), defaultValue, null);
         }
 
         /// <summary>
@@ -907,8 +1010,8 @@ namespace TranceSql
         /// </returns>
         public Deferred<TResult> FetchDeferred<TResult>(params Expression<Func<TResult, object>>[] collections)
         {
-            AssertDeferredAvailable();
-            return _deferContext.ExecuteResultDeferred<TResult>(Render(), default(TResult), collections.Select(i => i.GetPropertyInfo()));
+            return GetAvailableDeferred().ExecuteResultDeferred<TResult>(Render(), default(TResult),
+                collections.Select(i => i.GetPropertyInfo()));
         }
 
         /// <summary>
@@ -926,12 +1029,10 @@ namespace TranceSql
         {
             if (!collections.All(p => p.PropertyType.ImplementsInterface<IEnumerable>()))
             {
-                throw new ArgumentException("All properties must be collections", "collections");
+                throw new ArgumentException("All properties must be collections", nameof(collections));
             }
 
-            AssertDeferredAvailable();
-
-            return _deferContext.ExecuteResultDeferred<TResult>(Render(), default(TResult), collections);
+            return GetAvailableDeferred().ExecuteResultDeferred<TResult>(Render(), default(TResult), collections);
         }
 
         /// <summary>
@@ -948,9 +1049,8 @@ namespace TranceSql
         public Deferred<TResult> FetchMappedResultDeferred<TResult>(params Expression<Func<TResult, object>>[] map)
             where TResult : new()
         {
-            AssertDeferredAvailable();
             var mappedProperties = MapProperties(map);
-            return _deferContext.ExecuteMapResultDeferred<TResult>(Render(), mappedProperties);
+            return GetAvailableDeferred().ExecuteMapResultDeferred<TResult>(Render(), mappedProperties);
         }
 
         /// <summary>
@@ -967,8 +1067,7 @@ namespace TranceSql
         public Deferred<TResult> FetchMappedResultDeferred<TResult>(IEnumerable<PropertyInfo> map)
             where TResult : new()
         {
-            AssertDeferredAvailable();
-            return _deferContext.ExecuteMapResultDeferred<TResult>(Render(), MapProperties(map));
+            return GetAvailableDeferred().ExecuteMapResultDeferred<TResult>(Render(), MapProperties(map));
         }
 
         /// <summary>
@@ -982,8 +1081,7 @@ namespace TranceSql
         /// <returns>Result of command.</returns>
         public Deferred<TResult> FetchCustomResultDeferred<TResult>(CreateEntity<TResult> valueProvider)
         {
-            AssertDeferredAvailable();
-            return _deferContext.ExecuteCustomDeferred(Render(), valueProvider);
+            return GetAvailableDeferred().ExecuteCustomDeferred(Render(), valueProvider);
         }
 
         /// <summary>
@@ -997,8 +1095,7 @@ namespace TranceSql
         /// </returns>
         public Deferred<IDictionary<TKey, TValue>> FetchRowKeyedDictionaryDeferred<TKey, TValue>()
         {
-            AssertDeferredAvailable();
-            return _deferContext.ExecuteRowKeyedDictionaryResultDeferred<TKey, TValue>(Render());
+            return GetAvailableDeferred().ExecuteRowKeyedDictionaryResultDeferred<TKey, TValue>(Render());
         }
 
         /// <summary>
@@ -1009,25 +1106,28 @@ namespace TranceSql
         /// <returns>Result of command as a dictionary.</returns>
         public Deferred<IDictionary<string, object>> FetchColumnKeyedDictionaryDeferred(params string[] columns)
         {
-            AssertDeferredAvailable();
-            return _deferContext.ExecuteColumnKeyedDictionaryResultDeferred(Render(), columns);
+            return GetAvailableDeferred().ExecuteColumnKeyedDictionaryResultDeferred(Render(), columns);
         }
 
         /// <summary>
         /// Ensures the result of the deferred context's operation is available, otherwise
         /// throws an exception.
         /// </summary>
-        private void AssertDeferredAvailable()
+        private DeferContext GetAvailableDeferred()
         {
-            if (_deferContext == null)
+            if (_deferContext is null)
             {
-                throw new InvalidOperationException("No deferred command context exists for this command. To execute a deferred command you must provide a context when the command instance is created.");
+                throw new InvalidOperationException(
+                    "No deferred command context exists for this command. To execute a deferred command you must provide a context when the command instance is created.");
             }
 
             if (_deferContext.HasExecuted)
             {
-                throw new InvalidOperationException("The deferred context for this command has already executed. To execute additional deferred commands you must create a new deferred context.");
+                throw new InvalidOperationException(
+                    "The deferred context for this command has already executed. To execute additional deferred commands you must create a new deferred context.");
             }
+
+            return _deferContext;
         }
 
         /// <summary>
@@ -1037,7 +1137,7 @@ namespace TranceSql
         /// <returns>The number of rows affected by the command.</returns>
         public void ExecuteDeferred()
         {
-            _deferContext.ExecuteDeferred(Render());
+            GetAvailableDeferred().ExecuteDeferred(Render());
         }
 
         #endregion
@@ -1060,7 +1160,6 @@ namespace TranceSql
             var cached = new CachedContext(Render());
             return _manager.ExecuteStream<TResult>(cached);
         }
-
 
         #endregion
 

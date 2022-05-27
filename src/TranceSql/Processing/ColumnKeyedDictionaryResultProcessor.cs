@@ -26,7 +26,7 @@ namespace TranceSql.Processing
         /// </summary>
         /// <param name="reader">An open data reader queued to the appropriate result set.</param>
         /// <returns>The result for this query.</returns>
-        public object Process(DbDataReader reader)
+        public object? Process(DbDataReader reader)
         {
             return reader.CreateColumnKeyedDictionary(_columns);
         }

@@ -9,15 +9,15 @@ namespace TranceSql
     /// </summary>
     public class Constant : ExpressionElement, ISqlElement
     {
-        const string _stringWarning = "Warning, string constants are vulnerable to SQL injection attacks. Using a parameter is the preferred method of passing string values. The 'Value' class can be used to supply a string which will automatically be passed to the command as a parameter. To create string constant expression, call the 'Constant.Unsafe(string)' method.";
-        private object _value;
+        private const string _stringWarning = "Warning, string constants are vulnerable to SQL injection attacks. Using a parameter is the preferred method of passing string values. The 'Value' class can be used to supply a string which will automatically be passed to the command as a parameter. To create string constant expression, call the 'Constant.Unsafe(string)' method.";
+        private object? _value;
         
         /// <summary>
         /// Gets or sets the value of this constant. Setting this value directly
         /// to a <see cref="string"/> instance will result in a runtime error, you
         /// must use <see cref="Constant.Unsafe(string)"/> to define a string constant.
         /// </summary>
-        public object Value
+        public object? Value
         {
             get => _value;
             set
