@@ -20,14 +20,14 @@ namespace TranceSql.Test
 
         private void Matches(string left, string right)
         {
-            Assert.True(EntityMapping.ColumnPropertyComparer.Equals(left, right));
-            Assert.True(EntityMapping.ColumnPropertyComparer.Equals(right, left));
+            Assert.True(EntityMapping.ColumnPropertyComparer?.Equals(left, right));
+            Assert.True(EntityMapping.ColumnPropertyComparer?.Equals(right, left));
         }
 
         private void DoesNotMatch(string left, string right)
         {
-            Assert.False(EntityMapping.ColumnPropertyComparer.Equals(left, right));
-            Assert.False(EntityMapping.ColumnPropertyComparer.Equals(right, left));
+            Assert.False(EntityMapping.ColumnPropertyComparer?.Equals(left, right));
+            Assert.False(EntityMapping.ColumnPropertyComparer?.Equals(right, left));
         }
 
     }
