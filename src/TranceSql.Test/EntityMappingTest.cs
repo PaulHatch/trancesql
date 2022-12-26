@@ -24,7 +24,7 @@ public class EntityMappingTest
         {"List", 3}
     };
     
-    [Fact]
+    [Fact(Skip = "Read-only collection initializers are not yet supported")]
     public void CanMapGetOnlyDictionary()
     {
         var create = EntityMapping.GetEntityFunc<TestClass>();
