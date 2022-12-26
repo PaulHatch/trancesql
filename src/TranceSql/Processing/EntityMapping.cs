@@ -251,7 +251,7 @@ namespace TranceSql.Processing
         {
             var readerParam = Expression.Parameter(typeof(DbDataReader), "r");
             var mapParam = Expression.Parameter(typeof(IDictionary<string, int>), "m");
-            var readMethod = typeof(DbDataReader).GetMethod("get_Item", new[] {typeof(int)});
+            var readMethod = typeof(DbDataReader).GetMethod("get_Item", new[] {typeof(int)}) ?? throw new Exception(); // UnreachableException
 
 
             var tupleType = typeof(T);
@@ -262,13 +262,13 @@ namespace TranceSql.Processing
         }
 
         private static Expression CreateTupleInitExpression(
-            ParameterExpression readerParam,
+            Expression readerParam,
             MethodInfo readMethod,
             Type tupleType,
             int offset = 0)
         {
             var types = tupleType.GetGenericArguments();
-            var ctor = tupleType.GetConstructor(types);
+            var ctor = tupleType.GetConstructor(types) ?? throw new Exception($"Could not get constructor for {types}"); // UnreachableException
             var getExpressions = types.Select((type, i) =>
             {
                 if (IsValueTuple(type))
@@ -386,7 +386,7 @@ namespace TranceSql.Processing
                     // map constructor arguments to the SQL results
                     var helperMethodInfo = ReadHelper.GetPropertyHelperMethod(parameter.ParameterType);
                     Expression getValue = Expression.Call(helperMethodInfo, readerParam, mapParam,
-                        Expression.Constant(parameter.Name.ToCamelCase()));
+                        Expression.Constant(parameter.Name?.ToCamelCase() ?? throw new Exception()));
 
                     constructorArguments.Add(Expression.Convert(getValue, parameter.ParameterType));
                 }

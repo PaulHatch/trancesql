@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <Authors>Paul Hatcherian</Authors>
     <PackageTags>Trance TranceSQL SQL Database Client</PackageTags>
     <Copyright>2022 Paul Hatcherian</Copyright>
@@ -21,6 +21,10 @@ TranceSQL provides an easy to use, high performance data access interface for SQ
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\TranceSql\TranceSql.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" Version="0.13.3" />
   </ItemGroup>
 
 </Project>

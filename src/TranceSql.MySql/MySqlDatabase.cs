@@ -1,4 +1,4 @@
-﻿using OpenTracing;
+﻿using System.Diagnostics;
 using TranceSql.Processing;
 
 namespace TranceSql.MySql
@@ -26,7 +26,7 @@ namespace TranceSql.MySql
         /// A connection factory that returns a MySQL DB connection.
         /// </param>
         /// <param name="parameterMapper">The parameter mapper.</param>
-        public MySqlDatabase(MySqlConnectionFactory connectionFactory, IParameterMapper parameterMapper)
+        public MySqlDatabase(MySqlConnectionFactory connectionFactory, IParameterMapper? parameterMapper)
             : this(connectionFactory, parameterMapper, null)
         {
         }
@@ -37,12 +37,11 @@ namespace TranceSql.MySql
         /// <param name="connectionFactory">
         /// A connection factory that returns a MySQL DB connection.
         /// </param>
-        /// <param name="tracer">
-        /// The OpenTracing tracer instance to use. If this value is null the global tracer will
-        /// be used instead.
+        /// <param name="activitySource">
+        /// An activity source that can be used to create activities for database operations.
         /// </param>
-        public MySqlDatabase(MySqlConnectionFactory connectionFactory, ITracer tracer)
-            : this(connectionFactory, null, tracer)
+        public MySqlDatabase(MySqlConnectionFactory connectionFactory, ActivitySource? activitySource)
+            : this(connectionFactory, null, activitySource)
         {
         }
 
@@ -53,10 +52,11 @@ namespace TranceSql.MySql
         /// A connection factory that returns a MySQL DB connection.
         /// </param>
         /// <param name="parameterMapper">The parameter mapper.</param>
-        /// <param name="tracer">The OpenTracing tracer instance to use. If this value is null the global tracer will
-        /// be used instead.</param>
-        public MySqlDatabase(MySqlConnectionFactory connectionFactory, IParameterMapper? parameterMapper, ITracer? tracer)
-            : base(new SqlCommandManager(connectionFactory, parameterMapper ?? new DefaultParameterMapper(), tracer), new MySqlDialect())
+        /// <param name="activitySource">
+        /// An activity source that can be used to create activities for database operations.
+        /// </param>
+        public MySqlDatabase(MySqlConnectionFactory connectionFactory, IParameterMapper? parameterMapper, ActivitySource? activitySource)
+            : base(new SqlCommandManager(connectionFactory, parameterMapper ?? new DefaultParameterMapper(), activitySource), new MySqlDialect())
         {
         }
 
@@ -74,7 +74,7 @@ namespace TranceSql.MySql
         /// </summary>
         /// <param name="connectionString">The connection string.</param>
         /// <param name="parameterMapper">The parameter mapper.</param>
-        public MySqlDatabase(string connectionString, IParameterMapper parameterMapper)
+        public MySqlDatabase(string connectionString, IParameterMapper? parameterMapper)
             : this(connectionString, parameterMapper, null)
         {
         }
@@ -83,12 +83,11 @@ namespace TranceSql.MySql
         /// Creates command parameters for a MySQL database reference.
         /// </summary>
         /// <param name="connectionString">The connection string.</param>
-        /// <param name="tracer">
-        /// The OpenTracing tracer instance to use. If this value is null the global tracer will
-        /// be used instead.
+        /// <param name="activitySource">
+        /// An activity source that can be used to create activities for database operations.
         /// </param>
-        public MySqlDatabase(string connectionString, ITracer tracer)
-            : this(connectionString, null, tracer)
+        public MySqlDatabase(string connectionString, ActivitySource? activitySource)
+            : this(connectionString, null, activitySource)
         {
         }
 
@@ -98,12 +97,11 @@ namespace TranceSql.MySql
         /// </summary>
         /// <param name="connectionString">The connection string.</param>
         /// <param name="parameterMapper">The parameter mapper.</param>
-        /// <param name="tracer">
-        /// The OpenTracing tracer instance to use. If this value is null the global tracer will
-        /// be used instead.
+        /// <param name="activitySource">
+        /// An activity source that can be used to create activities for database operations.
         /// </param>
-        public MySqlDatabase(string connectionString, IParameterMapper? parameterMapper, ITracer? tracer)
-            : base(new SqlCommandManager(new MySqlConnectionFactory(connectionString), parameterMapper ?? new DefaultParameterMapper(), tracer), new MySqlDialect())
+        public MySqlDatabase(string connectionString, IParameterMapper? parameterMapper, ActivitySource? activitySource)
+            : base(new SqlCommandManager(new MySqlConnectionFactory(connectionString), parameterMapper ?? new DefaultParameterMapper(), activitySource), new MySqlDialect())
         {
         }
     }

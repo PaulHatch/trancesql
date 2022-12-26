@@ -1,4 +1,5 @@
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
 using Xunit;
 using Xunit.Abstractions;
@@ -9,11 +10,11 @@ namespace TranceSql.IntegrationTest
     [Trait("dialect", "ANY")]
     public class BasicCrud : IClassFixture<DatabaseFixture>
     {
-        protected readonly Database _database;
-
+        private readonly Database _database;
+        
         public BasicCrud(DatabaseFixture db, ITestOutputHelper helper)
         {
-            _database = db.GetDatabase(new TestTracer(helper));
+            _database = db.GetDatabase(helper);
         }
 
         [Fact]

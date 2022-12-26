@@ -14,7 +14,7 @@ namespace TranceSql.IntegrationTest
 
         public Mapping(DatabaseFixture db, ITestOutputHelper helper)
         {
-            _database = db.GetDatabase(new TestTracer(helper));
+            _database = db.GetDatabase(helper);
         }
 
         sealed class TestAttribute : Attribute { public string Format { get; set; } }

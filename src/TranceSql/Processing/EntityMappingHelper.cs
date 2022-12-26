@@ -58,6 +58,7 @@ namespace TranceSql.Processing
         /// <param name="reader">An open reader ready to be read to a list.</param>
         /// <returns>A dictionary created from the first two columns of the data reader.</returns>
         public static IDictionary<TKey, TValue?> CreateRowKeyedDictionary<TKey, TValue>(this DbDataReader reader)
+            where TKey : notnull
         {
             if (reader == null)
             {
@@ -100,20 +101,17 @@ namespace TranceSql.Processing
         public static IDictionary<string, object>? CreateColumnKeyedDictionary(this DbDataReader reader,
             IEnumerable<string>? columns)
         {
-            if (reader.Read())
+            if (!reader.Read()) return null;
+            if (columns?.Any() != true)
             {
-                if (columns?.Any() != true)
-                {
-                    var map = EntityMapping.MapDbReaderColumns(reader);
-                    return map.ToDictionary(k => k.Key, v => reader[v.Value]);
-                }
-                else
-                {
-                    return columns.ToDictionary(k => k, v => reader[v]);
-                }
+                var map = EntityMapping.MapDbReaderColumns(reader);
+                return map.ToDictionary(k => k.Key, v => reader[v.Value]);
+            }
+            else
+            {
+                return columns.ToDictionary(k => k, v => reader[v]);
             }
 
-            return null;
         }
 
         /// <summary>

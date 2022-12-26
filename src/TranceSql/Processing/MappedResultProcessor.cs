@@ -5,20 +5,25 @@ using System.Reflection;
 
 namespace TranceSql.Processing
 {
+
+    internal class MappedResultProcessor
+    {
+        // generic methods for our entity mapping helper methods
+        protected static readonly MethodInfo ReadData = typeof(EntityMappingHelper).GetTypeInfo().GetMethod(nameof(EntityMappingHelper.ReadData), new[] { typeof(DbDataReader) }) ?? throw new InvalidOperationException("Unable to find EntityMappingHelper.ReadData method.");
+        protected static readonly MethodInfo CreateInstance = typeof(EntityMappingHelper).GetTypeInfo().GetMethod(nameof(EntityMappingHelper.CreateInstance), new[] { typeof(DbDataReader) }) ?? throw new InvalidOperationException("Unable to find EntityMappingHelper.CreateInstance method.");
+    }
+    
     /// <summary>
     /// Result processor that returns a single class with one or more properties assigned to
     /// the results of the query.
     /// </summary>
     /// <typeparam name="TResult">Type to return.</typeparam>
-    internal class MappedResultProcessor<TResult> : IResultProcessor
+    internal class MappedResultProcessor<TResult> : MappedResultProcessor, IResultProcessor
         where TResult : new()
     {
         // properties to assign
         private IEnumerable<Tuple<PropertyInfo, Type>> _map;
-        // generic methods for our entity mapping helper methods
-        private static readonly MethodInfo _readData = typeof(EntityMappingHelper).GetTypeInfo().GetMethod(nameof(EntityMappingHelper.ReadData), new[] { typeof(DbDataReader) });
-        private static readonly MethodInfo _createInstance = typeof(EntityMappingHelper).GetTypeInfo().GetMethod(nameof(EntityMappingHelper.CreateInstance), new[] { typeof(DbDataReader) });
-
+        
         /// <summary>
         /// Result processor that returns a single class with one or more properties assigned to
         /// the results of the query.
@@ -45,14 +50,14 @@ namespace TranceSql.Processing
                    mappedProperty.Item1.PropertyType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
                 {
                     // lists
-                    var genericReadData = _readData.MakeGenericMethod(mappedProperty.Item2);
+                    var genericReadData = ReadData.MakeGenericMethod(mappedProperty.Item2);
                     var collectionResults = genericReadData.Invoke(null, new object[] { reader });
                     mappedProperty.Item1.SetValue(result, collectionResults);
                 }
                 else
                 {
                     // individual result
-                    var genericCreateInstance = _createInstance.MakeGenericMethod(mappedProperty.Item2);
+                    var genericCreateInstance = CreateInstance.MakeGenericMethod(mappedProperty.Item2);
                     var instanceResult = genericCreateInstance.Invoke(null, new object[] { reader });
                     mappedProperty.Item1.SetValue(result, instanceResult);
                 }

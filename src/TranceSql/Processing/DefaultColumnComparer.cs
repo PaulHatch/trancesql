@@ -19,7 +19,7 @@ namespace TranceSql.Processing
         /// <param name="x">The first object of type T to compare.</param>
         /// <param name="y">The second object of type T to compare.</param>
         /// <returns>true if the specified objects are equal; otherwise, false.</returns>
-        public bool Equals(string x, string y)
+        public bool Equals(string? x, string? y)
         {
 
             if (x == null) { return String.IsNullOrEmpty(y); }

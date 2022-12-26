@@ -66,12 +66,11 @@ namespace TranceSql.Processing
                     }
 
                     // Don't try to assign the result if it is null
-                    if (result != null)
-                    {
-                        var genericReadData = SingleResultProcessor.ReadData.MakeGenericMethod(collection.PropertyType.GetCollectionType());
-                        var collectionResults = genericReadData.Invoke(null, new object[] { reader });
-                        collection.SetValue(result, collectionResults);
-                    }
+                    if (result == null) continue;
+                    
+                    var genericReadData = SingleResultProcessor.ReadData.MakeGenericMethod(collection.PropertyType.GetCollectionType() ?? typeof(object));
+                    var collectionResults = genericReadData.Invoke(null, new object[] { reader });
+                    collection.SetValue(result, collectionResults);
                 }
             }
 

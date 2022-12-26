@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <Authors>Paul Hatcherian</Authors>
     <PackageTags>Trance TranceSQL SQL Database Client MySQL</PackageTags>
     <Copyright>2022 Paul Hatcherian</Copyright>
@@ -22,7 +22,8 @@ TranceSQL provides an easy to use, high performance data access interface for SQ
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MySqlConnector" Version="[0,)" />
+    <PackageReference Include="BenchmarkDotNet" Version="0.13.3" />
+    <PackageReference Include="MySqlConnector" Version="2.2.4" />
     <None Include="..\..\icon.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 

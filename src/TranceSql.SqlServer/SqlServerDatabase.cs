@@ -1,4 +1,4 @@
-﻿using OpenTracing;
+﻿using System.Diagnostics;
 using TranceSql.Processing;
 
 namespace TranceSql.SqlServer
@@ -26,7 +26,7 @@ namespace TranceSql.SqlServer
         /// A connection factory that returns a SQL Server DB connection.
         /// </param>
         /// <param name="parameterMapper">The parameter mapper.</param>
-        public SqlServerDatabase(IConnectionFactory connectionFactory, IParameterMapper parameterMapper)
+        public SqlServerDatabase(IConnectionFactory connectionFactory, IParameterMapper? parameterMapper)
             : this(connectionFactory, parameterMapper, null)
         {
         }
@@ -37,12 +37,11 @@ namespace TranceSql.SqlServer
         /// <param name="connectionFactory">
         /// A connection factory that returns a SQL Server DB connection.
         /// </param>
-        /// <param name="tracer">
-        /// The OpenTracing tracer instance to use. If this value is null the global tracer will
-        /// be used instead.
+        /// <param name="activitySource">
+        /// An activity source that can be used to create activities for database operations.
         /// </param>
-        public SqlServerDatabase(IConnectionFactory connectionFactory, ITracer tracer)
-            : this(connectionFactory, null, tracer)
+        public SqlServerDatabase(IConnectionFactory connectionFactory, ActivitySource? activitySource)
+            : this(connectionFactory, null, activitySource)
         {
         }
 
@@ -53,10 +52,11 @@ namespace TranceSql.SqlServer
         /// A connection factory that returns a SQL Server DB connection.
         /// </param>
         /// <param name="parameterMapper">The parameter mapper.</param>
-        /// <param name="tracer">The OpenTracing tracer instance to use. If this value is null the global tracer will
-        /// be used instead.</param>
-        public SqlServerDatabase(IConnectionFactory connectionFactory, IParameterMapper? parameterMapper, ITracer? tracer)
-            : base(new SqlCommandManager(connectionFactory, parameterMapper ?? new DefaultParameterMapper(), tracer), new SqlServerDialect())
+        /// <param name="activitySource">
+        /// An activity source that can be used to create activities for database operations.
+        /// </param>
+        public SqlServerDatabase(IConnectionFactory connectionFactory, IParameterMapper? parameterMapper, ActivitySource? activitySource)
+            : base(new SqlCommandManager(connectionFactory, parameterMapper ?? new DefaultParameterMapper(), activitySource), new SqlServerDialect())
         {
         }
 
@@ -74,7 +74,7 @@ namespace TranceSql.SqlServer
         /// </summary>
         /// <param name="connectionString">The connection string.</param>
         /// <param name="parameterMapper">The parameter mapper.</param>
-        public SqlServerDatabase(string connectionString, IParameterMapper parameterMapper)
+        public SqlServerDatabase(string connectionString, IParameterMapper? parameterMapper)
             : this(connectionString, parameterMapper, null)
         {
         }
@@ -83,12 +83,11 @@ namespace TranceSql.SqlServer
         /// Creates command parameters for a Microsoft SQL Server database reference.
         /// </summary>
         /// <param name="connectionString">The connection string.</param>
-        /// <param name="tracer">
-        /// The OpenTracing tracer instance to use. If this value is null the global tracer will
-        /// be used instead.
+        /// <param name="activitySource">
+        /// An activity source that can be used to create activities for database operations.
         /// </param>
-        public SqlServerDatabase(string connectionString, ITracer tracer)
-            : this(connectionString, null, tracer)
+        public SqlServerDatabase(string connectionString, ActivitySource? activitySource)
+            : this(connectionString, null, activitySource)
         {
         }
 
@@ -97,12 +96,11 @@ namespace TranceSql.SqlServer
         /// </summary>
         /// <param name="connectionString">The connection string.</param>
         /// <param name="parameterMapper">The parameter mapper.</param>
-        /// <param name="tracer">
-        /// The OpenTracing tracer instance to use. If this value is null the global tracer will
-        /// be used instead.
+        /// <param name="activitySource">
+        /// An activity source that can be used to create activities for database operations.
         /// </param>
-        public SqlServerDatabase(string connectionString, IParameterMapper? parameterMapper, ITracer? tracer)
-            : base(new SqlCommandManager(new SqlServerConnectionFactory(connectionString), parameterMapper ?? new DefaultParameterMapper(), tracer), new SqlServerDialect())
+        public SqlServerDatabase(string connectionString, IParameterMapper? parameterMapper, ActivitySource? activitySource)
+            : base(new SqlCommandManager(new SqlServerConnectionFactory(connectionString), parameterMapper ?? new DefaultParameterMapper(), activitySource), new SqlServerDialect())
         {
         }
     }

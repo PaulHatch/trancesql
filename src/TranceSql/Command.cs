@@ -449,6 +449,7 @@ namespace TranceSql
         /// Result of command as a dictionary.
         /// </returns>
         public Func<CancellationToken, Task<IDictionary<TKey, TValue?>?>> FetchRowKeyedDictionaryCached<TKey, TValue>()
+            where TKey : notnull
         {
             var cached = new CachedContext(Render());
             return (c) => _manager.ExecuteRowKeyedDictionaryResultAsync<TKey, TValue>(Render(), c);
@@ -706,6 +707,7 @@ namespace TranceSql
         /// Result of command as a dictionary.
         /// </returns>
         public IDictionary<TKey, TValue?>? FetchRowKeyedDictionary<TKey, TValue>()
+            where TKey : notnull
         {
             return _manager.ExecuteRowKeyedDictionaryResult<TKey, TValue?>(Render());
         }
@@ -929,8 +931,8 @@ namespace TranceSql
         /// <returns>
         /// Result of command as a dictionary.
         /// </returns>
-        public Task<IDictionary<TKey, TValue?>?> FetchRowKeyedDictionaryAsync<TKey, TValue>(
-            CancellationToken cancel = default)
+        public Task<IDictionary<TKey, TValue?>?> FetchRowKeyedDictionaryAsync<TKey, TValue>(CancellationToken cancel = default)
+            where TKey : notnull
         {
             return _manager.ExecuteRowKeyedDictionaryResultAsync<TKey, TValue>(Render(), cancel);
         }
@@ -1094,6 +1096,7 @@ namespace TranceSql
         /// Result of command as a dictionary.
         /// </returns>
         public Deferred<IDictionary<TKey, TValue>> FetchRowKeyedDictionaryDeferred<TKey, TValue>()
+            where TKey : notnull
         {
             return GetAvailableDeferred().ExecuteRowKeyedDictionaryResultDeferred<TKey, TValue>(Render());
         }

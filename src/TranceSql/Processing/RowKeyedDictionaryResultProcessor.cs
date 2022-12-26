@@ -9,6 +9,7 @@ namespace TranceSql.Processing
     /// <typeparam name="TKey">The type of the key, e.g. the first column type.</typeparam>
     /// <typeparam name="TValue">The type of the value, e.g. the second column type.</typeparam>
     internal class RowKeyedDictionaryResultProcessor<TKey,TValue> : IResultProcessor
+        where TKey : notnull
     {
         /// <summary>
         /// Processes the result as a row-keyed dictionary.

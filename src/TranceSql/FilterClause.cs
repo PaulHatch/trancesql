@@ -26,7 +26,7 @@ namespace TranceSql
         /// <param name="clause">The clause.</param>
         /// <param name="condition">The condition.</param>
         /// <returns>The result of the operator.</returns>
-        public static FilterClause operator &(FilterClause clause, Condition condition)
+        public static FilterClause operator &(FilterClause? clause, Condition condition)
         {
             return (clause?.Value) switch
             {
@@ -41,7 +41,7 @@ namespace TranceSql
         /// <param name="clause">The clause.</param>
         /// <param name="conditionPair">The condition.</param>
         /// <returns>The result of the operator.</returns>
-        public static FilterClause operator &(FilterClause clause, ConditionPair conditionPair)
+        public static FilterClause operator &(FilterClause? clause, ConditionPair conditionPair)
         {
             return (clause?.Value) switch
             {
@@ -56,7 +56,7 @@ namespace TranceSql
         /// <param name="clause">The clause.</param>
         /// <param name="condition">The condition pair.</param>
         /// <returns>The result of the operator.</returns>
-        public static FilterClause operator |(FilterClause clause, Condition condition)
+        public static FilterClause operator |(FilterClause? clause, Condition condition)
         {
             return (clause?.Value) switch
             {
@@ -71,7 +71,7 @@ namespace TranceSql
         /// <param name="clause">The clause.</param>
         /// <param name="conditionPair">The condition pair.</param>
         /// <returns>The result of the operator.</returns>
-        public static FilterClause operator |(FilterClause clause, ConditionPair conditionPair)
+        public static FilterClause operator |(FilterClause? clause, ConditionPair conditionPair)
         {
             return (clause?.Value) switch
             {

@@ -24,7 +24,7 @@ public class EntityMappingTest
         {"List", 3}
     };
     
-    [Fact(Skip = "Collection mapping is not implemented yet")]
+    [Fact]
     public void CanMapGetOnlyDictionary()
     {
         var create = EntityMapping.GetEntityFunc<TestClass>();

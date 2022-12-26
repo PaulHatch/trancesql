@@ -1,8 +1,8 @@
 ﻿using Npgsql;
-using OpenTracing;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using TranceSql.Processing;
@@ -33,7 +33,7 @@ namespace TranceSql.Postgres
         /// A connection factory that returns a Postgres DB connection.
         /// </param>
         /// <param name="parameterMapper">The parameter mapper.</param>
-        public PostgresDatabase(IConnectionFactory connectionFactory, IParameterMapper parameterMapper)
+        public PostgresDatabase(IConnectionFactory connectionFactory, IParameterMapper? parameterMapper)
             : this(connectionFactory, parameterMapper, null)
         {
         }
@@ -44,10 +44,11 @@ namespace TranceSql.Postgres
         /// <param name="connectionFactory">
         /// A connection factory that returns a Postgres DB connection.
         /// </param>
-        /// <param name="tracer">The OpenTracing tracer instance to use. If this value is null the global tracer will
-        /// be used instead.</param>
-        public PostgresDatabase(IConnectionFactory connectionFactory, ITracer tracer)
-            : this(connectionFactory, null, tracer)
+        /// <param name="activitySource">
+        /// An activity source that can be used to create activities for database operations.
+        /// </param>
+        public PostgresDatabase(IConnectionFactory connectionFactory, ActivitySource? activitySource)
+            : this(connectionFactory, null, activitySource)
         {
         }
 
@@ -58,10 +59,11 @@ namespace TranceSql.Postgres
         /// A connection factory that returns a Postgres DB connection.
         /// </param>
         /// <param name="parameterMapper">The parameter mapper.</param>
-        /// <param name="tracer">The OpenTracing tracer instance to use. If this value is null the global tracer will
-        /// be used instead.</param>
-        public PostgresDatabase(IConnectionFactory connectionFactory, IParameterMapper? parameterMapper, ITracer? tracer)
-            : base(new SqlCommandManager(connectionFactory, parameterMapper ?? new DefaultParameterMapper(), tracer), new PostgresDialect())
+        /// <param name="activitySource">
+        /// An activity source that can be used to create activities for database operations.
+        /// </param>
+        public PostgresDatabase(IConnectionFactory connectionFactory, IParameterMapper? parameterMapper, ActivitySource? activitySource)
+            : base(new SqlCommandManager(connectionFactory, parameterMapper ?? new DefaultParameterMapper(), activitySource), new PostgresDialect())
         {
         }
 
@@ -79,7 +81,7 @@ namespace TranceSql.Postgres
         /// </summary>
         /// <param name="connectionString">The connection string.</param>
         /// <param name="parameterMapper">The parameter mapper.</param>
-        public PostgresDatabase(string connectionString, IParameterMapper parameterMapper)
+        public PostgresDatabase(string connectionString, IParameterMapper? parameterMapper)
             : this(connectionString, parameterMapper, null)
         {
         }
@@ -88,12 +90,11 @@ namespace TranceSql.Postgres
         /// Creates command parameters for a Postgres database reference.
         /// </summary>
         /// <param name="connectionString">The connection string.</param>
-        /// <param name="tracer">
-        /// The OpenTracing tracer instance to use. If this value is null the global tracer will
-        /// be used instead.
+        /// <param name="activitySource">
+        /// An activity source that can be used to create activities for database operations.
         /// </param>
-        public PostgresDatabase(string connectionString, ITracer tracer)
-            : this(connectionString, null, tracer)
+        public PostgresDatabase(string connectionString, ActivitySource? activitySource)
+            : this(connectionString, null, activitySource)
         {
         }
 
@@ -102,16 +103,15 @@ namespace TranceSql.Postgres
         /// </summary>
         /// <param name="connectionString">The connection string.</param>
         /// <param name="parameterMapper">The parameter mapper.</param>
-        /// <param name="tracer">
-        /// The OpenTracing tracer instance to use. If this value is null the global tracer will
-        /// be used instead.
+        /// <param name="activitySource">
+        /// An activity source that can be used to create activities for database operations.
         /// </param>
-        public PostgresDatabase(string connectionString, IParameterMapper? parameterMapper, ITracer? tracer)
+        public PostgresDatabase(string connectionString, IParameterMapper? parameterMapper, ActivitySource? activitySource)
             : base(
                 new SqlCommandManager(
                     new PostgresConnectionFactory(connectionString),
                     parameterMapper ?? new DefaultParameterMapper(),
-                    tracer),
+                    activitySource),
                 new PostgresDialect())
         {
         }
@@ -272,7 +272,7 @@ namespace TranceSql.Postgres
                 }
             }
 
-            private void OnConnectionDisposed(object sender, EventArgs e)
+            private void OnConnectionDisposed(object? sender, EventArgs e)
             {
                 _observable.OnCompleted();
             }

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <Authors>Paul Hatcherian</Authors>
     <PackageTags>Trance TranceSQL SQL Database Client</PackageTags>
     <Copyright>2022 Paul Hatcherian</Copyright>
@@ -21,7 +21,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="OpenTracing" Version="0.12.0" />
+    <PackageReference Include="BenchmarkDotNet" Version="0.13.3" />
+    <PackageReference Include="OpenTelemetry" Version="1.3.2" />
     <PackageReference Include="System.Data.Common" Version="4.3.0" />
     <None Include="..\..\icon.png" Pack="true" PackagePath="\" />
   </ItemGroup>

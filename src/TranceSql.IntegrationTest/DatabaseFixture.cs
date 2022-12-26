@@ -1,6 +1,5 @@
-﻿using OpenTracing;
-using OpenTracing.Mock;
-using System;
+﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using TranceSql.MySql;
@@ -8,6 +7,7 @@ using TranceSql.Oracle;
 using TranceSql.Postgres;
 using TranceSql.Sqlite;
 using TranceSql.SqlServer;
+using Xunit.Abstractions;
 
 namespace TranceSql.IntegrationTest
 {
@@ -20,8 +20,19 @@ namespace TranceSql.IntegrationTest
         private bool _createdDatabase;
         private Database _masterDatabase; // used for fixture operations (create/drop test database)
 
-        public Func<ITracer, Database> GetDatabase { get; }
+        private Func<Database> _getDatabase;
+        private Database _database;
+        private ActivitySource _activitySource;
 
+        public Database GetDatabase(ITestOutputHelper outputHelper)
+        {
+            if (_database != null) return _database;
+            RegisterActivityOutput(outputHelper);
+            _database = _getDatabase();
+            return _database;
+        }
+
+        
         protected enum Dialect
         {
             MySql,
@@ -29,6 +40,34 @@ namespace TranceSql.IntegrationTest
             Oracle,
             Postgres,
             Sqlite
+        }
+
+        private void RegisterActivityOutput(ITestOutputHelper outputHelper)
+        {
+            ActivitySource.AddActivityListener(new ActivityListener
+            {
+                ShouldListenTo = a => a == _activitySource,
+                Sample = (ref ActivityCreationOptions<ActivityContext> options) => ActivitySamplingResult.AllDataAndRecorded,
+                ActivityStarted = activity =>
+                {
+                    var started = $"Started '{activity.OperationName}'";
+                    Console.WriteLine(started);
+                    outputHelper.WriteLine(started);
+                    foreach (var tag in activity.Tags)
+                    {
+                        var output = $"  {tag.Key}: {tag.Value}";
+                        Console.WriteLine(output);
+                        outputHelper.WriteLine(output);    
+                    }
+                    
+                },
+                ActivityStopped = activity =>
+                {
+                    var stopped = $"Stopped '{activity.OperationName}'";
+                    Console.WriteLine(stopped);
+                    outputHelper.WriteLine(stopped);
+                }
+            });
         }
 
         public DatabaseFixture()
@@ -39,9 +78,11 @@ namespace TranceSql.IntegrationTest
                 _nameIndex++;
                 _dbName = $"integration{_nameIndex}";
             }
+            
+            _activitySource = new ActivitySource("TranceSql.IntegrationTest");
 
             var dialect = Environment.GetEnvironmentVariable("DIALECT");
-            var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
+            var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING") ?? throw new InvalidOperationException("CONNECTION_STRING environment variable must be set.");
             if (!Enum.TryParse(dialect, true, out _dialect))
             {
                 Console.WriteLine($"Warning, could not resolve DIALECT={dialect} to known dialect.");
@@ -52,30 +93,30 @@ namespace TranceSql.IntegrationTest
             {
                 case Dialect.MySql:
                     WaitForDatabase(new MySqlDatabase(connectionString));
-                    GetDatabase = t => new MySqlDatabase(connectionString + $";Database={_dbName}", t);
+                    _getDatabase = () => new MySqlDatabase(connectionString + $";Database={_dbName}", _activitySource);
                     break;
                 case Dialect.Oracle:
                     WaitForDatabase(new OracleDatabase(connectionString));
-                    GetDatabase = t => new OracleDatabase(connectionString + $";Database={_dbName}", t);
+                    _getDatabase = () => new OracleDatabase(connectionString + $";Database={_dbName}", _activitySource);
                     break;
                 case Dialect.Postgres:
                     WaitForDatabase(new PostgresDatabase(connectionString));
-                    GetDatabase = t => new PostgresDatabase(connectionString + $";Database={_dbName}", t);
+                    _getDatabase = () => new PostgresDatabase(connectionString + $";Database={_dbName}", _activitySource);
                     break;
                 case Dialect.SqlServer:
                     WaitForDatabase(new SqlServerDatabase(connectionString));
-                    GetDatabase = t => new SqlServerDatabase(connectionString + $";Database={_dbName}", t);
+                    _getDatabase = () => new SqlServerDatabase(connectionString + $";Database={_dbName}", _activitySource);
                     break;
                 case Dialect.Sqlite:
                 default:
                     if (File.Exists($"{_dbName}.db")) { File.Delete($"{_dbName}.db"); }
-                    GetDatabase = t => new SqliteDatabase($"Data Source={_dbName }.db", t);
+                    _getDatabase = () => new SqliteDatabase($"Data Source={_dbName }.db", _activitySource);
                     break;
             }
 
             try
             {
-                new Command(GetDatabase(new MockTracer()))
+                new Command(_getDatabase())
                 {
                     new CreateTable("sample")
                     {

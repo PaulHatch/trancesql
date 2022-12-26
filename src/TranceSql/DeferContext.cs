@@ -110,6 +110,7 @@ namespace TranceSql
         /// <param name="context">The SQL context.</param>
         /// <returns>Deferred&lt;IDictionary&lt;TKey, TValue&gt;&gt;.</returns>
         internal Deferred<IDictionary<TKey, TValue>> ExecuteRowKeyedDictionaryResultDeferred<TKey, TValue>(IContext context)
+            where TKey : notnull
         {
             return DeferCommand<IDictionary<TKey, TValue>>(context, new RowKeyedDictionaryResultProcessor<TKey, TValue>());
         }

@@ -11,7 +11,7 @@ namespace TranceSql.IntegrationTest
 
         public Joins(DatabaseFixture db, ITestOutputHelper helper)
         {
-            _database = db.GetDatabase(new TestTracer(helper));
+            _database = db.GetDatabase(helper);
         }
 
         [Fact]

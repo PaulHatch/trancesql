@@ -1,9 +1,7 @@
-﻿using OpenTracing;
-using OpenTracing.Tag;
-using OpenTracing.Util;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -17,7 +15,7 @@ namespace TranceSql.Processing
         /// <summary>Provides parameter value from input object instances.</summary>
         internal IParameterMapper ParameterMapper { get; }
 
-        private readonly ITracer _tracer;
+        private readonly ActivitySource? _activitySource;
         private readonly IConnectionFactory _connectionFactory;
 
         /// <summary>
@@ -26,16 +24,16 @@ namespace TranceSql.Processing
         /// </summary>
         /// <param name="connectionFactory">Factory to create connections for current database.</param>
         /// <param name="parameterMapper">Provides parameter value from input object instances.</param>
-        /// <param name="tracer">The OpenTracing tracer instance to use. If this value is null the global tracer will
+        /// <param name="activitySource">The OpenTelemetry ActivitySource instance to use. If this value is null the global tracer will
         /// be used instead.</param>
         public SqlCommandManager(
             IConnectionFactory connectionFactory,
             IParameterMapper parameterMapper,
-            ITracer? tracer)
+            ActivitySource? activitySource)
         {
             _connectionFactory = connectionFactory;
             ParameterMapper = parameterMapper;
-            _tracer = tracer ?? GlobalTracer.Instance;
+            _activitySource = activitySource;
         }
 
         /// <summary>
@@ -150,8 +148,10 @@ namespace TranceSql.Processing
         /// <param name="context">A SQL command context which includes a SELECT command.</param>
         /// <param name="cancel">A token to monitor for cancellation requests.</param>
         /// <returns>The result of the SQL command.</returns>
-        internal async Task<IDictionary<TKey, TValue?>?> ExecuteRowKeyedDictionaryResultAsync<TKey, TValue>(IContext context,
+        internal async Task<IDictionary<TKey, TValue?>?> ExecuteRowKeyedDictionaryResultAsync<TKey, TValue>(
+            IContext context,
             CancellationToken cancel)
+            where TKey : notnull
         {
             var processor = new RowKeyedDictionaryResultProcessor<TKey, TValue>();
             var result = await RunCommandAsync<IDictionary<TKey, TValue?>>(context, processor, cancel);
@@ -260,6 +260,7 @@ namespace TranceSql.Processing
         /// <param name="context">A SQL command context which includes a SELECT command.</param>
         /// <returns>The result of the SQL command.</returns>
         internal IDictionary<TKey, TValue>? ExecuteRowKeyedDictionaryResult<TKey, TValue>(IContext context)
+            where TKey : notnull
         {
             var processor = new RowKeyedDictionaryResultProcessor<TKey, TValue>();
             return RunCommand<IDictionary<TKey, TValue>>(context, processor);
@@ -293,23 +294,13 @@ namespace TranceSql.Processing
             return new ResultStream<T>(context, this);
         }
 
-        private IScope CreateScope(IContext context)
+        private Activity? CreateScope(IContext context)
         {
-            var builder = _tracer
-                .BuildSpan(context.OperationName ?? "sql-command")
-                .WithTag(Tags.SpanKind.Key, Tags.SpanKindClient)
-                .WithTag(Tags.DbType, "sql")
-                .WithTag(Tags.Component.Key, "trancesql");
+            var builder = _activitySource?.StartActivity(context.OperationName ?? "sql-command", ActivityKind.Client)
+                ?.SetTag("db-type", "sql")
+                .SetTag("component", "trancesql");
 
-            //if (!String.IsNullOrEmpty(_dbInfo.User)) { builder.WithTag(Tags.DbUser, _dbInfo.User); }
-            //if (!String.IsNullOrEmpty(_dbInfo.Database)) { builder.WithTag(Tags.DbInstance, _dbInfo.Database); }
-            if (!String.IsNullOrEmpty(context.CommandText))
-            {
-                builder.WithTag(Tags.DbStatement, context.CommandText);
-            }
-            //if (!String.IsNullOrEmpty(_dbInfo.Server)) { builder.WithTag("peer.address", _dbInfo.Server); }
-
-            return builder.StartActive(finishSpanOnDispose: true);
+            return builder?.Start();
         }
 
         /// <summary>
@@ -349,7 +340,7 @@ namespace TranceSql.Processing
 
                         if (item.Deferred is null || item.Processer is null)
                             throw new InvalidOperationException("Null value in processor context");
-                        
+
                         item.Deferred.SetValue(item.Processer.Process(reader));
                         results++;
                     }
@@ -359,7 +350,7 @@ namespace TranceSql.Processing
             }
             catch
             {
-                scope.Span.SetTag(Tags.Error, true);
+                scope?.SetStatus(ActivityStatusCode.Error);
                 throw;
             }
         }
@@ -379,7 +370,7 @@ namespace TranceSql.Processing
             command.CommandText = context.CommandText;
             AddParametersToCommand(command, context);
 
-            using IScope scope = CreateScope(context);
+            using var activity = CreateScope(context);
             try
             {
                 await connection.OpenAsync();
@@ -411,7 +402,7 @@ namespace TranceSql.Processing
             }
             catch
             {
-                scope.Span.SetTag(Tags.Error, true);
+                activity?.SetStatus(ActivityStatusCode.Error);
                 throw;
             }
         }
@@ -441,7 +432,7 @@ namespace TranceSql.Processing
 
             object? result;
 
-            using var scope = CreateScope(context);
+            using var activity = CreateScope(context);
             try
             {
                 await connection.OpenAsync(cancel);
@@ -459,11 +450,11 @@ namespace TranceSql.Processing
             }
             catch
             {
-                scope.Span.SetTag(Tags.Error, true);
+                activity?.SetStatus(ActivityStatusCode.Error);
                 throw;
             }
 
-            return (T?)result;
+            return (T?) result;
         }
 
         /// <summary>
@@ -489,7 +480,7 @@ namespace TranceSql.Processing
 
             object? result;
 
-            using var scope = CreateScope(context);
+            using var activity = CreateScope(context);
             try
             {
                 connection.Open();
@@ -507,7 +498,7 @@ namespace TranceSql.Processing
             }
             catch
             {
-                scope.Span.SetTag(Tags.Error, true);
+                activity?.SetStatus(ActivityStatusCode.Error);
                 throw;
             }
 
