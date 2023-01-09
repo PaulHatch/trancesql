@@ -22,7 +22,6 @@ TranceSQL provides an easy to use, high performance data access interface for SQ
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BenchmarkDotNet" Version="0.13.3" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
     <None Include="..\..\icon.png" Pack="true" PackagePath="\" />
   </ItemGroup>

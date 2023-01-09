@@ -22,7 +22,6 @@ TranceSQL provides an easy to use, high performance data access interface for SQ
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BenchmarkDotNet" Version="0.13.3" />
     <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="3.21.80" />
     <None Include="..\..\icon.png" Pack="true" PackagePath="\" />
   </ItemGroup>
