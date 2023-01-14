@@ -4,9 +4,7 @@
     /// <summary>
     /// Represents an element which has an alias applied.
     /// </summary>
-    public class Alias :
-        ISqlElement,
-        IDataSource  // allow use in data source contexts such as FROM clause
+    public class Alias : IDataSource  // allow use in data source contexts such as FROM clause
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Alias"/> class.

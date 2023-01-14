@@ -64,7 +64,7 @@ namespace TranceSql
                         context.Write(" >> ");
                         break;
                     default:
-                        break;
+                        throw new ArgumentOutOfRangeException(nameof(Symbol),$"Invalid arithmetic symbol '{Symbol}'");
                 }
                 context.Render(Right);
             }
