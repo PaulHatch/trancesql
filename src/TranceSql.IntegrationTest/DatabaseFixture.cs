@@ -81,8 +81,8 @@ namespace TranceSql.IntegrationTest
             
             _activitySource = new ActivitySource("TranceSql.IntegrationTest");
 
-            var dialect = Environment.GetEnvironmentVariable("DIALECT");
-            var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING") ?? throw new InvalidOperationException("CONNECTION_STRING environment variable must be set.");
+            var dialect = Environment.GetEnvironmentVariable("DIALECT") ?? "Sqlite";
+            var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING") ?? "Data Source=:memory:;Version=3;New=True;";
             if (!Enum.TryParse(dialect, true, out _dialect))
             {
                 Console.WriteLine($"Warning, could not resolve DIALECT={dialect} to known dialect.");
