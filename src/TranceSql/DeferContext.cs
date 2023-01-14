@@ -9,10 +9,11 @@ namespace TranceSql
     /// <summary>
     /// Represents the execution context for deferred SQL operations.
     /// </summary>
-    public sealed class DeferContext
+    public sealed class DeferContext : IAsyncDisposable, IDisposable
     {
         private readonly CombineContext _context = new();
         private readonly List<ProcessorContext> _processors = new();
+        private readonly object _locker = new();
 
         /// <summary>
         /// Gets the database for execution of commands within this context.
@@ -28,13 +29,29 @@ namespace TranceSql
         internal int ParameterIndex { get; set; }
 
         /// <summary>
+        /// Gets or sets a final command (commit transaction) for this context.
+        /// </summary>
+        private Command? FinalCommand { get; set; }
+
+        /// <summary>
         /// Represents the execution context for deferred SQL operations.
         /// </summary>
         /// <param name="database">The database to execute commands requested in this context.</param>
-        internal DeferContext(Database database)
+        /// <param name="beginTransaction"></param>
+        /// <param name="endTransaction"></param>
+        internal DeferContext(Database database, BeginTransaction? beginTransaction, CommitTransaction? endTransaction)
         {
             Database = database;
             ParameterIndex = 1;
+            if (beginTransaction is not null)
+            {
+                new Command(this) {beginTransaction}.ExecuteDeferred();
+            }
+
+            if (endTransaction is not null)
+            {
+                FinalCommand = new Command(this) {endTransaction};
+            }
         }
 
         /// <summary>
@@ -48,10 +65,9 @@ namespace TranceSql
         {
             _context.Append(context);
             var deferredResult = new Deferred<T>(this);
-            _processors.Add(new ProcessorContext { Processer = processor, Deferred = deferredResult });
+            _processors.Add(new ProcessorContext {Processer = processor, Deferred = deferredResult});
             return deferredResult;
         }
-
 
         /// <summary>
         /// Queues a command and returns a deferred reference to the result.
@@ -72,9 +88,11 @@ namespace TranceSql
         /// <param name="defaultValue">The default value.</param>
         /// <param name="properties">The properties.</param>
         /// <returns>Deferred&lt;TResult&gt;.</returns>
-        internal Deferred<TResult> ExecuteResultDeferred<TResult>(IContext context, object? defaultValue, IEnumerable<PropertyInfo>? properties)
+        internal Deferred<TResult> ExecuteResultDeferred<TResult>(IContext context, object? defaultValue,
+            IEnumerable<PropertyInfo>? properties)
         {
-            return DeferCommand<TResult>(context, new SingleResultProcessor<TResult>((TResult?)defaultValue, properties));
+            return DeferCommand<TResult>(context,
+                new SingleResultProcessor<TResult>((TResult?) defaultValue, properties));
         }
 
         /// <summary>
@@ -84,7 +102,8 @@ namespace TranceSql
         /// <param name="context">The SQL context.</param>
         /// <param name="mappedProperties">The mapped properties.</param>
         /// <returns>Deferred&lt;TResult&gt;.</returns>
-        internal Deferred<TResult> ExecuteMapResultDeferred<TResult>(IContext context, IEnumerable<Tuple<PropertyInfo, Type>> mappedProperties)
+        internal Deferred<TResult> ExecuteMapResultDeferred<TResult>(IContext context,
+            IEnumerable<Tuple<PropertyInfo, Type>> mappedProperties)
             where TResult : new()
         {
             return DeferCommand<TResult>(context, new MappedResultProcessor<TResult>(mappedProperties));
@@ -109,10 +128,12 @@ namespace TranceSql
         /// <typeparam name="TValue">The type of the t value.</typeparam>
         /// <param name="context">The SQL context.</param>
         /// <returns>Deferred&lt;IDictionary&lt;TKey, TValue&gt;&gt;.</returns>
-        internal Deferred<IDictionary<TKey, TValue>> ExecuteRowKeyedDictionaryResultDeferred<TKey, TValue>(IContext context)
+        internal Deferred<IDictionary<TKey, TValue>> ExecuteRowKeyedDictionaryResultDeferred<TKey, TValue>(
+            IContext context)
             where TKey : notnull
         {
-            return DeferCommand<IDictionary<TKey, TValue>>(context, new RowKeyedDictionaryResultProcessor<TKey, TValue>());
+            return DeferCommand<IDictionary<TKey, TValue>>(context,
+                new RowKeyedDictionaryResultProcessor<TKey, TValue>());
         }
 
         /// <summary>
@@ -121,9 +142,11 @@ namespace TranceSql
         /// <param name="context">The SQL context.</param>
         /// <param name="columns">The columns.</param>
         /// <returns>Deferred&lt;IDictionary&lt;System.String, System.Object&gt;&gt;.</returns>
-        internal Deferred<IDictionary<string, object>> ExecuteColumnKeyedDictionaryResultDeferred(IContext context, string[] columns)
+        internal Deferred<IDictionary<string, object>> ExecuteColumnKeyedDictionaryResultDeferred(IContext context,
+            string[] columns)
         {
-            return DeferCommand<IDictionary<string, object>>(context, new ColumnKeyedDictionaryResultProcessor(columns));
+            return DeferCommand<IDictionary<string, object>>(context,
+                new ColumnKeyedDictionaryResultProcessor(columns));
         }
 
         /// <summary>
@@ -141,8 +164,18 @@ namespace TranceSql
         /// <returns>A task for the operation.</returns>
         internal async Task RunAsync()
         {
+            lock (_locker)
+            {
+                if (HasExecuted)
+                {
+                    return;
+                }
+
+                HasExecuted = true;
+            }
+
+            FinalCommand?.ExecuteDeferred();
             await Database.Manager.RunCommandSetAsync(_context, _processors);
-            HasExecuted = true;
         }
 
         /// <summary>
@@ -150,8 +183,24 @@ namespace TranceSql
         /// </summary>
         internal void Run()
         {
+            lock (_locker)
+            {
+                if (HasExecuted)
+                {
+                    return;
+                }
+
+                HasExecuted = true;
+            }
+
+            FinalCommand?.ExecuteDeferred();
             Database.Manager.RunCommandSet(_context, _processors);
-            HasExecuted = true;
         }
+
+        /// <inheritdoc />
+        public async ValueTask DisposeAsync() => await RunAsync();
+
+        /// <inheritdoc />
+        public void Dispose() => Run();
     }
 }

@@ -36,7 +36,16 @@ namespace TranceSql
         /// </summary>
         /// <returns>A new <see cref="DeferContext"/> instance for this connection.</returns>
         public DeferContext CreateDeferContext() => 
-            new(this);
+            new(this, null, null);
+        
+        /// <summary>
+        /// Creates a new context for running deferred commands using this connection's manager which will be wrapped
+        /// with the specified begin/commit transaction statements.
+        /// begin and end 
+        /// </summary>
+        /// <returns>A new <see cref="DeferContext"/> instance for this connection.</returns>
+        public DeferContext CreateDeferContext(BeginTransaction beginTransaction, CommitTransaction commitTransaction) => 
+            new(this, null, null);
 
         /// <summary>
         /// Creates the connection using the internal connection manager.
