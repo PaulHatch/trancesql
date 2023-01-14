@@ -49,7 +49,7 @@ namespace TranceSql
 
         private async Task<T?> GetResultAsync()
         {
-            await _context.RunAsync();
+            await _context.RunAsync().ConfigureAwait(false);
             return _result;
         }
 

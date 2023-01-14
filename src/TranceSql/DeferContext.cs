@@ -175,7 +175,7 @@ namespace TranceSql
             }
 
             FinalCommand?.ExecuteDeferred();
-            await Database.Manager.RunCommandSetAsync(_context, _processors);
+            await Database.Manager.RunCommandSetAsync(_context, _processors).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -198,7 +198,7 @@ namespace TranceSql
         }
 
         /// <inheritdoc />
-        public async ValueTask DisposeAsync() => await RunAsync();
+        public async ValueTask DisposeAsync() => await RunAsync().ConfigureAwait(false);
 
         /// <inheritdoc />
         public void Dispose() => Run();

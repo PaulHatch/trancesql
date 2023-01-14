@@ -154,7 +154,7 @@ namespace TranceSql.Processing
             where TKey : notnull
         {
             var processor = new RowKeyedDictionaryResultProcessor<TKey, TValue>();
-            var result = await RunCommandAsync<IDictionary<TKey, TValue?>>(context, processor, cancel);
+            var result = await RunCommandAsync<IDictionary<TKey, TValue?>>(context, processor, cancel).ConfigureAwait(false);
             return result;
         }
 
@@ -170,7 +170,7 @@ namespace TranceSql.Processing
             IEnumerable<string> columns, CancellationToken cancel)
         {
             var processor = new ColumnKeyedDictionaryResultProcessor(columns);
-            var result = await RunCommandAsync<IDictionary<string, object?>>(context, processor, cancel);
+            var result = await RunCommandAsync<IDictionary<string, object?>>(context, processor, cancel).ConfigureAwait(false);
             return result;
         }
 
@@ -363,7 +363,7 @@ namespace TranceSql.Processing
         /// <returns>A task for the operation.</returns>
         internal async Task RunCommandSetAsync(IContext context, IList<ProcessorContext> processors)
         {
-            await using var connection = await CreateConnectionAsync();
+            await using var connection = await CreateConnectionAsync().ConfigureAwait(false);
             await using var command = connection.CreateCommand();
             // initialize command
             command.Connection = connection;
@@ -373,18 +373,18 @@ namespace TranceSql.Processing
             using var activity = CreateScope(context);
             try
             {
-                await connection.OpenAsync();
+                await connection.OpenAsync().ConfigureAwait(false);
                 if (processors.Any() != true)
                 {
-                    await command.ExecuteNonQueryAsync();
+                    await command.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
                 else
                 {
-                    await using var reader = await command.ExecuteReaderAsync();
+                    await using var reader = await command.ExecuteReaderAsync().ConfigureAwait(false);
                     var results = 0;
                     foreach (var item in processors)
                     {
-                        if (results > 0 && !await reader.NextResultAsync())
+                        if (results > 0 && !await reader.NextResultAsync().ConfigureAwait(false))
                         {
                             throw new InvalidOperationException(
                                 $"Expected {processors.Count} but result only contained {results}");
@@ -398,7 +398,7 @@ namespace TranceSql.Processing
                     }
                 }
 
-                await connection.CloseAsync();
+                await connection.CloseAsync().ConfigureAwait(false);
             }
             catch
             {
@@ -423,7 +423,7 @@ namespace TranceSql.Processing
         {
             AssertCorrectReturnType<T>(processor);
 
-            await using var connection = await CreateConnectionAsync();
+            await using var connection = await CreateConnectionAsync().ConfigureAwait(false);
             await using var command = connection.CreateCommand();
             // initialize command
             command.Connection = connection;
@@ -435,18 +435,18 @@ namespace TranceSql.Processing
             using var activity = CreateScope(context);
             try
             {
-                await connection.OpenAsync(cancel);
+                await connection.OpenAsync(cancel).ConfigureAwait(false);
                 if (processor == null)
                 {
-                    result = await command.ExecuteNonQueryAsync(cancel);
+                    result = await command.ExecuteNonQueryAsync(cancel).ConfigureAwait(false);
                 }
                 else
                 {
-                    await using var reader = await command.ExecuteReaderAsync(cancel);
+                    await using var reader = await command.ExecuteReaderAsync(cancel).ConfigureAwait(false);
                     result = processor.Process(reader);
                 }
 
-                await connection.CloseAsync();
+                await connection.CloseAsync().ConfigureAwait(false);
             }
             catch
             {
