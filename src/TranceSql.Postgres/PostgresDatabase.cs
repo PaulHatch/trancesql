@@ -324,10 +324,8 @@ namespace TranceSql.Postgres
 
             var listener = new PostgresEventListener(connection);
 
-            using (var command = new NpgsqlCommand($"LISTEN {Dialect.FormatIdentifier(channel)}", connection))
-            {
-                await command.ExecuteNonQueryAsync();
-            }
+            await using var command = new NpgsqlCommand($"LISTEN {Dialect.FormatIdentifier(channel)}", connection);
+            await command.ExecuteNonQueryAsync();
 
             return listener;
         }

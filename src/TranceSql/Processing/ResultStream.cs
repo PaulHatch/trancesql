@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Data.Common;
 
 namespace TranceSql.Processing
@@ -37,8 +36,8 @@ namespace TranceSql.Processing
     {
         private readonly bool _isSimpleType;
         private readonly CreateEntity<T> _readEntity;
-        private DbConnection _connection;
-        private DbCommand _command;
+        private readonly DbConnection _connection;
+        private readonly DbCommand _command;
         private DbDataReader _reader;
         private IDictionary<string, int>? _map;
 
@@ -48,7 +47,7 @@ namespace TranceSql.Processing
             _isSimpleType = EntityMapping.IsSimpleType<T>();
             _readEntity = _isSimpleType ? GetSimple : EntityMapping.GetEntityFunc<T>();
 
-            _connection = AsyncHelper.RunSync(() => manager.CreateConnectionAsync());
+            _connection = AsyncHelper.RunSync(manager.CreateConnectionAsync);
             _command = _connection.CreateCommand();
             _command.Connection = _connection;
             _command.CommandText = context.CommandText;
@@ -58,7 +57,7 @@ namespace TranceSql.Processing
             _map = _isSimpleType ? null : EntityMapping.MapDbReaderColumns(_reader);
         }
 
-        private T GetSimple(DbDataReader reader, IDictionary<string, int> map)
+        private static T GetSimple(DbDataReader reader, IDictionary<string, int> map)
         {
             var result = reader[0];
             if (result is T match)
@@ -90,7 +89,7 @@ namespace TranceSql.Processing
         /// </summary>
         public void Dispose()
         {
-            _command?.Dispose();
+            _command.Dispose();
             _connection.Dispose();
         }
 
@@ -119,9 +118,9 @@ namespace TranceSql.Processing
         public void Reset()
         {
             Current = default!;
-            _reader?.Close();
-            _command?.Cancel();
-            _reader = _command!.ExecuteReader();
+            _reader.Close();
+            _command.Cancel();
+            _reader = _command.ExecuteReader();
             _map = _isSimpleType ? null : EntityMapping.MapDbReaderColumns(_reader);
         }
     }

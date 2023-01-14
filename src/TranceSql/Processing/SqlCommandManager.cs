@@ -363,8 +363,8 @@ namespace TranceSql.Processing
         /// <returns>A task for the operation.</returns>
         internal async Task RunCommandSetAsync(IContext context, IList<ProcessorContext> processors)
         {
-            using var connection = await CreateConnectionAsync();
-            using var command = connection.CreateCommand();
+            await using var connection = await CreateConnectionAsync();
+            await using var command = connection.CreateCommand();
             // initialize command
             command.Connection = connection;
             command.CommandText = context.CommandText;
@@ -380,7 +380,7 @@ namespace TranceSql.Processing
                 }
                 else
                 {
-                    using var reader = await command.ExecuteReaderAsync();
+                    await using var reader = await command.ExecuteReaderAsync();
                     var results = 0;
                     foreach (var item in processors)
                     {
@@ -398,7 +398,7 @@ namespace TranceSql.Processing
                     }
                 }
 
-                connection.Close();
+                await connection.CloseAsync();
             }
             catch
             {
@@ -423,8 +423,8 @@ namespace TranceSql.Processing
         {
             AssertCorrectReturnType<T>(processor);
 
-            using var connection = await CreateConnectionAsync();
-            using var command = connection.CreateCommand();
+            await using var connection = await CreateConnectionAsync();
+            await using var command = connection.CreateCommand();
             // initialize command
             command.Connection = connection;
             command.CommandText = context.CommandText;
@@ -442,11 +442,11 @@ namespace TranceSql.Processing
                 }
                 else
                 {
-                    using var reader = await command.ExecuteReaderAsync(cancel);
+                    await using var reader = await command.ExecuteReaderAsync(cancel);
                     result = processor.Process(reader);
                 }
 
-                connection.Close();
+                await connection.CloseAsync();
             }
             catch
             {

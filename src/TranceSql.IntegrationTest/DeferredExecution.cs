@@ -7,7 +7,7 @@ namespace TranceSql.IntegrationTest
     [Trait("dialect", "ANY")]
     public class DeferredExecution : IClassFixture<DatabaseFixture>
     {
-        protected readonly Database _database;
+        private readonly Database _database;
 
         public DeferredExecution(DatabaseFixture db, ITestOutputHelper helper)
         {
@@ -80,11 +80,11 @@ namespace TranceSql.IntegrationTest
         {
             // setup
 
-            new Command(_database)
+            await new Command(_database)
             {
                 CreateTable.From<Sample>("deferred_async_table"),
                 new Insert { Into = "deferred_async_table", Columns = {"ID", "Column1"}, Values = { 1, "Test" } },
-            }.Execute();
+            }.ExecuteAsync();
 
             // test
 
@@ -112,11 +112,11 @@ namespace TranceSql.IntegrationTest
         {
             // setup
             
-            new Command(_database)
+            await new Command(_database)
             {
                 CreateTable.From<Sample>("deferred_inline_async_table"),
                 new Insert { Into = "deferred_inline_async_table", Columns = {"ID", "Column1"}, Values = { 1, "Test" } },
-            }.Execute();
+            }.ExecuteAsync();
 
             // test
 
@@ -141,13 +141,13 @@ namespace TranceSql.IntegrationTest
         {
             // setup
 
-            var t = CreateTable.From<Sample>("deferred_inline_table");
+            CreateTable.From<Sample>("deferred_inline_table");
 
-            new Command(_database)
+            await new Command(_database)
             {
                 CreateTable.From<Sample>("deferred_mixed_table"),
                 new Insert { Into = "deferred_mixed_table", Columns = {"ID", "Column1"}, Values = { 1, "Test" } },
-            }.Execute();
+            }.ExecuteAsync();
 
             // test
 
