@@ -25,7 +25,6 @@ namespace TranceSql
         public AssignmentCollection(IEnumerable<Assignment> assignments)
             : base(assignments)
         {
-
         }
 
         /// <summary>
@@ -34,8 +33,15 @@ namespace TranceSql
         /// </summary>
         /// <param name="column">The column name.</param>
         /// <param name="value">The value to assign.</param>
-        public void Add(string column, object value)
-            => Add(new Assignment(new Column(column), new Value(value)));
+        /// <param name="include">
+        /// Indicates whether the assignment should be included, defaults to true. This can be used to more easily
+        /// support partial updates.
+        /// </param>
+        public void Add(string column, object value, bool include = true)
+        {
+            if (!include) return;
+            Add(new Assignment(new Column(column), new Value(value)));
+        }
 
         /// <summary>
         /// Adds a new assignment of the specified column to the specified value. This
@@ -44,16 +50,30 @@ namespace TranceSql
         /// <param name="table">The column's table's name.</param>
         /// <param name="column">The column name.</param>
         /// <param name="value">The value to assign.</param>
-        public void Add(string table, string column, object value)
-            => Add(new Assignment(new Column(table, column), new Value(value)));
+        /// <param name="include">
+        /// Indicates whether the assignment should be included, defaults to true. This can be used to more easily
+        /// support partial updates.
+        /// </param>
+        public void Add(string table, string column, object value, bool include = true)
+        {
+            if (!include) return;
+            Add(new Assignment(new Column(table, column), new Value(value)));
+        }
 
         /// <summary>
         /// Adds a new assignment of the specified column to the specified value.
         /// </summary>
         /// <param name="column">The column name.</param>
         /// <param name="value">The value to assign.</param>
-        public void Add(string column, ISqlElement value)
-            => Add(new Assignment(new Column(column), value));
+        /// <param name="include">
+        /// Indicates whether the assignment should be included, defaults to true. This can be used to more easily
+        /// support partial updates.
+        /// </param>
+        public void Add(string column, ISqlElement value, bool include = true)
+        {
+            if (!include) return;
+            Add(new Assignment(new Column(column), value));
+        }
 
         /// <summary>
         /// Adds a new assignment of the specified column to the specified value.
@@ -61,24 +81,45 @@ namespace TranceSql
         /// <param name="table">The column's table's name.</param>
         /// <param name="column">The column name.</param>
         /// <param name="value">The value to assign.</param>
-        public void Add(string table, string column, ISqlElement value)
-            => Add(new Assignment(new Column(table, column), value));
+        /// <param name="include">
+        /// Indicates whether the assignment should be included, defaults to true. This can be used to more easily
+        /// support partial updates.
+        /// </param>
+        public void Add(string table, string column, ISqlElement value, bool include = true)
+        {
+            if (!include) return;
+            Add(new Assignment(new Column(table, column), value));
+        }
 
         /// <summary>
         /// Adds a new assignment of the specified column to the specified value.
         /// </summary>
         /// <param name="column">The column.</param>
         /// <param name="value">The value to assign.</param>
-        public void Add(ISqlElement column, ISqlElement value)
-            => Add(new Assignment(column, value));
+        /// <param name="include">
+        /// Indicates whether the assignment should be included, defaults to true. This can be used to more easily
+        /// support partial updates.
+        /// </param>
+        public void Add(ISqlElement column, ISqlElement value, bool include = true)
+        {
+            if (!include) return;
+            Add(new Assignment(column, value));
+        }
 
         /// <summary>
         /// Adds a new assignment of the specified column to the specified value.
         /// </summary>
         /// <param name="column">The column.</param>
         /// <param name="value">The value to assign.</param>
-        public void Add(ISqlElement column, object value)
-            => Add(new Assignment(column, new Value(value)));
+        /// <param name="include">
+        /// Indicates whether the assignment should be included, defaults to true. This can be used to more easily
+        /// support partial updates.
+        /// </param>
+        public void Add(ISqlElement column, object value, bool include = true)
+        {
+            if (!include) return;
+            Add(new Assignment(column, new Value(value)));
+        }
 
         /// <summary>
         /// Performs an implicit conversion from <see cref="Assignment"/> to <see cref="AssignmentCollection"/>.
@@ -88,6 +129,6 @@ namespace TranceSql
         /// The result of the conversion.
         /// </returns>
         public static implicit operator AssignmentCollection(Assignment assignment)
-            => new() { assignment };
+            => new() {assignment};
     }
 }

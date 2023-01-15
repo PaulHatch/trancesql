@@ -6,7 +6,9 @@ namespace TranceSql
     /// <summary>
     /// Represents a table constraint definition.
     /// </summary>
-    public interface IConstraint : ISqlElement { }
+    public interface IConstraint : ISqlElement
+    {
+    }
 
     /// <summary>
     /// Represents a unique constraint definition.
@@ -19,12 +21,13 @@ namespace TranceSql
         public string Name { get; set; }
 
         private ColumnCollection _on;
+
         /// <summary>
         /// Gets or sets the columns to create the constraint on.
         /// </summary>
         public ColumnCollection On
         {
-            get => _on = _on ?? new ColumnCollection();
+            get => _on ??= new ColumnCollection();
             set => _on = value;
         }
 
@@ -36,6 +39,7 @@ namespace TranceSql
                 context.WriteIdentifier(Name);
                 context.Write(' ');
             }
+
             context.Write("UNIQUE");
             if (_on?.Any() == true)
             {
@@ -65,12 +69,13 @@ namespace TranceSql
         public string Name { get; set; }
 
         private ColumnOrderCollection _on;
+
         /// <summary>
         /// Gets or sets the columns to create this primary key on.
         /// </summary>
         public ColumnOrderCollection On
         {
-            get => _on = _on ?? new ColumnOrderCollection();
+            get => _on ??= new ColumnOrderCollection();
             set => _on = value;
         }
 
@@ -111,14 +116,17 @@ namespace TranceSql
         /// Specifies no action on delete.
         /// </summary>
         NoAction,
+
         /// <summary>
         /// Specifies cascading deletes.
         /// </summary>
         Cascade,
+
         /// <summary>
         /// Specifies that the foreign key column should be set to null on delete.
         /// </summary>
         SetNull,
+
         /// <summary>
         /// Specifies that the foreign key column should be set to the column's 
         /// default value on delete.
@@ -139,7 +147,9 @@ namespace TranceSql
         /// <summary>
         /// Initializes a new instance of the <see cref="ForeignKeyConstraint"/> class.
         /// </summary>
-        public ForeignKeyConstraint() { }
+        public ForeignKeyConstraint()
+        {
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ForeignKeyConstraint"/> class.
@@ -162,7 +172,8 @@ namespace TranceSql
         /// <param name="referenceTable">The table to reference.</param>
         /// <param name="referenceColumn">The column to reference.</param>
         /// <exception cref="System.ArgumentNullException">referenceColumn</exception>
-        public ForeignKeyConstraint(string column, string referenceSchema, string referenceTable, string referenceColumn)
+        public ForeignKeyConstraint(string column, string referenceSchema, string referenceTable,
+            string referenceColumn)
         {
             Columns = column;
             References = new Table(referenceSchema, referenceTable);
@@ -170,12 +181,13 @@ namespace TranceSql
         }
 
         private ColumnCollection _columns;
+
         /// <summary>
         /// Gets or sets the columns  to create a foreign key relationship on.
         /// </summary>
         public ColumnCollection Columns
         {
-            get => _columns = _columns ?? new ColumnCollection();
+            get => _columns ??= new ColumnCollection();
             set => _columns = value;
         }
 
@@ -185,12 +197,13 @@ namespace TranceSql
         public Table References { get; set; }
 
         private ColumnCollection _referencesColumns;
+
         /// <summary>
         /// Gets or sets the columns to references.
         /// </summary>
         public ColumnCollection ReferencesColumns
         {
-            get => _referencesColumns = _referencesColumns ?? new ColumnCollection();
+            get => _referencesColumns ??= new ColumnCollection();
             set => _referencesColumns = value;
         }
 
@@ -205,10 +218,12 @@ namespace TranceSql
             {
                 throw new InvalidCommandException("No columns specified for foreign key constraint.");
             }
+
             if (References == null)
             {
                 throw new InvalidCommandException("No reference table specified for foreign key constraint.");
             }
+
             if (_referencesColumns?.Any() != true)
             {
                 throw new InvalidCommandException("No reference columns specified for foreign key constraint.");
@@ -220,6 +235,7 @@ namespace TranceSql
                 context.WriteIdentifier(Name);
                 context.Write(' ');
             }
+
             context.Write("FOREIGN KEY (");
             context.RenderDelimited(_columns, columnNamesOnly: true);
             context.Write(") REFERENCES ");
@@ -266,7 +282,9 @@ namespace TranceSql
         /// <summary>
         /// Initializes a new instance of the <see cref="CheckConstraint"/> class.
         /// </summary>
-        public CheckConstraint() { }
+        public CheckConstraint()
+        {
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CheckConstraint"/> class.
@@ -311,6 +329,7 @@ namespace TranceSql
                 context.WriteIdentifier(Name);
                 context.Write(' ');
             }
+
             context.Write("CHECK (");
             context.Render(Check.Value);
             context.Write(')');
@@ -360,7 +379,7 @@ namespace TranceSql
 
         void ISqlElement.Render(RenderContext context)
         {
-            if (((object)Value) == null)
+            if (((object) Value) == null)
             {
                 throw new InvalidCommandException("No value specified for default constraint.");
             }
@@ -371,6 +390,7 @@ namespace TranceSql
                 context.WriteIdentifier(Name);
                 context.Write(' ');
             }
+
             context.Write("DEFAULT (");
             context.Render(Value);
             context.Write(')');

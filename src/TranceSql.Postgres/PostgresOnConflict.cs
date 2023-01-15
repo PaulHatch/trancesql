@@ -18,7 +18,7 @@ namespace TranceSql.Postgres
         /// </summary>
         public ColumnCollection Target
         {
-            get => _target = _target ?? new ColumnCollection();
+            get => _target ??= new ColumnCollection();
             set => _target = value;
         }
 

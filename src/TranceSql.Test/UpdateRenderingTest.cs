@@ -53,5 +53,22 @@ namespace TranceSql.Test
 
             Assert.Equal("UPDATE Table T\nSET Column1 = @P1, Column2 = @P2;", result);
         }
+        
+        [Fact]
+        public void UpdateExcludeAssignmentsRender()
+        {
+            var sut = new Update
+            {
+                Table = Table("Table").As("T"),
+                Set = {
+                    { "Column1", 123 },
+                    { "Column2", 123, false }
+                }
+            };
+
+            var result = sut.ToString();
+
+            Assert.Equal("UPDATE Table T\nSET Column1 = @P1;", result);
+        }
     }
 }

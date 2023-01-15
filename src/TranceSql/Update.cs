@@ -60,9 +60,15 @@ namespace TranceSql
         /// </summary>
         public AssignmentCollection Set
         {
-            get => _set = _set ?? new AssignmentCollection();
+            get => _set ??= new AssignmentCollection();
             set => _set = value;
         }
+        
+        /// <summary>
+        /// Gets a value indicating whether any assignments have been made. This can be used when the set operation
+        /// includes conditional assignments to determine whether this .
+        /// </summary>
+        public bool IncludesAssignments => _set?.Count > 0;
 
         private DataSourceCollection? _from;
         /// <summary>
@@ -70,7 +76,7 @@ namespace TranceSql
         /// </summary>
         public DataSourceCollection From
         {
-            get => _from = _from ?? new DataSourceCollection();
+            get => _from ??= new DataSourceCollection();
             set => _from = value;
         }
 
@@ -85,7 +91,7 @@ namespace TranceSql
         /// </summary>
         public ColumnCollection Returning
         {
-            get => _returning = _returning ?? new ColumnCollection();
+            get => _returning ??= new ColumnCollection();
             set => _returning = value;
         }
 

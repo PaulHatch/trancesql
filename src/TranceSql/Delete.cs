@@ -87,7 +87,7 @@ namespace TranceSql
         /// </summary>
         public ColumnCollection? Returning
         {
-            get => _returning = _returning ?? new ColumnCollection();
+            get => _returning ??= new ColumnCollection();
             set => _returning = value;
         }
 
