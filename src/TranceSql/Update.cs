@@ -97,6 +97,12 @@ namespace TranceSql
 
         void ISqlElement.Render(RenderContext context)
         {
+            // do not render if there are no assignments
+            if (!IncludesAssignments)
+            {
+                return;
+            }
+            
             var output = OutputType.None;
             if (_returning?.Any() == true)
             {
