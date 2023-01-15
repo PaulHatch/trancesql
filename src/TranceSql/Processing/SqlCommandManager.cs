@@ -66,10 +66,12 @@ namespace TranceSql.Processing
         /// <param name="context">A SQL command context which includes a SELECT command.</param>
         /// <param name="cancel">A token to monitor for cancellation requests.</param>
         /// <returns>The result of the SQL command.</returns>
-        internal Task<IEnumerable<T>?> ExecuteListResultAsync<T>(IContext context, CancellationToken cancel)
+        internal async Task<IEnumerable<T>?> ExecuteListResultAsync<T>(IContext context, CancellationToken cancel)
         {
+            if (context.CommandText.Length == 0) return default;
+            
             var processor = new ListResultProcessor<T>();
-            return RunCommandAsync<IEnumerable<T>>(context, processor, cancel);
+            return await RunCommandAsync<IEnumerable<T>>(context, processor, cancel);
         }
 
         /// <summary>
@@ -86,11 +88,13 @@ namespace TranceSql.Processing
         /// <returns>The result of the SQL command.</returns>
         /// <param name="cancel">A token to monitor for cancellation requests.</param>
         /// <exception cref="System.InvalidOperationException">Each collection argument must have a corresponding select command.</exception>
-        internal Task<T?> ExecuteResultAsync<T>(IContext context, T? defaultResult,
+        internal async Task<T?> ExecuteResultAsync<T>(IContext context, T? defaultResult,
             IEnumerable<PropertyInfo>? collections, CancellationToken cancel)
         {
+            if (context.CommandText.Length == 0) return default;
+            
             var processor = new SingleResultProcessor<T>(defaultResult, collections);
-            return RunCommandAsync<T>(context, processor, cancel);
+            return await RunCommandAsync<T>(context, processor, cancel);
         }
 
         /// <summary>
@@ -104,12 +108,14 @@ namespace TranceSql.Processing
         /// <returns>
         /// The result of the SQL command.
         /// </returns>
-        internal Task<T?> ExecuteMapResultAsync<T>(IContext context, IEnumerable<Tuple<PropertyInfo, Type>> map,
+        internal async Task<T?> ExecuteMapResultAsync<T>(IContext context, IEnumerable<Tuple<PropertyInfo, Type>> map,
             CancellationToken cancel)
             where T : new()
         {
+            if (context.CommandText.Length == 0) return default;
+            
             var processor = new MappedResultProcessor<T>(map);
-            return RunCommandAsync<T>(context, processor, cancel);
+            return await RunCommandAsync<T>(context, processor, cancel);
         }
 
         /// <summary>
@@ -118,9 +124,11 @@ namespace TranceSql.Processing
         /// <param name="context">The SQL context to run.</param>
         /// <param name="cancel">A token to monitor for cancellation requests.</param>
         /// <returns>The number of rows affected.</returns>
-        internal Task<int> ExecuteAsync(IContext context, CancellationToken cancel)
+        internal async Task<int> ExecuteAsync(IContext context, CancellationToken cancel)
         {
-            return RunCommandAsync<int>(context, null, cancel);
+            if (context.CommandText.Length == 0) return default;
+            
+            return await RunCommandAsync<int>(context, null, cancel);
         }
 
         /// <summary>
@@ -132,11 +140,13 @@ namespace TranceSql.Processing
         /// <param name="valueProvider">Custom delegate to create the result.</param>
         /// <param name="cancel">A token to monitor for cancellation requests.</param>
         /// <returns>The result of the SQL command.</returns>
-        internal Task<T?> ExecuteCustomAsync<T>(IContext context, CreateEntity<T> valueProvider,
+        internal async Task<T?> ExecuteCustomAsync<T>(IContext context, CreateEntity<T> valueProvider,
             CancellationToken cancel)
         {
+            if (context.CommandText.Length == 0) return default;
+            
             var processor = new CustomResultProcessor<T>(valueProvider);
-            return RunCommandAsync<T>(context, processor, cancel);
+            return await RunCommandAsync<T>(context, processor, cancel);
         }
 
         /// <summary>
@@ -153,8 +163,11 @@ namespace TranceSql.Processing
             CancellationToken cancel)
             where TKey : notnull
         {
+            if (context.CommandText.Length == 0) return default;
+            
             var processor = new RowKeyedDictionaryResultProcessor<TKey, TValue>();
-            var result = await RunCommandAsync<IDictionary<TKey, TValue?>>(context, processor, cancel).ConfigureAwait(false);
+            var result = await RunCommandAsync<IDictionary<TKey, TValue?>>(context, processor, cancel)
+                .ConfigureAwait(false);
             return result;
         }
 
@@ -169,8 +182,11 @@ namespace TranceSql.Processing
         internal async Task<IDictionary<string, object?>?> ExecuteColumnKeyedDictionaryResultAsync(IContext context,
             IEnumerable<string> columns, CancellationToken cancel)
         {
+            if (context.CommandText.Length == 0) return default;
+            
             var processor = new ColumnKeyedDictionaryResultProcessor(columns);
-            var result = await RunCommandAsync<IDictionary<string, object?>>(context, processor, cancel).ConfigureAwait(false);
+            var result = await RunCommandAsync<IDictionary<string, object?>>(context, processor, cancel)
+                .ConfigureAwait(false);
             return result;
         }
 
@@ -187,6 +203,8 @@ namespace TranceSql.Processing
         /// <returns>The result of the SQL command.</returns>
         internal IEnumerable<T>? ExecuteListResult<T>(IContext context)
         {
+            if (context.CommandText.Length == 0) return default;
+            
             var processor = new ListResultProcessor<T>();
             return RunCommand<IEnumerable<T>>(context, processor);
         }
@@ -206,6 +224,8 @@ namespace TranceSql.Processing
         /// <exception cref="System.InvalidOperationException">Each collection argument must have a corresponding select command.</exception>
         internal T? ExecuteResult<T>(IContext context, T? defaultResult, IEnumerable<PropertyInfo>? collections)
         {
+            if (context.CommandText.Length == 0) return default;
+            
             var processor = new SingleResultProcessor<T>(defaultResult, collections);
             return RunCommand<T>(context, processor);
         }
@@ -223,6 +243,8 @@ namespace TranceSql.Processing
         internal T? ExecuteMapResult<T>(IContext context, IEnumerable<Tuple<PropertyInfo, Type>> map)
             where T : new()
         {
+            if (context.CommandText.Length == 0) return default;
+            
             var processor = new MappedResultProcessor<T>(map);
             return RunCommand<T>(context, processor);
         }
@@ -234,6 +256,8 @@ namespace TranceSql.Processing
         /// <returns>The number of rows affected.</returns>
         internal int Execute(IContext context)
         {
+            if (context.CommandText.Length == 0) return default;
+            
             return RunCommand<int>(context);
         }
 
@@ -247,6 +271,8 @@ namespace TranceSql.Processing
         /// <returns>The result of the SQL command.</returns>
         internal T? ExecuteCustom<T>(IContext context, CreateEntity<T> valueProvider)
         {
+            if (context.CommandText.Length == 0) return default;
+            
             var processor = new CustomResultProcessor<T>(valueProvider);
             return RunCommand<T>(context, processor);
         }
@@ -262,6 +288,8 @@ namespace TranceSql.Processing
         internal IDictionary<TKey, TValue>? ExecuteRowKeyedDictionaryResult<TKey, TValue>(IContext context)
             where TKey : notnull
         {
+            if (context.CommandText.Length == 0) return default;
+            
             var processor = new RowKeyedDictionaryResultProcessor<TKey, TValue>();
             return RunCommand<IDictionary<TKey, TValue>>(context, processor);
         }
@@ -276,6 +304,8 @@ namespace TranceSql.Processing
         internal IDictionary<string, object?>? ExecuteColumnKeyedDictionaryResult(IContext context,
             IEnumerable<string> columns)
         {
+            if (context.CommandText.Length == 0) return default;
+            
             var processor = new ColumnKeyedDictionaryResultProcessor(columns);
             return RunCommand<IDictionary<string, object?>>(context, processor);
         }
@@ -291,26 +321,21 @@ namespace TranceSql.Processing
         /// <returns>The result of the SQL command.</returns>
         internal IEnumerable<T> ExecuteStream<T>(IContext context)
         {
+            if (context.CommandText.Length == 0) return Enumerable.Empty<T>();
+            
             return new ResultStream<T>(context, this);
         }
 
-        private Activity? CreateScope(IContext context)
-        {
-            var builder = _activitySource?.StartActivity(context.OperationName ?? "sql-command", ActivityKind.Client)
-                ?.SetTag("db-type", "sql")
-                .SetTag("component", "trancesql");
-
-            return builder?.Start();
-        }
-
         /// <summary>
-        /// Runs the specified SQL as an asynchronous operation.
+        /// Runs the specified SQL.
         /// </summary>
         /// <param name="context">The SQL context to run.</param>
         /// <param name="processors">The processors to use for the result sets.</param>
         /// <returns>A task for the operation.</returns>
         internal void RunCommandSet(IContext context, IList<ProcessorContext> processors)
         {
+            if (context.CommandText.Length == 0) return;
+            
             using var connection = AsyncHelper.RunSync(CreateConnectionAsync);
             using var command = connection.CreateCommand();
             // initialize command
@@ -363,6 +388,8 @@ namespace TranceSql.Processing
         /// <returns>A task for the operation.</returns>
         internal async Task RunCommandSetAsync(IContext context, IList<ProcessorContext> processors)
         {
+            if (context.CommandText.Length == 0) return;
+            
             await using var connection = await CreateConnectionAsync().ConfigureAwait(false);
             await using var command = connection.CreateCommand();
             // initialize command
@@ -422,6 +449,8 @@ namespace TranceSql.Processing
             CancellationToken cancel = default)
         {
             AssertCorrectReturnType<T>(processor);
+            
+            if (context.CommandText.Length == 0) return default;
 
             await using var connection = await CreateConnectionAsync().ConfigureAwait(false);
             await using var command = connection.CreateCommand();
@@ -470,6 +499,8 @@ namespace TranceSql.Processing
         private T? RunCommand<T>(IContext context, IResultProcessor? processor = null)
         {
             AssertCorrectReturnType<T>(processor);
+            
+            if (context.CommandText.Length == 0) return default;
 
             using var connection = AsyncHelper.RunSync(CreateConnectionAsync);
             using var command = connection.CreateCommand();
@@ -503,6 +534,15 @@ namespace TranceSql.Processing
             }
 
             return (T?) result;
+        }
+        
+        private Activity? CreateScope(IContext context)
+        {
+            var builder = _activitySource?.StartActivity(context.OperationName ?? "sql-command", ActivityKind.Client)
+                ?.SetTag("db-type", "sql")
+                .SetTag("component", "trancesql");
+
+            return builder?.Start();
         }
 
         private static void AssertCorrectReturnType<T>(IResultProcessor? processor)

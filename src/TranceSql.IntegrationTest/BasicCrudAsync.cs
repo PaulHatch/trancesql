@@ -24,8 +24,8 @@ namespace TranceSql.IntegrationTest
                 new Insert
                 {
                     Into = "sample",
-                    Columns = { "id", "column1" },
-                    Values = { 1, "hello world" }
+                    Columns = {"id", "column1"},
+                    Values = {1, "hello world"}
                 }
             }.ExecuteAsync();
 
@@ -48,7 +48,7 @@ namespace TranceSql.IntegrationTest
                 new Update
                 {
                     Table = "sample",
-                    Set = { { "column1", "hallo welt" } },
+                    Set = {{"column1", "hallo welt"}},
                     Where = Condition.Equal("id", 1)
                 }
             }.ExecuteAsync();
@@ -96,29 +96,29 @@ namespace TranceSql.IntegrationTest
         {
             var count = new Command(_database)
             {
-                new Delete { From = "sample"},
+                new Delete {From = "sample"},
                 new Insert
                 {
                     Into = "sample",
-                    Columns = { "id", "column1" },
+                    Columns = {"id", "column1"},
                     Values =
                     {
-                        { 11, "data" },
-                        { 12, "data" },
-                        { 13, "data" },
-                        { 14, "data" },
-                        { 15, "data" },
-                        { 16, "data" },
-                        { 17, "data" },
-                        { 18, "data" }
+                        {11, "data"},
+                        {12, "data"},
+                        {13, "data"},
+                        {14, "data"},
+                        {15, "data"},
+                        {16, "data"},
+                        {17, "data"},
+                        {18, "data"}
                     }
                 },
-                new Select { Columns = Count(), From = "sample" }
+                new Select {Columns = Count(), From = "sample"}
             }.Fetch<int>();
 
             var sut = new Command(_database)
             {
-                new Select { Columns = { "id", "column1" }, From = "sample" }
+                new Select {Columns = {"id", "column1"}, From = "sample"}
             }.FetchStream<Sample>();
 
             var count1 = sut.Count();
@@ -145,15 +145,34 @@ namespace TranceSql.IntegrationTest
             {
                 new CreateTable("update_output_table")
                 {
-                    Columns = { { "column1", SqlType.From<int>() } }
+                    Columns = {{"column1", SqlType.From<int>()}}
                 },
-                new Insert { Into = "update_output_table", Columns = "column1", Values = { 1 } },
-                new Update { Table = "update_output_table", Set = { { "column1", 2 } }, Where = new Column("column1") == new Value(1), Returning = "column1" }
+                new Insert {Into = "update_output_table", Columns = "column1", Values = {1}},
+                new Update
+                {
+                    Table = "update_output_table", Set = {{"column1", 2}},
+                    Where = new Column("column1") == new Value(1), Returning = "column1"
+                }
             };
 
             var result = await sut.FetchAsync<int>();
 
             Assert.Equal(2, result);
+        }
+
+        [Fact]
+        public async Task ShippedUpdate()
+        {
+            var sut = new Command(_database)
+            {
+                new Update
+                {
+                    Table = "invalid_table",
+                    Set = {{"column1", 2, false}}
+                }
+            };
+
+            var result = await sut.ExecuteAsync();
         }
 
         [Fact]
@@ -169,9 +188,9 @@ namespace TranceSql.IntegrationTest
             {
                 new CreateTable("insert_output_table")
                 {
-                    Columns = { { "column1", SqlType.From<int>() } }
+                    Columns = {{"column1", SqlType.From<int>()}}
                 },
-                new Insert { Into = "insert_output_table", Columns = "column1", Values = { 2 }, Returning = "column1" },
+                new Insert {Into = "insert_output_table", Columns = "column1", Values = {2}, Returning = "column1"},
             };
 
             var result = await sut.FetchAsync<int>();

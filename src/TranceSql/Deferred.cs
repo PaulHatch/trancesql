@@ -21,7 +21,7 @@ namespace TranceSql
     public sealed class Deferred<T> : IDeferred
     {
         private T? _result;
-        private DeferContext _context;
+        private readonly DeferContext _context;
 
         internal Deferred(DeferContext context)
         {
