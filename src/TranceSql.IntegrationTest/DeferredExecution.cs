@@ -27,7 +27,7 @@ namespace TranceSql.IntegrationTest
 
             // test
 
-            var context = _database.CreateDeferContext();
+            using var context = _database.CreateDeferContext();
 
             var command1 = new Command(context)
             {
@@ -59,7 +59,7 @@ namespace TranceSql.IntegrationTest
 
             // test
 
-            var context = _database.CreateDeferContext();
+            using var context = _database.CreateDeferContext();
 
             var results1 = new Command(context)
             {
@@ -88,7 +88,7 @@ namespace TranceSql.IntegrationTest
 
             // test
 
-            var context = _database.CreateDeferContext();
+            await using var context = _database.CreateDeferContext();
 
             var command1 = new Command(context)
             {
@@ -108,6 +108,38 @@ namespace TranceSql.IntegrationTest
         }
 
         [Fact]
+        public async Task DeferredContextAddsTransactions()
+        {
+            // setup
+
+            await new Command(_database)
+            {
+                CreateTable.From<Sample>("deferred_transaction_async_table"),
+                new Insert { Into = "deferred_transaction_async_table", Columns = {"ID", "Column1"}, Values = { 1, "Test" } },
+            }.ExecuteAsync();
+
+            // test
+
+            await using var context = _database.CreateDeferContext(
+                new BeginTransaction(), 
+                new CommitTransaction());
+
+            var command1 = new Command(context)
+            {
+                new Update{ Table = "deferred_transaction_async_table", Set = { { "Column1", "Test1" } }, Where = new Column("ID")  == new Constant(1) }
+            };
+
+            var command2 = new Command(context)
+            {
+                new Update{ Table = "deferred_transaction_async_table", Set = { { "Column1", "Test2" } }, Where = new Column("ID")  == new Constant(1) }
+            };
+
+            command1.ExecuteDeferred();
+            command2.ExecuteDeferred();
+            
+        }
+
+        [Fact]
         public async Task DeferredInlineResultsAsync()
         {
             // setup
@@ -120,7 +152,7 @@ namespace TranceSql.IntegrationTest
 
             // test
 
-            var context = _database.CreateDeferContext();
+            await using var context = _database.CreateDeferContext();
 
             var results1 = new Command(context)
             {
@@ -151,7 +183,7 @@ namespace TranceSql.IntegrationTest
 
             // test
 
-            var context = _database.CreateDeferContext();
+            await using var context = _database.CreateDeferContext();
 
             var results1 = new Command(context)
             {
