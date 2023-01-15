@@ -20,7 +20,7 @@ namespace TranceSql.Processing
 
         public static string ToCamelCase(this string value)
         {
-            if (String.IsNullOrEmpty(value))
+            if (string.IsNullOrEmpty(value))
             {
                 return value;
             }
@@ -30,7 +30,7 @@ namespace TranceSql.Processing
                 return value.ToLower();
             }
 
-            return String.Concat(value.Substring(0, 1).ToUpper(), value.Substring(1));
+            return string.Concat(value.Substring(0, 1).ToUpper(), value.Substring(1));
         }
 
         public static Type? GetCollectionType(this Type type)

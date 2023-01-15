@@ -30,7 +30,7 @@ namespace TranceSql
             {
                 throw new ArgumentNullException("Type value must not be null.", nameof(rawType));
             }
-            if (String.IsNullOrWhiteSpace(rawType) || rawType.Contains("'"))
+            if (string.IsNullOrWhiteSpace(rawType) || rawType.Contains("'"))
             {
                 throw new ArgumentException("Invalid type value string.", nameof(rawType));
             }

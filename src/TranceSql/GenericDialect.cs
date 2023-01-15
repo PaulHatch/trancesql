@@ -38,7 +38,7 @@ namespace TranceSql
             var typeName = type.ToString().ToUpper();
             if (parameters?.Any() == true)
             {
-                return $"{typeName}({String.Join(", ", parameters)})";
+                return $"{typeName}({string.Join(", ", parameters)})";
             }
             else
             {

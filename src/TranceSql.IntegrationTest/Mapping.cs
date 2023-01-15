@@ -24,7 +24,7 @@ namespace TranceSql.IntegrationTest
             public object MapValue(PropertyInfo property, object value)
             {
                 var attr = property.GetCustomAttribute<TestAttribute>();
-                return String.Format(attr.Format, value);
+                return string.Format(attr.Format, value);
             }
         }
         class TestResult

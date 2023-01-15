@@ -112,7 +112,7 @@ namespace TranceSql
                 .Where(p => p.CanRead && p.CanWrite)
                 .Select(p => new ColumnDefinition(p.Name, SqlType.From(p.PropertyType), null));
 
-            var table = String.IsNullOrWhiteSpace(schema) ? new Table(name ?? type.Name) : new Table(schema, name ?? type.Name);
+            var table = string.IsNullOrWhiteSpace(schema) ? new Table(name ?? type.Name) : new Table(schema, name ?? type.Name);
 
             return new CreateTable
             {

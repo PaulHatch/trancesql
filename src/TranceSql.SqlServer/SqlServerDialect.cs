@@ -38,7 +38,7 @@ namespace TranceSql.SqlServer
             var typeName = GetType(type);
             if (parameters?.Any() == true)
             {
-                return $"{typeName}({String.Join(", ", parameters)})";
+                return $"{typeName}({string.Join(", ", parameters)})";
             }
             else
             {

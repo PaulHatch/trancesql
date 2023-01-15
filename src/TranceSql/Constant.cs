@@ -101,7 +101,7 @@ namespace TranceSql
             }
             else if (_numericTypes.Contains(type))
             {
-                context.Write(String.Format(CultureInfo.InvariantCulture, "{0}", Value));
+                context.Write(string.Format(CultureInfo.InvariantCulture, "{0}", Value));
             }
             else if (type == typeof(DateTime))
             {

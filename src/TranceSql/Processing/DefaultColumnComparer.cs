@@ -22,8 +22,8 @@ namespace TranceSql.Processing
         public bool Equals(string? x, string? y)
         {
 
-            if (x == null) { return String.IsNullOrEmpty(y); }
-            if (y == null) { return String.IsNullOrEmpty(x); }
+            if (x == null) { return string.IsNullOrEmpty(y); }
+            if (y == null) { return string.IsNullOrEmpty(x); }
 
             int ix = 0, iy = 0;
             for (; ix < x.Length || iy < x.Length; ix++, iy++)
@@ -36,7 +36,7 @@ namespace TranceSql.Processing
                 if (ix == x.Length) { return iy == y.Length; }
                 if (iy == y.Length) { return ix == x.Length; }
 
-                if (Char.ToLowerInvariant(y[iy]) != Char.ToLowerInvariant(x[ix]))
+                if (char.ToLowerInvariant(y[iy]) != char.ToLowerInvariant(x[ix]))
                 {
                     return false;
                 }

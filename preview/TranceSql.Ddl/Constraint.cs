@@ -33,7 +33,7 @@ namespace TranceSql
 
         void ISqlElement.Render(RenderContext context)
         {
-            if (!String.IsNullOrEmpty(Name))
+            if (!string.IsNullOrEmpty(Name))
             {
                 context.Write("CONSTRAINT ");
                 context.WriteIdentifier(Name);
@@ -81,7 +81,7 @@ namespace TranceSql
 
         void ISqlElement.Render(RenderContext context)
         {
-            if (!String.IsNullOrEmpty(Name))
+            if (!string.IsNullOrEmpty(Name))
             {
                 context.Write("CONSTRAINT ");
                 context.WriteIdentifier(Name);
@@ -229,7 +229,7 @@ namespace TranceSql
                 throw new InvalidCommandException("No reference columns specified for foreign key constraint.");
             }
 
-            if (!String.IsNullOrEmpty(Name))
+            if (!string.IsNullOrEmpty(Name))
             {
                 context.Write("CONSTRAINT ");
                 context.WriteIdentifier(Name);
@@ -323,7 +323,7 @@ namespace TranceSql
                 throw new InvalidCommandException("No condition specified for check constraint.");
             }
 
-            if (!String.IsNullOrEmpty(Name))
+            if (!string.IsNullOrEmpty(Name))
             {
                 context.Write("CONSTRAINT ");
                 context.WriteIdentifier(Name);
@@ -384,7 +384,7 @@ namespace TranceSql
                 throw new InvalidCommandException("No value specified for default constraint.");
             }
 
-            if (!String.IsNullOrEmpty(Name))
+            if (!string.IsNullOrEmpty(Name))
             {
                 context.Write("CONSTRAINT ");
                 context.WriteIdentifier(Name);

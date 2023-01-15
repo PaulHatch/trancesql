@@ -12,6 +12,12 @@ namespace TranceSql
     {
         private readonly StringBuilder _commandText = new();
         private readonly Dictionary<string, object?> _parameters = new();
+        
+        /// <summary>
+        /// Tracks whether anything has been added to the context so that we can determine whether or not to
+        /// execute the context.
+        /// </summary>
+        internal bool IncludesCommands { get; set; }
 
         /// <summary>
         /// Gets the SQL command text for this context.
@@ -35,16 +41,21 @@ namespace TranceSql
         /// <param name="context">The context to be appended.</param>
         public void Append(IContext context)
         {
-            if (!String.IsNullOrEmpty(context.OperationName))
+            if (!string.IsNullOrEmpty(context.OperationName))
             {
-                if (String.IsNullOrEmpty(OperationName))
+                if (string.IsNullOrEmpty(OperationName))
                 {
                     OperationName = context.OperationName;
                 }
-                else if (!String.IsNullOrEmpty(context.OperationName))
+                else if (!string.IsNullOrEmpty(context.OperationName))
                 {
                     OperationName = $"{OperationName}+{context.OperationName}";
                 }
+            }
+
+            if (context.CommandText.Length != 0)
+            {
+                IncludesCommands = true;
             }
 
             _commandText.Append(context.CommandText);

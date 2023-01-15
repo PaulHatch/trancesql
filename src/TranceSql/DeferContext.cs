@@ -46,6 +46,10 @@ namespace TranceSql
             if (beginTransaction is not null)
             {
                 new Command(this) {beginTransaction}.ExecuteDeferred();
+
+                // we don't want consider the begin transaction command when we're checking
+                // if we have any commands to execute
+                _context.IncludesCommands = false;
             }
 
             if (endTransaction is not null)
@@ -172,6 +176,11 @@ namespace TranceSql
                 }
 
                 HasExecuted = true;
+                
+                if (!_context.IncludesCommands)
+                {
+                    return;
+                }
             }
 
             FinalCommand?.ExecuteDeferred();
@@ -191,6 +200,11 @@ namespace TranceSql
                 }
 
                 HasExecuted = true;
+
+                if (!_context.IncludesCommands)
+                {
+                    return;
+                }
             }
 
             FinalCommand?.ExecuteDeferred();

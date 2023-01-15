@@ -33,6 +33,6 @@ namespace TranceSql.Postgres
         /// the value should be created if missing.</param>
         /// <returns>Function call with specified parameters.</returns>
         public static Function JsonbSet(ISqlElement target, JsonPath path, ISqlElement newValue, bool createMissing)
-            => JsonbSet(target, String.Join(",", path), newValue, new Constant(createMissing));
+            => JsonbSet(target, string.Join(",", path), newValue, new Constant(createMissing));
     }
 }
