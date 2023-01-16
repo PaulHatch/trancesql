@@ -68,14 +68,14 @@ public static class UsingStatic
     /// </summary>
     /// <param name="value">The value to create the instance for.</param>
     /// <returns>A new Value instance.</returns>
-    public static Value Value(object value) => new(value);
+    public static Value Value(object? value) => new(value);
 
     /// <summary>
     /// Creates a new Values instance.
     /// </summary>
     /// <param name="value">A single value for the set.</param>
     /// <returns>A new Values instance.</returns>
-    public static Values Values(object value) => new() { value };
+    public static Values Values(object? value) => new() { value };
         
     /// <summary>
     /// Creates a new Values instance.
@@ -83,7 +83,7 @@ public static class UsingStatic
     /// <param name="first">The first value.</param>
     /// <param name="second">The second value.</param>
     /// <returns>A new Values instance.</returns>
-    public static Values Values(object first, object second) => new() { first, second };
+    public static Values Values(object? first, object? second) => new() { first, second };
         
     /// <summary>
     /// Creates a new Values instance.
@@ -92,7 +92,7 @@ public static class UsingStatic
     /// <param name="second">The second value.</param>
     /// <param name="third">The third value.</param>
     /// <returns>A new Values instance.</returns>
-    public static Values Values(object first, object second, object third) => new() { first, second, third };
+    public static Values Values(object? first, object? second, object? third) => new() { first, second, third };
 
     /// <summary>
     /// Creates a new Values instance.
@@ -101,7 +101,7 @@ public static class UsingStatic
     /// <returns>
     /// A new Values instance.
     /// </returns>
-    public static Values Values(params object[] values) => new(values);
+    public static Values Values(params object?[] values) => new(values);
 
     /// <summary>
     /// Creates a function for COUNT(*).

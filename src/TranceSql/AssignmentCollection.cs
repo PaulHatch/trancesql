@@ -37,7 +37,7 @@ public class AssignmentCollection : List<Assignment>
     /// Indicates whether the assignment should be included, defaults to true. This can be used to more easily
     /// support partial updates.
     /// </param>
-    public void Add(string column, object value, bool include = true)
+    public void Add(string column, object? value, bool include = true)
     {
         if (!include) return;
         Add(new Assignment(new Column(column), new Value(value)));
@@ -54,7 +54,7 @@ public class AssignmentCollection : List<Assignment>
     /// Indicates whether the assignment should be included, defaults to true. This can be used to more easily
     /// support partial updates.
     /// </param>
-    public void Add(string table, string column, object value, bool include = true)
+    public void Add(string table, string column, object? value, bool include = true)
     {
         if (!include) return;
         Add(new Assignment(new Column(table, column), new Value(value)));
@@ -115,7 +115,7 @@ public class AssignmentCollection : List<Assignment>
     /// Indicates whether the assignment should be included, defaults to true. This can be used to more easily
     /// support partial updates.
     /// </param>
-    public void Add(ISqlElement column, object value, bool include = true)
+    public void Add(ISqlElement column, object? value, bool include = true)
     {
         if (!include) return;
         Add(new Assignment(column, new Value(value)));

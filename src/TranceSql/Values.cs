@@ -11,7 +11,7 @@ namespace TranceSql;
 /// </summary>
 public class Values : IEnumerable<ISqlElement>, ISqlElement
 {
-    List<ISqlElement> _data = new();
+    private readonly List<ISqlElement> _data = new();
         
     /// <summary>
     /// Gets the data. (This property would be named "Values" but C# does not
@@ -32,11 +32,6 @@ public class Values : IEnumerable<ISqlElement>, ISqlElement
     /// <param name="values">The values for this set.</param>
     public Values(IEnumerable values)
     {
-        if (values is null)
-        {
-            throw new ArgumentNullException(nameof(values));
-        }
-
         foreach (var value in values)
         {
             _data.Add(value as ISqlElement ?? new Value(value));
@@ -62,7 +57,7 @@ public class Values : IEnumerable<ISqlElement>, ISqlElement
     /// Adds the specified element to the set.
     /// </summary>
     /// <param name="value">The value to add.</param>
-    public void Add(object value) => _data.Add(value is ISqlElement el ? el : new Value(value));
+    public void Add(object? value) => _data.Add(value as ISqlElement ?? new Value(value));
 
     void ISqlElement.Render(RenderContext context)
     {

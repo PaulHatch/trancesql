@@ -101,7 +101,7 @@ public class Command : IEnumerable<ISqlStatement>
     /// <param name="name">The parameter name.</param>
     /// <param name="value">The parameter value.</param>
     /// <returns>A parameter instance for the parameter specified.</returns>
-    public Parameter IncludeParameter(string name, object value)
+    public Parameter IncludeParameter(string name, object? value)
     {
         if (value is ISqlElement)
         {

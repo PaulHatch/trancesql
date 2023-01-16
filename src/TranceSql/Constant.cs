@@ -40,7 +40,7 @@ public class Constant : ExpressionElement, ISqlElement
     /// Initializes a new instance of the <see cref="Constant"/> class.
     /// </summary>
     /// <param name="value">The value.</param>
-    public Constant(object value) { Value = value; }
+    public Constant(object? value) { Value = value; }
 
     /// <summary>
     /// This constructor is to prevent accidentally introducing a SQL injection
