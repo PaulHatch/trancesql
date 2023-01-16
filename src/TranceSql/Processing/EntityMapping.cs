@@ -24,8 +24,7 @@ public static class EntityMapping
     /// The custom binders registered for the application.
     /// </summary>
     private static readonly List<ICustomBinder> _customBinders = new();
-
-
+    
     // TODO: perhaps make this configurable per SQL manager instance at some point
 
     /// <summary>
@@ -110,11 +109,9 @@ public static class EntityMapping
                 var ordinal = columnMap[column];
                 return Get<T>(reader, ordinal);
             }
-            else
-            {
-                // unmatched columns
-                return default;
-            }
+
+            // unmatched columns
+            return default;
         }
 
         /// <summary>Helper method called from dynamically generated entity map function
@@ -183,15 +180,13 @@ public static class EntityMapping
         if (IsSimpleType<T>())
         {
             throw new ArgumentException(
-                "Cannot register entity creator for type '" + typeof(T).Name +
-                "' because it is a simple type which will be cast directly from a result.", "T");
+                $"Cannot register entity creator for type '{typeof(T).Name}' because it is a primitive type which will be cast directly from a result.", "T");
         }
 
         if (!TryRegister(() => createEntity))
         {
             throw new InvalidOperationException(
-                "The delegate library already contains a definition for the type '" + typeof(T).Name +
-                "'. RegisterCustomEntityCreator must be called before the type has been bound.");
+                $"The delegate library already contains a definition for the type '{typeof(T).Name}'. RegisterCustomEntityCreator must be called before the type has been bound.");
         }
     }
 
@@ -230,17 +225,16 @@ public static class EntityMapping
     }
 
     /// <summary>
-    /// "ORM in a Can" - Gets a function delegate from the EntityMapper's internal 
-    /// library which will return an instance of the specified entity class type from a
-    /// DB reader data row. By default this function will bind public properties and 
-    /// constructor parameters to a row from a DbDataReader.
+    /// Gets a function delegate from the EntityMapper's internal library which will return an instance of the
+    /// specified entity class type from a DB reader data row. By default this function will bind public properties
+    /// and constructor parameters to a row from a DbDataReader.
     /// </summary>
     /// <typeparam name="T">Type to bind to.</typeparam>
     /// <returns>
     /// A function delegate which returns an instance of the specified type from a
     /// DB reader data row.
     /// </returns>
-    internal static CreateEntity<T> GetEntityFunc<T>()
+    public static CreateEntity<T> GetEntityFunc<T>()
     {
         // Ensure this type is registered
         TryRegister(() => IsValueTuple(typeof(T)) ? CreateTupleFunc<T>() : CreateEntityFunc<T>());
@@ -252,7 +246,6 @@ public static class EntityMapping
         var readerParam = Expression.Parameter(typeof(DbDataReader), "r");
         var mapParam = Expression.Parameter(typeof(IDictionary<string, int>), "m");
         var readMethod = typeof(DbDataReader).GetMethod("get_Item", new[] {typeof(int)}) ?? throw new Exception(); // UnreachableException
-
 
         var tupleType = typeof(T);
         var newTuple = CreateTupleInitExpression(readerParam, readMethod, tupleType);
@@ -302,8 +295,7 @@ public static class EntityMapping
     private static bool IsValueTuple(Type type)
     {
         return
-            type.IsValueType &&
-            type.IsGenericType &&
+            type is {IsValueType: true, IsGenericType: true} &&
             _valueTuples.Contains(type.GetGenericTypeDefinition());
     }
 
