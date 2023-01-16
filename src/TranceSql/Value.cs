@@ -27,7 +27,7 @@ public class Value : ExpressionElement, ISqlElement
     /// Initializes a new instance of the <see cref="Value"/> class.
     /// </summary>
     /// <param name="value">The value.</param>
-    public Value(object value)
+    public Value(object? value)
     {
         if (value is ISqlElement)
         {
