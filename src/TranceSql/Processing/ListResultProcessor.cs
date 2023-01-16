@@ -1,21 +1,20 @@
 ﻿using System.Data.Common;
 
-namespace TranceSql.Processing
+namespace TranceSql.Processing;
+
+/// <summary>
+/// Result processor that creates a list of items of the specified type.
+/// </summary>
+/// <typeparam name="TResult">The entity type of result.</typeparam>
+internal class ListResultProcessor<TResult> : IResultProcessor
 {
     /// <summary>
-    /// Result processor that creates a list of items of the specified type.
+    /// Processes the result as a list result.
     /// </summary>
-    /// <typeparam name="TResult">The entity type of result.</typeparam>
-    internal class ListResultProcessor<TResult> : IResultProcessor
+    /// <param name="reader">An open data reader queued to the appropriate result set.</param>
+    /// <returns>The result for this query.</returns>
+    public object Process(DbDataReader reader)
     {
-        /// <summary>
-        /// Processes the result as a list result.
-        /// </summary>
-        /// <param name="reader">An open data reader queued to the appropriate result set.</param>
-        /// <returns>The result for this query.</returns>
-        public object Process(DbDataReader reader)
-        {
-            return reader.ReadData<TResult>();
-        }
+        return reader.ReadData<TResult>();
     }
 }

@@ -1,17 +1,16 @@
-﻿namespace TranceSql
+﻿namespace TranceSql;
+
+/// <summary>
+/// Represents the direction of a <see cref="Order"/> element.
+/// </summary>
+public enum Direction
 {
     /// <summary>
-    /// Represents the direction of a <see cref="Order"/> element.
+    /// Ascending (ASC) order.
     /// </summary>
-    public enum Direction
-    {
-        /// <summary>
-        /// Ascending (ASC) order.
-        /// </summary>
-        Ascending,
-        /// <summary>
-        /// Descending (DESC) order.
-        /// </summary>
-        Descending
-    }
+    Ascending,
+    /// <summary>
+    /// Descending (DESC) order.
+    /// </summary>
+    Descending
 }

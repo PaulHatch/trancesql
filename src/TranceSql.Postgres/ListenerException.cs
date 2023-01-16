@@ -1,18 +1,17 @@
 ﻿using System.Data.Common;
 
-namespace TranceSql.Postgres
+namespace TranceSql.Postgres;
+
+/// <summary>
+/// Represents an error that occurs while a listener is running.
+/// </summary>
+public class ListenerException : DbException
 {
     /// <summary>
-    /// Represents an error that occurs while a listener is running.
+    /// Initializes a new instance of the <see cref="ListenerException"/> class.
     /// </summary>
-    public class ListenerException : DbException
+    /// <param name="message">The message to display for this exception.</param>
+    public ListenerException(string message) : base(message)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ListenerException"/> class.
-        /// </summary>
-        /// <param name="message">The message to display for this exception.</param>
-        public ListenerException(string message) : base(message)
-        {
-        }
     }
 }

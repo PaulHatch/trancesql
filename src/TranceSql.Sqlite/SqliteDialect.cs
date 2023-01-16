@@ -4,72 +4,71 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 
-namespace TranceSql.Sqlite
+namespace TranceSql.Sqlite;
+
+/// <summary>
+/// Dialect definition for SQLite.
+/// </summary>
+public class SqliteDialect : IDialect
 {
-    /// <summary>
-    /// Dialect definition for SQLite.
-    /// </summary>
-    public class SqliteDialect : IDialect
+    /// <inheritdoc/>
+    public LimitBehavior LimitBehavior => LimitBehavior.Limit;
+
+    /// <inheritdoc/>
+    public OffsetBehavior OffsetBehavior => OffsetBehavior.Offset;
+
+    /// <inheritdoc/>
+    public OutputType OutputType => OutputType.None;
+
+    /// <inheritdoc/>
+    public string FormatDate(DateTime date) => $"'{date}'";
+
+    /// <inheritdoc/>
+    public string FormatDate(DateTimeOffset date) => $"'{date}'";
+
+    /// <inheritdoc/>
+    public string FormatIdentifier(string identifier) => $"\"{identifier}\"";
+
+    /// <inheritdoc/>
+    public string FormatString(string value) => $"'{value.Replace("'", "''")}'";
+
+    /// <inheritdoc/>
+    public string FormatType(DbType type, IEnumerable<object>? parameters)
     {
-        /// <inheritdoc/>
-        public LimitBehavior LimitBehavior => LimitBehavior.Limit;
-
-        /// <inheritdoc/>
-        public OffsetBehavior OffsetBehavior => OffsetBehavior.Offset;
-
-        /// <inheritdoc/>
-        public OutputType OutputType => OutputType.None;
-
-        /// <inheritdoc/>
-        public string FormatDate(DateTime date) => $"'{date}'";
-
-        /// <inheritdoc/>
-        public string FormatDate(DateTimeOffset date) => $"'{date}'";
-
-        /// <inheritdoc/>
-        public string FormatIdentifier(string identifier) => $"\"{identifier}\"";
-
-        /// <inheritdoc/>
-        public string FormatString(string value) => $"'{value.Replace("'", "''")}'";
-
-        /// <inheritdoc/>
-        public string FormatType(DbType type, IEnumerable<object>? parameters)
+        var typeName = GetType(type);
+        if (parameters?.Any() == true)
         {
-            var typeName = GetType(type);
-            if (parameters?.Any() == true)
-            {
-                return $"{typeName}({string.Join(", ", parameters)})";
-            }
-            else
-            {
-                return typeName;
-            }
+            return $"{typeName}({string.Join(", ", parameters)})";
+        }
+        else
+        {
+            return typeName;
+        }
+    }
+
+    /// <inheritdoc/>
+    public void Render(RenderContext context, BeginTransaction beginTransaction)
+    {
+        if (beginTransaction.Isolation != null)
+        {
+            throw new InvalidCommandException($"BeginTransaction.Isolation is not supported by this SQL dialect");
         }
 
-        /// <inheritdoc/>
-        public void Render(RenderContext context, BeginTransaction beginTransaction)
+        if (beginTransaction.ReadOnly.HasValue)
         {
-            if (beginTransaction.Isolation != null)
-            {
-                throw new InvalidCommandException($"BeginTransaction.Isolation is not supported by this SQL dialect");
-            }
-
-            if (beginTransaction.ReadOnly.HasValue)
-            {
-                throw new InvalidCommandException($"BeginTransaction.ReadOnly is not supported by this SQL dialect");
-            }
-
-            context.Write("BEGIN TRANSACTION;");
+            throw new InvalidCommandException($"BeginTransaction.ReadOnly is not supported by this SQL dialect");
         }
 
-        private string GetType(DbType type)
-        {
-            var parameter = new SqliteParameter
-            {
-                DbType = type
-            };
+        context.Write("BEGIN TRANSACTION;");
+    }
 
-            return parameter.SqliteType.ToString().ToUpper();
-        }
+    private string GetType(DbType type)
+    {
+        var parameter = new SqliteParameter
+        {
+            DbType = type
+        };
+
+        return parameter.SqliteType.ToString().ToUpper();
     }
 }

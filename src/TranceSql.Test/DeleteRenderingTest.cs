@@ -1,35 +1,34 @@
 ﻿using Xunit;
 
-namespace TranceSql.Test
+namespace TranceSql.Test;
+
+public class DeleteRenderingTest
 {
-    public class DeleteRenderingTest
+    [Fact]
+    public void BasicDeleteRender()
     {
-        [Fact]
-        public void BasicDeleteRender()
+        var sut = new Delete
         {
-            var sut = new Delete
-            {
-                From = "Table"
-            };
+            From = "Table"
+        };
 
-            var result = sut.ToString();
+        var result = sut.ToString();
 
-            Assert.Equal("DELETE FROM Table;", result);
-        }
-
-        [Fact]
-        public void WhereRender()
-        {
-            var sut = new Delete
-            {
-                From = "Table",
-                Where = Condition.Equal("Column1", 123)
-            };
-
-            var result = sut.ToString();
-
-            Assert.Equal("DELETE FROM Table\nWHERE Column1 = @P1;", result);
-        }
-
+        Assert.Equal("DELETE FROM Table;", result);
     }
+
+    [Fact]
+    public void WhereRender()
+    {
+        var sut = new Delete
+        {
+            From = "Table",
+            Where = Condition.Equal("Column1", 123)
+        };
+
+        var result = sut.ToString();
+
+        Assert.Equal("DELETE FROM Table\nWHERE Column1 = @P1;", result);
+    }
+
 }

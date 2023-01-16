@@ -1,17 +1,16 @@
 ﻿using Xunit;
 
-namespace TranceSql.Test
+namespace TranceSql.Test;
+
+public class DropRenderingTest
 {
-    public class DropRenderingTest
+    [Fact]
+    public void BasicDropTableRender()
     {
-        [Fact]
-        public void BasicDropTableRender()
-        {
-            var sut = new Drop(DropType.Table, "Table");
+        var sut = new Drop(DropType.Table, "Table");
 
-            var result = sut.ToString();
+        var result = sut.ToString();
 
-            Assert.Equal("DROP TABLE Table;", result);
-        }
+        Assert.Equal("DROP TABLE Table;", result);
     }
 }

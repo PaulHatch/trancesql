@@ -1,8 +1,7 @@
-﻿namespace TranceSql.IntegrationTest
+﻿namespace TranceSql.IntegrationTest;
+
+internal class Sample
 {
-    internal class Sample
-    {
-        public int ID { get; set; }
-        public string Column1 { get; set; }
-    }
+    public int ID { get; set; }
+    public string Column1 { get; set; }
 }

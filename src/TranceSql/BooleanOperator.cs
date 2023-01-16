@@ -1,17 +1,16 @@
-﻿namespace TranceSql
+﻿namespace TranceSql;
+
+/// <summary>
+/// Represents the operator to use in a condition clause.
+/// </summary>
+public enum BooleanOperator
 {
     /// <summary>
-    /// Represents the operator to use in a condition clause.
+    /// Represent the AND operator.
     /// </summary>
-    public enum BooleanOperator
-    {
-        /// <summary>
-        /// Represent the AND operator.
-        /// </summary>
-        And,
-        /// <summary>
-        /// Represent the OR operator.
-        /// </summary>
-        Or
-    }
+    And,
+    /// <summary>
+    /// Represent the OR operator.
+    /// </summary>
+    Or
 }

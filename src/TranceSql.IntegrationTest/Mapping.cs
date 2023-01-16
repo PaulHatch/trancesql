@@ -5,79 +5,78 @@ using TranceSql.Processing;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace TranceSql.IntegrationTest
+namespace TranceSql.IntegrationTest;
+
+[Trait("dialect", "ANY")]
+public class Mapping : IClassFixture<DatabaseFixture>
 {
-    [Trait("dialect", "ANY")]
-    public class Mapping : IClassFixture<DatabaseFixture>
+    protected readonly Database _database;
+
+    public Mapping(DatabaseFixture db, ITestOutputHelper helper)
     {
-        protected readonly Database _database;
+        _database = db.GetDatabase(helper);
+    }
 
-        public Mapping(DatabaseFixture db, ITestOutputHelper helper)
+    sealed class TestAttribute : Attribute { public string Format { get; set; } }
+    class TestBinder : ICustomBinder
+    {
+        public bool DoesApply(PropertyInfo property) => property.GetCustomAttribute<TestAttribute>() != null;
+        public object MapValue(PropertyInfo property, object value)
         {
-            _database = db.GetDatabase(helper);
+            var attr = property.GetCustomAttribute<TestAttribute>();
+            return string.Format(attr.Format, value);
         }
+    }
+    class TestResult
+    {
+        public string PropertyOne { get; set; }
 
-        sealed class TestAttribute : Attribute { public string Format { get; set; } }
-        class TestBinder : ICustomBinder
+        [Test(Format = "Value={0}")]
+        public string PropertyTwo { get; set; }
+    }
+
+    [Fact]
+    public async Task CustomBinder()
+    {
+        EntityMapping.RegisterBinder(new TestBinder());
+
+        var result = await new Command(_database)
         {
-            public bool DoesApply(PropertyInfo property) => property.GetCustomAttribute<TestAttribute>() != null;
-            public object MapValue(PropertyInfo property, object value)
+            new Select
             {
-                var attr = property.GetCustomAttribute<TestAttribute>();
-                return string.Format(attr.Format, value);
-            }
-        }
-        class TestResult
-        {
-            public string PropertyOne { get; set; }
-
-            [Test(Format = "Value={0}")]
-            public string PropertyTwo { get; set; }
-        }
-
-        [Fact]
-        public async Task CustomBinder()
-        {
-            EntityMapping.RegisterBinder(new TestBinder());
-
-            var result = await new Command(_database)
-            {
-                new Select
+                Columns =
                 {
-                    Columns =
-                    {
-                        Constant.Unsafe("Test").As("PropertyOne"),
-                        Constant.Unsafe("Test").As("PropertyTwo")
-                    }
+                    Constant.Unsafe("Test").As("PropertyOne"),
+                    Constant.Unsafe("Test").As("PropertyTwo")
                 }
-            }.FetchAsync<TestResult>();
+            }
+        }.FetchAsync<TestResult>();
 
-            Assert.Equal("Test", result.PropertyOne);
-            Assert.Equal("Value=Test", result.PropertyTwo);
-        }
+        Assert.Equal("Test", result.PropertyOne);
+        Assert.Equal("Value=Test", result.PropertyTwo);
+    }
 
 
-        enum TestLongEnum : long { One = 1, Two = 2 }
-        enum TestIntEnum : int { One = 1, Two = 2 }
-        enum TestShortEnum : short { One = 1, Two = 2 }
-        enum TestByteEnum : byte { One = 1, Two = 2 }
+    enum TestLongEnum : long { One = 1, Two = 2 }
+    enum TestIntEnum : int { One = 1, Two = 2 }
+    enum TestShortEnum : short { One = 1, Two = 2 }
+    enum TestByteEnum : byte { One = 1, Two = 2 }
 
-        [Theory]
-        [InlineData((long)2)]
-        [InlineData((int)2)]
-        [InlineData((short)2)]
-        [InlineData((byte)2)]
-        public async Task EnumByValue(object value)
+    [Theory]
+    [InlineData((long)2)]
+    [InlineData((int)2)]
+    [InlineData((short)2)]
+    [InlineData((byte)2)]
+    public async Task EnumByValue(object value)
+    {
+        var command = new Command(_database)
         {
-            var command = new Command(_database)
-            {
-                new Select { Columns = new Value(value) }
-            };
+            new Select { Columns = new Value(value) }
+        };
 
-            Assert.Equal(TestLongEnum.Two, await command.FetchAsync<TestLongEnum>());
-            Assert.Equal(TestIntEnum.Two, await command.FetchAsync<TestIntEnum>());
-            Assert.Equal(TestShortEnum.Two, await command.FetchAsync<TestShortEnum>());
-            Assert.Equal(TestByteEnum.Two, await command.FetchAsync<TestByteEnum>());
-        }
+        Assert.Equal(TestLongEnum.Two, await command.FetchAsync<TestLongEnum>());
+        Assert.Equal(TestIntEnum.Two, await command.FetchAsync<TestIntEnum>());
+        Assert.Equal(TestShortEnum.Two, await command.FetchAsync<TestShortEnum>());
+        Assert.Equal(TestByteEnum.Two, await command.FetchAsync<TestByteEnum>());
     }
 }

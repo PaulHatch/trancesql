@@ -3,32 +3,32 @@ using TranceSql.Postgres;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace TranceSql.IntegrationTest
+namespace TranceSql.IntegrationTest;
+
+[Trait("dialect", "Postgres")]
+public class Postgres : IClassFixture<DatabaseFixture>
 {
-    [Trait("dialect", "Postgres")]
-    public class Postgres : IClassFixture<DatabaseFixture>
+    protected readonly Database _database;
+
+    public Postgres(DatabaseFixture db, ITestOutputHelper helper)
     {
-        protected readonly Database _database;
+        _database = db.GetDatabase(helper);
+    }
 
-        public Postgres(DatabaseFixture db, ITestOutputHelper helper)
+    [Fact]
+    public async Task OnConflictCanExecute()
+    {
+        var sut = new Command(_database)
         {
-            _database = db.GetDatabase(helper);
-        }
-
-        [Fact]
-        public async Task OnConflictCanExecute()
-        {
-            var sut = new Command(_database)
+            new CreateTable("unique_table")
             {
-                new CreateTable("unique_table")
+                Columns =
                 {
-                    Columns =
-                    {
-                        { "column", SqlType.From<int>(), new UniqueConstraint() }
-                    }
-                },
-                new Insert { Into = "unique_table", Columns = "column", Values = { 1 } },
-                new Insert { Into = "unique_table", Columns = "column", Values = { 1 } }
+                    { "column", SqlType.From<int>(), new UniqueConstraint() }
+                }
+            },
+            new Insert { Into = "unique_table", Columns = "column", Values = { 1 } },
+            new Insert { Into = "unique_table", Columns = "column", Values = { 1 } }
                 .OnConflict(
                     new [] {
                         new Column("column")
@@ -36,13 +36,12 @@ namespace TranceSql.IntegrationTest
                     new Update {
                         Set = { { "column", 2 } }
                     }),
-                new Select { Limit = 1, Columns = "column", From = "unique_table" }
-            };
+            new Select { Limit = 1, Columns = "column", From = "unique_table" }
+        };
 
-            var result = await sut.FetchAsync<int>();
+        var result = await sut.FetchAsync<int>();
 
-            Assert.Equal(2, result);
-        }
-
+        Assert.Equal(2, result);
     }
+
 }
