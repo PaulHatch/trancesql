@@ -1,4 +1,6 @@
-﻿
+> ##### _2024 Status_
+> _The current version of Entity Framework Core includes a few features which substantially diminish the comparative advantages of using this library. In particular the with ability to write raw SQL strings with sytax highlighting and automatic parameterization solves and return arbitrary types introduced in EF 8 resolves the main problems I originally had that motivated the creation of this library. At this point I have mostly replaced this library with Entity Framework in my own projects and it no longer make sense to continue investing in the present form._
+
 # TranceSQL
 
 [![NuGet version (TranceSql)](https://img.shields.io/nuget/v/TranceSql.svg?style=flat-square)](https://www.nuget.org/packages/TranceSql/)
